@@ -15,6 +15,7 @@ class LecturerController extends Controller
     public function index()
     {
         //
+return ["sc" => true];
     }
 
     /**
