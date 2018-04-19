@@ -23,18 +23,46 @@ class LecturerRequest extends FormRequest
      */
     public function rules()
     {
-        if($this->isMethod("POST"))
+        switch($this->method())
         {
-            return [
-                //
-                "name_lecturer" => "required",
-                "address_lecturer" => "required",
-                "email_address_lecturer" => "required| unique.lecturers,email_address_lecturer",
-                "phone_number" => "required",
-                "id_department" => "required|integer",
-                "id_field" => "required|integer",
-            ];
+            case 'GET':
+            case 'DELETE':
+                {
+                    return [];
+                }
+            case 'POST':
+                {
+
+                    if($this->hasFile("excel"))
+                    {
+                        return [];
+                    }
+                    return [
+
+                        "name_lecturer" => "required",
+                        "address_lecturer" => "required",
+                        "email_address_lecturer" => "required|unique:lecturers,email_address_lecturer",
+                        "phone_number" => "required",
+                        "id_department" => "required|integer",
+                        "id_field" => "required|integer",
+                        "password" => "required"
+                    ];
+                }
+            case 'PUT':
+            case 'PATCH':
+                {
+                    return [
+                        "name_lecturer" => "required",
+                        "address_lecturer" => "required",
+                        "email_address_lecturer" => "required",
+                        "phone_number" => "required",
+                        "id_department" => "required|integer",
+                        "id_field" => "required|integer",
+                    ];
+                }
+            default:break;
         }
+
         return [];
     }
 }

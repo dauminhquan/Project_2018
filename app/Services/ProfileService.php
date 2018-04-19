@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Http\Requests\LecturerRequest;
 use App\Http\Requests\StudentRequest;
+use App\Models\Department;
 use App\Models\Field;
 use App\Models\Lecturer;
 use App\Models\LecturerProtection;
@@ -111,18 +112,18 @@ class ProfileService
     // lay thong tin cua tat ca giang vien
     public function getLecturersInfo()
     {
-        $lecturer = Lecturer::join("lecturer_protection","lecturer_protection.id_lecturer","lecturers.id")
-            ->join("departments","departments.id","lecturers.id_department")
-            ->join("fields","fields.id","lecturers.id_field")
-            ->join("protections","protections.id","lecturer_protection.id_protection")
-            ->join("topics","topics.id_lecturer","lecturers.id")
-
+        $lecturer = Lecturer::leftjoin("lecturer_protection","lecturer_protection.id_lecturer","lecturers.id")
+            ->leftjoin("departments","departments.id","lecturers.id_department")
+            ->leftjoin("fields","fields.id","lecturers.id_field")
+            ->leftjoin("protections","protections.id","lecturer_protection.id_protection")
+            ->leftjoin("topics","topics.id_lecturer","lecturers.id")
+            ->leftjoin("users","users.id","lecturers.id_user")
             ->select("lecturers.*",
                 "protections.time_start", "protections.time_end",
                 "topics.name_topic",
                 "fields.field_name",
-                "departments.department_name"
-
+                "departments.department_name",
+                "users.email"
                 )
 
             ->get();
@@ -131,20 +132,21 @@ class ProfileService
 
     public function getLecturerInfo($id)
     {
-        $lecturer = Lecturer::where("lecturers.id",$id)->join("lecturer_protection","lecturer_protection.id_lecturer","lecturers.id")->
-            join("lecturer_protection","lecturer_protection.id_lecturer","lecturers.id")
-            ->join("departments","departments.id","lecturers.id_department")
-            ->join("fields","fields.id","lecturers.id_field")
-            ->join("protections","protections.id","lecturer_protection.id_protection")
-            ->join("topics","topics.id_lecturer","lecturers.id")
+        $lecturer = Lecturer::where("lecturers.id",$id)->leftjoin("lecturer_protection","lecturer_protection.id_lecturer","lecturers.id")
+        ->leftjoin("departments","departments.id","lecturers.id_department")
+        ->leftjoin("fields","fields.id","lecturers.id_field")
+        ->leftjoin("protections","protections.id","lecturer_protection.id_protection")
+        ->leftjoin("topics","topics.id_lecturer","lecturers.id")
+        ->leftjoin("users","users.id","lecturers.id_user")
+        ->select("lecturers.*",
+            "protections.time_start", "protections.time_end",
+            "topics.name_topic",
+            "fields.field_name",
+            "departments.department_name",
+            "users.email"
+        )
 
-            ->select("lecturers.*",
-                "protections.time_start", "protections.time_end",
-                "topics.name_topic",
-                "fields.field_name",
-                "departments.department_name"
-
-            )->first();
+        ->first();
         return $lecturer;
     }
 
@@ -156,8 +158,9 @@ class ProfileService
         $lecturer->update();
     }
 
-    public function updateLecturer($id,Request $request)
+    public function updateLecturer($id,LecturerRequest $request)
     {
+
         $lecturer = Lecturer::findOrFail($id);
         if($request->has("name_lecturer"))
         {
@@ -165,23 +168,23 @@ class ProfileService
         }
         if($request->has("address_lecturer"))
         {
-            $lecturer->student_name = $request->input("address_lecturer");
+            $lecturer->address_lecturer = $request->input("address_lecturer");
         }
         if($request->has("email_address_lecturer"))
         {
-            $lecturer->student_name = $request->input("email_address_lecturer");
+            $lecturer->email_address_lecturer = $request->input("email_address_lecturer");
         }
         if($request->has("phone_number"))
         {
-            $lecturer->student_name = $request->input("phone_number");
+            $lecturer->phone_number = $request->input("phone_number");
         }
         if($request->has("id_department"))
         {
-            $lecturer->student_name = $request->input("id_department");
+            $lecturer->id_department = $request->input("id_department");
         }
         if($request->has("id_field"))
         {
-            $lecturer->student_name = $request->input("id_field");
+            $lecturer->id_field = $request->input("id_field");
         }
         if($request->has("password"))
         {
@@ -204,19 +207,25 @@ class ProfileService
 
         $user = new Users();
         $user->email =  $request->input("email_address_lecturer");
-        $user->password =  $request->input("password");
+        $user->password = Hash::make( $request->input("password"));
+        $user->auth =  2;
         $user->save();
         $lecturer->id_user = $user->id;
-
 
         $lecturer->save();
 
     }
 
-    public function addLecturers(array $lecturers)
+    public function addLecturers($lecturers)
     {
+        $catch = [];
         foreach ($lecturers as $item)
         {
+            if(Users::where("email",$item->email_address_lecturer)->count() > 0 || Lecturer::where("email_address_lecturer",$item->email_address_lecturer)->count() > 0)
+            {
+                $catch[] = $item;
+                continue;
+            }
             $lecturer = new Lecturer();
             $lecturer->name_lecturer = $item->name_lecturer;
             $lecturer->address_lecturer = $item->address_lecturer;
@@ -228,17 +237,28 @@ class ProfileService
             $user = new Users();
             $user->email =  $item->email_address_lecturer;
             $user->password = Hash::make($item->password);
+            $user->auth = 2;
             $user->save();
             $lecturer->id_user = $user->id;
 
-
             $lecturer->save();
+
         }
+        return $catch;
     }
 
     public function deleteLecturer($id)
     {
         $lecturer = Lecturer::findOrFail($id);
+
+        $id_user = $lecturer->id_user;
+        if(isset($id_user))
+        {
+            $user = Users::findOrFail($id_user);
+            $user->delete();
+        }
+
+
         $lecturer->delete();
     }
     ///----------------------------------------------/
@@ -248,7 +268,7 @@ class ProfileService
     ///
     public function getSecretariesInfo()
     {
-        $secretary = Secretary::get();
+        $secretary = Secretary::leftjoin("users","users.id","secretaries.id_user")->select("secretaries.*","users.email")->get();
         return $secretary;
     }
 
@@ -266,7 +286,7 @@ class ProfileService
         $secretary->update();
     }
 
-    public function updateSecretary($id,Request $request)
+    public function updateSecretary($id,SecretaryRequest $request)
     {
         $secretary = Secretary::findOrFail($id);
         if($request->has("name_secretary"))
@@ -291,7 +311,7 @@ class ProfileService
     }
     //
 
-    public function addSecretary(LecturerRequest $request)
+    public function addSecretary(SecretaryRequest $request)
     {
         $secretary = new Secretary();
         $secretary->name_secretary = $request->input("name_secretary");
@@ -301,7 +321,8 @@ class ProfileService
 
         $user = new Users();
         $user->email =  $request->input("email_address_secretary");
-        $user->password =  $request->input("password");
+        $user->password =  Hash::make($request->input("password"));
+        $user->auth = 1;
         $user->save();
         $secretary->id_user = $user->id;
 
@@ -341,24 +362,14 @@ class ProfileService
 
     public function getFieldsInfo()
     {
-        $field = Field::
-        join("lecturers","fields.id","lecturers.id_field")
-        ->select("lecturers.*",
-                "fields.field_name"
-            )
-            ->get();
+        $field = Field::get();
         return $field;
     }
 
     public function getFieldInfo($id)
     {
 
-        $field = Field::where("fields.id",$id)->
-        join("lecturers","fields.id","lecturers.id_field")
-            ->select("lecturers.*",
-                "fields.field_name"
-            )
-            ->first();
+        $field = Field::where("fields.id",$id)->first();
         return $field;
     }
 
@@ -613,6 +624,17 @@ class ProfileService
             $lecturer_protection->id_lecturer = $item->id_lecturer;
             $lecturer_protection->save();
         }
+    }
+
+    ///////------------------------------
+    /// Departments
+    public function getDepartments()
+    {
+        return Department::get();
+    }
+    public function getDepartment($id)
+    {
+        return Department::findOrFail($id);
     }
 
 
