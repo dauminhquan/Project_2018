@@ -15,4 +15,5 @@ let mix = require('laravel-mix');
 //    .sass('resources/assets/sass/app.scss', 'public/css');
 
 mix.js('resources/assets/js/secretary/SecretaryController/lecturersManage/lecturersManage.js', 'public/js');
+mix.js('resources/assets/js/secretary/SecretaryController/studentsManage/studentsManage.js', 'public/js');
 

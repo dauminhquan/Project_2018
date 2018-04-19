@@ -11,4 +11,8 @@ class SecretaryController extends Controller
     {
         return view("secretary.lecturersManage");
     }
+    public function studentsManage()
+    {
+        return view("secretary.studentsManage");
+    }
 }

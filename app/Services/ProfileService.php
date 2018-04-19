@@ -4,6 +4,8 @@ namespace App\Services;
 
 use App\Http\Requests\LecturerRequest;
 use App\Http\Requests\StudentRequest;
+use App\Models\Branch;
+use App\Models\Course;
 use App\Models\Department;
 use App\Models\Field;
 use App\Models\Lecturer;
@@ -28,14 +30,14 @@ class ProfileService
         return Student::join("departments","departments.id","students.id_department")
             ->join("courses","courses.id","students.id_course")
             ->join("branches","branches.id","students.id_branch")->select(["students.*","courses.name_course",
-                "branches.name_branch"])->get();
+                "branches.name_branch","departments.department_name"])->get();
     }
     // lay thong tin sinh vien theo id
     public function getStudentInfo($id)
     {
         return Student::where("students.id",$id) ->join("courses","courses.id","students.id_course")
             ->join("branches","branches.id","students.id_branch")->select(["students.*","courses.name_course",
-                "branches.name_branch"])->first();
+                "branches.name_branch","departments.department_name"])->first();
     }
     /// update thong tin sinh vien theo id
     /// update tung truong
@@ -62,10 +64,10 @@ class ProfileService
         {
             $student->id_department = $request->input("id_department");
         }
-//        if($request->has("id_course"))
-//        {
-//            $student->student_name = $request->input("id_course");
-//        }
+        if($request->has("id_course"))
+        {
+            $student->student_name = $request->input("id_course");
+        }
         if($request->has("id_branch"))
         {
             $student->id_branch = $request->input("id_branch");
@@ -76,28 +78,41 @@ class ProfileService
     public function addStudent(StudentRequest $request)
     {
         $student = new Student();
+
         $student->code = $request->input("code");
         $student->student_name = $request->input("student_name");
         $student->address = $request->input("address");
         $student->id_department = $request->input("id_department");
         $student->id_course = $request->input("id_course");
         $student->id_branch = $request->input("id_branch");
+        $student->password = Hash::make($request->input("password"));
         $student->save();
     }
     // them nhieu sinh vien
-    public function addStudents(array $students)
+    public function addStudents($students)
     {
+        $catch = [];
         foreach ($students as $item)
         {
+
             $student = new Student();
+
+            if(Student::where("code",$item->code)->count() > 0)
+            {
+                $catch[] = $item;
+                continue;
+            }
+
             $student->code = $item->code;
             $student->student_name = $item->student_name;
             $student->address = $item->address;
             $student->id_department = $item->id_department;
             $student->id_course = $item->id_course;
             $student->id_branch = $item->id_branch;
+            $student->password= $item->password;
             $student->save();
         }
+        return $catch;
     }
     // xoa sinh vien
     public function deleteStudent($id)
@@ -636,6 +651,25 @@ class ProfileService
     {
         return Department::findOrFail($id);
     }
+///
+///
+/// Course
+    public function getCourses()
+    {
+        return Course::get();
+    }
+    public function getCourse($id)
+    {
+        return Course::findOrFail($id);
+    }
+//Branchs
 
-
+    public function getBranchs()
+    {
+        return Branch::get();
+    }
+    public function getBranch($id)
+    {
+        return Branch::findOrFail($id);
+    }
 }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Requests\StudentRequest;
 use App\Services\ProfileService;
 use App\Http\Controllers\Controller;
+use Maatwebsite\Excel\Facades\Excel;
 
 class StudentController extends Controller
 {
@@ -29,8 +30,12 @@ class StudentController extends Controller
     public function store(StudentRequest $request)
     {
         //
-
+        
         $studentProfile = new ProfileService();
+        if($request->hasFile("excel"))
+        {
+            return $studentProfile->addStudents(Excel::load($request->file("excel"))->get());
+        }
         $studentProfile->addStudent($request);
         return ["sc" => "true"];
     }

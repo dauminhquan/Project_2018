@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "/";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 32);
+/******/ 	return __webpack_require__(__webpack_require__.s = 37);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -13187,14 +13187,19 @@ module.exports = function normalizeComponent (
 
 
 /***/ }),
-/* 32 */
+/* 32 */,
+/* 33 */,
+/* 34 */,
+/* 35 */,
+/* 36 */,
+/* 37 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(33);
+module.exports = __webpack_require__(38);
 
 
 /***/ }),
-/* 33 */
+/* 38 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
@@ -13202,22 +13207,22 @@ module.exports = __webpack_require__(33);
 window.Vue = __webpack_require__(9);
 window.axios = __webpack_require__(12);
 
-Vue.component('table-lecturer', __webpack_require__(34));
+Vue.component('data-table', __webpack_require__(39));
 
 var table = new Vue({
-    el: '#lecturers-table'
+    el: '#data-table'
 });
 
 /***/ }),
-/* 34 */
+/* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 var normalizeComponent = __webpack_require__(31)
 /* script */
-var __vue_script__ = __webpack_require__(35)
+var __vue_script__ = __webpack_require__(40)
 /* template */
-var __vue_template__ = __webpack_require__(36)
+var __vue_template__ = __webpack_require__(41)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -13234,7 +13239,7 @@ var Component = normalizeComponent(
   __vue_scopeId__,
   __vue_module_identifier__
 )
-Component.options.__file = "resources\\assets\\js\\secretary\\SecretaryController\\lecturersManage\\components\\tableLecturer.vue"
+Component.options.__file = "resources\\assets\\js\\secretary\\SecretaryController\\studentsManage\\components\\dataTable.vue"
 
 /* hot reload */
 if (false) {(function () {
@@ -13243,9 +13248,9 @@ if (false) {(function () {
   if (!hotAPI.compatible) return
   module.hot.accept()
   if (!module.hot.data) {
-    hotAPI.createRecord("data-v-5eba4d1f", Component.options)
+    hotAPI.createRecord("data-v-7d185a7c", Component.options)
   } else {
-    hotAPI.reload("data-v-5eba4d1f", Component.options)
+    hotAPI.reload("data-v-7d185a7c", Component.options)
   }
   module.hot.dispose(function (data) {
     disposed = true
@@ -13256,7 +13261,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 35 */
+/* 40 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -13491,35 +13496,48 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     mounted: function mounted() {
-
-        // this.drawTable()
-        this.get_department();
-        this.get_field();
-        this.getLecturers();
-        // console.log(this.department)
+        //hien thi thong tin sinh vien
+        this.getData();
+        this.getDepartment();
+        this.getBranch();
+        this.getCourse();
     },
 
     methods: {
-        get_department: function get_department() {
+        // lấy thông tin khoa
+        getDepartment: function getDepartment() {
             var _this = this;
 
             axios.get('/api/department').then(function (response) {
                 _this.departments = response.data;
-                console.log(_this.departments);
             }).catch(function (err) {
                 console.log(err);
             });
         },
-        get_field: function get_field() {
+
+        //lay thong tin nganh
+
+        getBranch: function getBranch() {
             var _this2 = this;
 
-            axios.get('/api/field').then(function (response) {
-                console.log(response.data);
-                _this2.fields = response.data;
+            axios.get('/api/branch').then(function (response) {
+                _this2.branchs = response.data;
+            }).catch(function (err) {
+                console.log(err);
+            });
+        },
+
+        //lay thong khoa hoc
+        getCourse: function getCourse() {
+            var _this3 = this;
+
+            axios.get('/api/course').then(function (response) {
+                _this3.courses = response.data;
             }).catch(function (err) {
                 console.log(err);
             });
@@ -13535,8 +13553,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 }
             });
 
-            data = this.filData(data);
-            console.log(data);
             $('#datatable-basic').dataTable({
                 data: data,
                 columnDefs: [],
@@ -13547,16 +13563,16 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                         }
                     },
                     buttons: [{ extend: 'copy' }, { extend: 'csv' }, { extend: 'excel' }, { extend: 'pdf' }, { extend: 'print' }, {
-                        text: 'Thêm giảng viên',
+                        text: 'Thêm sinh viên',
                         className: 'btn bg-teal-400',
                         action: function action(e, dt, node, config) {
-                            $("#modal_add").modal("show");
+                            $("#modalAdd").modal("show");
                         }
                     }, {
                         text: 'Thêm bằng Excel',
                         className: 'btn bg-info-400',
                         action: function action(e, dt, node, config) {
-                            $("#modal_form_inline").modal("show");
+                            $("#modalAddExcel").modal("show");
                         }
                     }]
                 }
@@ -13569,56 +13585,49 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 width: 'auto'
             });
         },
-        submit_add: function submit_add() {
-            var _this3 = this;
+
+        // them moi 1 data
+        submitAdd: function submitAdd() {
+            var _this4 = this;
 
             console.log(this.add_u);
-            axios.post("/api/lecturer", this.add_u).then(function (data) {
-                _this3.resetData();
+            axios.post("/api/student", this.dataAdd).then(function (data) {
+                _this4.resetData();
                 swal({
                     title: "Thành công!",
                     text: "Thêm mới thành công!",
                     confirmButtonColor: "#66BB6A",
                     type: "success"
                 });
-                $("#modal_add").modal("hide");
+                $("#modalAdd").modal("hide");
             }).catch(function (err) {
                 console.log(err);
             });
         },
-        getLecturers: function getLecturers() {
-            var _this4 = this;
 
-            axios.get("/api/lecturer").then(function (data) {
-                _this4.drawTable(data.data);
-            }).catch(function (err) {
-                console.log(err);
+        //loc du lieu
+        // edit
+        filData: function filData(data) {
+
+            return data.map(function (value, index) {
+                return [value.code, value.student_name, value.department_name, value.name_branch, value.name_course, value.address, '<ul style="text-align: center;" class="icons-list">' + '   <li class="dropdown">' + '       <a href="#" class="dropdown-toggle" data-toggle="dropdown">' + '           <i class="icon-menu9"></i>' + '       </a>' + '<ul class="dropdown-menu dropdown-menu-right">' + '<li>' + '   <a href="#" onclick="showInfor(' + value.id + ')">' + '       <i class=" icon-user"></i> Thông tin chi tiết' + '   </a>' + '</li>' + '<li>' + '   <a href="#" @click="" onclick="deleteInfo(' + value.id + ')">' + '<i class="icon-user-cancel"></i> Xóa' + '</a>' + '</li>' + '</ul>' + '</li>' + '</ul>'];
             });
         },
-        filData: function filData(data_lec) {
-            // name_lecturer
-            //id
-            //department_name - khoa
-            // chu de field_name
-            var td = data_lec.map(function (value, index) {
-                var htmlAction = '';
-                return [value.name_lecturer, value.department_name, value.email, value.email_address_lecturer, '<ul style="text-align: center;" class="icons-list">' + '   <li class="dropdown">' + '       <a href="#" class="dropdown-toggle" data-toggle="dropdown">' + '           <i class="icon-menu9"></i>' + '       </a>' + '<ul class="dropdown-menu dropdown-menu-right">' + '<li>' + '   <a href="#" onclick="showModalLec(' + value.id + ')">' + '       <i class=" icon-user"></i> Thông tin chi tiết' + '   </a>' + '</li>' + '<li>' + '   <a href="#" onclick="delete_lec(' + value.id + ')">' + '<i class="icon-user-cancel"></i> Xóa' + '</a>' + '</li>' + '</ul>' + '</li>' + '</ul>'];
-            });
 
-            console.log(td);
-            return td;
-        },
+        //reset lại dữ liệu bảng
         resetData: function resetData() {
             var _this5 = this;
 
-            axios.get("/api/lecturer").then(function (data) {
+            axios.get("/api/student").then(function (data) {
                 $('#datatable-basic').dataTable().fnClearTable();
                 $('#datatable-basic').dataTable().fnAddData(_this5.filData(data.data));
             }).catch(function (err) {
                 console.log(err);
             });
         },
-        success_delete: function success_delete() {
+
+        // xác định delete người dùng
+        successDelete: function successDelete() {
             var id = $("#delete_button").attr("data");
             axios.delete("/api/lecturer/" + id).then(function (data) {
                 console.log(data);
@@ -13647,37 +13656,60 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 });
             });
         },
-        add_excel: function add_excel() {
+
+        // Thêm excel
+        addExcel: function addExcel() {
             this.file_excel = this.$refs.file.files[0];
         },
-        submit_file: function submit_file() {
+
+        //gửi file excel
+        submitFile: function submitFile() {
             var _this6 = this;
 
             var formData = new FormData();
 
             formData.append('excel', this.file_excel);
             console.log(this.file_excel);
-            axios.post('/api/lecturer', formData, {
+            axios.post('/api/student', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }
             }).then(function (data) {
                 if (data.data.length > 0) {
-                    var email_err = "";
+                    var code = "";
                     console.log(data.data);
                     for (var i = 0; i < data.data.length; i++) {
-                        email_err += data.data[i].email_address_lecturer + ";";
+                        code += data.data[i].code + ";";
                     }
-                    $("#modal_form_inline").modal("hide");
+                    $("#modalAddExcel").modal("hide");
                     swal({
                         title: "Thêm thành công!",
-                        text: "Có " + data.data.length + " user không thể thêm. Tại vị trí " + email_err + "!",
+                        text: "Có " + data.data.length + " user không thể thêm. Tại mã sinh viên " + code + "!",
                         confirmButtonColor: "#66BB6A",
                         type: "success"
                     });
                     _this6.resetData();
-                    $("#modal_form_inline").modal("hide");
+                    $("#modalAddExcel").modal("hide");
+                } else {
+                    swal({
+                        title: "Thêm thành công!",
+                        text: "Danh sách sinh viên đã được thêm vào!",
+                        confirmButtonColor: "#66BB6A",
+                        type: "success"
+                    });
+                    _this6.resetData();
+                    $("#modalAddExcel").modal("hide");
                 }
+            }).catch(function (err) {
+                console.log(err);
+            });
+        },
+        getData: function getData() {
+            var _this7 = this;
+
+            axios.get("/api/student").then(function (data) {
+                _this7.infoData = _this7.filData(data.data);
+                _this7.drawTable(_this7.infoData);
             }).catch(function (err) {
                 console.log(err);
             });
@@ -13686,30 +13718,29 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     data: function data() {
         return {
 
-            file_excel: "",
-
-            add_u: {
-                name_lecturer: "",
-                address_lecturer: "",
-                email_address_lecturer: "",
-                phone_number: "",
+            fileExcel: "",
+            //Thông tin data
+            infoData: [],
+            dataAdd: {
+                code: "",
+                student_name: "",
+                address: "",
                 id_department: "",
-                id_field: "",
+                id_course: "",
+                id_branch: "",
                 password: ""
             },
+            // chuyen nganh
             departments: [],
-            fields: []
+            branchs: [],
+            courses: []
 
         };
-    },
-    created: function created() {},
-
-    computed: {}
-
+    }
 });
 
 /***/ }),
-/* 36 */
+/* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -13719,56 +13750,21 @@ var render = function() {
   return _c("div", [
     _vm._m(0),
     _vm._v(" "),
-    _vm._m(1),
-    _vm._v(" "),
-    _c(
-      "div",
-      { staticClass: "modal fade", attrs: { id: "modal_theme_danger" } },
-      [
-        _c("div", { staticClass: "modal-dialog" }, [
-          _c("div", { staticClass: "modal-content" }, [
-            _vm._m(2),
-            _vm._v(" "),
-            _vm._m(3),
-            _vm._v(" "),
-            _c("div", { staticClass: "modal-footer" }, [
-              _c(
-                "button",
-                {
-                  staticClass: "btn btn-link",
-                  attrs: { type: "button", "data-dismiss": "modal" }
-                },
-                [_vm._v("Close")]
-              ),
-              _vm._v(" "),
-              _c(
-                "button",
-                {
-                  staticClass: "btn btn-danger",
-                  attrs: { type: "button", id: "delete_button" },
-                  on: { click: _vm.success_delete }
-                },
-                [_vm._v("Xóa")]
-              )
-            ])
-          ])
-        ])
-      ]
-    ),
-    _vm._v(" "),
-    _c("div", { staticClass: "modal fade", attrs: { id: "modal_add" } }, [
+    _c("div", { staticClass: "modal fade", attrs: { id: "modalAdd" } }, [
       _c("div", { staticClass: "modal-dialog modal-lg" }, [
         _c("div", { staticClass: "modal-content" }, [
-          _vm._m(4),
+          _vm._m(1),
           _vm._v(" "),
           _c(
             "form",
             {
               staticClass: "form-horizontal",
-              attrs: {
-                onsubmit: "event.preventDefault()",
-                id: "form_add",
-                action: "#"
+              attrs: { id: "form_add", action: "#" },
+              on: {
+                submit: function($event) {
+                  $event.preventDefault()
+                  return _vm.submitAdd($event)
+                }
               }
             },
             [
@@ -13780,7 +13776,7 @@ var render = function() {
                   _vm._v(" "),
                   _c("div", { staticClass: "form-group" }, [
                     _c("label", { staticClass: "control-label col-lg-2" }, [
-                      _vm._v("Tên giảng viên")
+                      _vm._v("Mã sinh viên")
                     ]),
                     _vm._v(" "),
                     _c("div", { staticClass: "col-lg-10" }, [
@@ -13789,21 +13785,51 @@ var render = function() {
                           {
                             name: "model",
                             rawName: "v-model",
-                            value: _vm.add_u.name_lecturer,
-                            expression: "add_u.name_lecturer"
+                            value: _vm.dataAdd.code,
+                            expression: "dataAdd.code"
                           }
                         ],
                         staticClass: "form-control",
                         attrs: { type: "text", name: "name_lecturer" },
-                        domProps: { value: _vm.add_u.name_lecturer },
+                        domProps: { value: _vm.dataAdd.code },
+                        on: {
+                          input: function($event) {
+                            if ($event.target.composing) {
+                              return
+                            }
+                            _vm.$set(_vm.dataAdd, "code", $event.target.value)
+                          }
+                        }
+                      })
+                    ])
+                  ]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "form-group" }, [
+                    _c("label", { staticClass: "control-label col-lg-2" }, [
+                      _vm._v("Tên sinh viên")
+                    ]),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "col-lg-10" }, [
+                      _c("input", {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: _vm.dataAdd.student_name,
+                            expression: "dataAdd.student_name"
+                          }
+                        ],
+                        staticClass: "form-control",
+                        attrs: { type: "text ", name: "address_lecturer" },
+                        domProps: { value: _vm.dataAdd.student_name },
                         on: {
                           input: function($event) {
                             if ($event.target.composing) {
                               return
                             }
                             _vm.$set(
-                              _vm.add_u,
-                              "name_lecturer",
+                              _vm.dataAdd,
+                              "student_name",
                               $event.target.value
                             )
                           }
@@ -13823,93 +13849,25 @@ var render = function() {
                           {
                             name: "model",
                             rawName: "v-model",
-                            value: _vm.add_u.address_lecturer,
-                            expression: "add_u.address_lecturer"
-                          }
-                        ],
-                        staticClass: "form-control",
-                        attrs: { type: "text ", name: "address_lecturer" },
-                        domProps: { value: _vm.add_u.address_lecturer },
-                        on: {
-                          input: function($event) {
-                            if ($event.target.composing) {
-                              return
-                            }
-                            _vm.$set(
-                              _vm.add_u,
-                              "address_lecturer",
-                              $event.target.value
-                            )
-                          }
-                        }
-                      })
-                    ])
-                  ]),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "form-group" }, [
-                    _c("label", { staticClass: "control-label col-lg-2" }, [
-                      _vm._v("Email")
-                    ]),
-                    _vm._v(" "),
-                    _c("div", { staticClass: "col-lg-10" }, [
-                      _c("input", {
-                        directives: [
-                          {
-                            name: "model",
-                            rawName: "v-model",
-                            value: _vm.add_u.email_address_lecturer,
-                            expression: "add_u.email_address_lecturer"
+                            value: _vm.dataAdd.address,
+                            expression: "dataAdd.address"
                           }
                         ],
                         staticClass: "form-control",
                         attrs: {
-                          type: "email",
+                          type: "text",
                           name: "email_address_lecturer",
                           placeholder: ""
                         },
-                        domProps: { value: _vm.add_u.email_address_lecturer },
+                        domProps: { value: _vm.dataAdd.address },
                         on: {
                           input: function($event) {
                             if ($event.target.composing) {
                               return
                             }
                             _vm.$set(
-                              _vm.add_u,
-                              "email_address_lecturer",
-                              $event.target.value
-                            )
-                          }
-                        }
-                      })
-                    ])
-                  ]),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "form-group" }, [
-                    _c("label", { staticClass: "control-label col-lg-2" }, [
-                      _vm._v("Số điện thoại")
-                    ]),
-                    _vm._v(" "),
-                    _c("div", { staticClass: "col-lg-10" }, [
-                      _c("input", {
-                        directives: [
-                          {
-                            name: "model",
-                            rawName: "v-model",
-                            value: _vm.add_u.phone_number,
-                            expression: "add_u.phone_number"
-                          }
-                        ],
-                        staticClass: "form-control",
-                        attrs: { type: "text", name: "phone_number" },
-                        domProps: { value: _vm.add_u.phone_number },
-                        on: {
-                          input: function($event) {
-                            if ($event.target.composing) {
-                              return
-                            }
-                            _vm.$set(
-                              _vm.add_u,
-                              "phone_number",
+                              _vm.dataAdd,
+                              "address",
                               $event.target.value
                             )
                           }
@@ -13931,8 +13889,8 @@ var render = function() {
                             {
                               name: "model",
                               rawName: "v-model",
-                              value: _vm.add_u.id_department,
-                              expression: "add_u.id_department"
+                              value: _vm.dataAdd.id_department,
+                              expression: "dataAdd.id_department"
                             }
                           ],
                           staticClass: "form-control",
@@ -13948,7 +13906,7 @@ var render = function() {
                                   return val
                                 })
                               _vm.$set(
-                                _vm.add_u,
+                                _vm.dataAdd,
                                 "id_department",
                                 $event.target.multiple
                                   ? $$selectedVal
@@ -13970,7 +13928,7 @@ var render = function() {
                   _vm._v(" "),
                   _c("div", { staticClass: "form-group" }, [
                     _c("label", { staticClass: "control-label col-lg-2" }, [
-                      _vm._v("Chọn chủ đề hướng dẫn")
+                      _vm._v("Chọn ngành")
                     ]),
                     _vm._v(" "),
                     _c("div", { staticClass: "col-lg-10" }, [
@@ -13981,8 +13939,8 @@ var render = function() {
                             {
                               name: "model",
                               rawName: "v-model",
-                              value: _vm.add_u.id_field,
-                              expression: "add_u.id_field"
+                              value: _vm.dataAdd.id_branch,
+                              expression: "dataAdd.id_branch"
                             }
                           ],
                           staticClass: "form-control",
@@ -13998,8 +13956,8 @@ var render = function() {
                                   return val
                                 })
                               _vm.$set(
-                                _vm.add_u,
-                                "id_field",
+                                _vm.dataAdd,
+                                "id_branch",
                                 $event.target.multiple
                                   ? $$selectedVal
                                   : $$selectedVal[0]
@@ -14007,11 +13965,61 @@ var render = function() {
                             }
                           }
                         },
-                        _vm._l(_vm.fields, function(field) {
+                        _vm._l(_vm.branchs, function(branch) {
                           return _c(
                             "option",
-                            { domProps: { value: field.id } },
-                            [_vm._v(_vm._s(field.field_name))]
+                            { domProps: { value: branch.id } },
+                            [_vm._v(_vm._s(branch.name_branch))]
+                          )
+                        })
+                      )
+                    ])
+                  ]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "form-group" }, [
+                    _c("label", { staticClass: "control-label col-lg-2" }, [
+                      _vm._v("Chọn khóa")
+                    ]),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "col-lg-10" }, [
+                      _c(
+                        "select",
+                        {
+                          directives: [
+                            {
+                              name: "model",
+                              rawName: "v-model",
+                              value: _vm.dataAdd.id_course,
+                              expression: "dataAdd.id_course"
+                            }
+                          ],
+                          staticClass: "form-control",
+                          attrs: { name: "id_field" },
+                          on: {
+                            change: function($event) {
+                              var $$selectedVal = Array.prototype.filter
+                                .call($event.target.options, function(o) {
+                                  return o.selected
+                                })
+                                .map(function(o) {
+                                  var val = "_value" in o ? o._value : o.value
+                                  return val
+                                })
+                              _vm.$set(
+                                _vm.dataAdd,
+                                "id_course",
+                                $event.target.multiple
+                                  ? $$selectedVal
+                                  : $$selectedVal[0]
+                              )
+                            }
+                          }
+                        },
+                        _vm._l(_vm.courses, function(course) {
+                          return _c(
+                            "option",
+                            { domProps: { value: course.id } },
+                            [_vm._v(_vm._s(course.name_course))]
                           )
                         })
                       )
@@ -14029,8 +14037,8 @@ var render = function() {
                           {
                             name: "model",
                             rawName: "v-model",
-                            value: _vm.add_u.password,
-                            expression: "add_u.password"
+                            value: _vm.dataAdd.password,
+                            expression: "dataAdd.password"
                           }
                         ],
                         staticClass: "form-control",
@@ -14039,13 +14047,17 @@ var render = function() {
                           name: "password",
                           placeholder: "Nhập mật khẩu"
                         },
-                        domProps: { value: _vm.add_u.password },
+                        domProps: { value: _vm.dataAdd.password },
                         on: {
                           input: function($event) {
                             if ($event.target.composing) {
                               return
                             }
-                            _vm.$set(_vm.add_u, "password", $event.target.value)
+                            _vm.$set(
+                              _vm.dataAdd,
+                              "password",
+                              $event.target.value
+                            )
                           }
                         }
                       })
@@ -14054,76 +14066,56 @@ var render = function() {
                 ])
               ]),
               _vm._v(" "),
-              _c("div", { staticClass: "modal-footer" }, [
-                _vm._m(5),
-                _vm._v(" "),
-                _c(
-                  "button",
-                  {
-                    staticClass: "btn btn-primary",
-                    attrs: { id: "submit_add", type: "submit" },
-                    on: {
-                      click: function($event) {
-                        _vm.submit_add()
-                      }
-                    }
-                  },
-                  [_c("i", { staticClass: "icon-check" }), _vm._v(" Lưu")]
-                )
-              ])
+              _vm._m(2)
             ]
           )
         ])
       ])
     ]),
     _vm._v(" "),
-    _c(
-      "div",
-      { staticClass: "modal fade", attrs: { id: "modal_form_inline" } },
-      [
-        _c("div", { staticClass: "modal-dialog" }, [
-          _c("div", { staticClass: "modal-content text-center" }, [
-            _vm._m(6),
-            _vm._v(" "),
-            _c(
-              "form",
-              {
-                staticClass: "form-inline",
-                attrs: { action: "#" },
-                on: {
-                  submit: function($event) {
-                    $event.preventDefault()
-                    return _vm.submit_file($event)
-                  }
+    _c("div", { staticClass: "modal fade", attrs: { id: "modalAddExcel" } }, [
+      _c("div", { staticClass: "modal-dialog" }, [
+        _c("div", { staticClass: "modal-content text-center" }, [
+          _vm._m(3),
+          _vm._v(" "),
+          _c(
+            "form",
+            {
+              staticClass: "form-inline",
+              attrs: { action: "#" },
+              on: {
+                submit: function($event) {
+                  $event.preventDefault()
+                  return _vm.submitFile($event)
                 }
-              },
-              [
-                _c("div", { staticClass: "modal-body" }, [
-                  _c("div", { staticClass: "form-group has-feedback" }, [
-                    _c("label", [_vm._v("Chọn file Excel: ")]),
-                    _vm._v(" "),
-                    _c("input", {
-                      ref: "file",
-                      staticClass: "form-control",
-                      attrs: {
-                        type: "file",
-                        required: "",
-                        placeholder: "Chọn file ..."
-                      },
-                      on: { change: _vm.add_excel }
-                    }),
-                    _vm._v(" "),
-                    _vm._m(7)
-                  ])
-                ]),
-                _vm._v(" "),
-                _vm._m(8)
-              ]
-            )
-          ])
+              }
+            },
+            [
+              _c("div", { staticClass: "modal-body" }, [
+                _c("div", { staticClass: "form-group has-feedback" }, [
+                  _c("label", [_vm._v("Chọn file Excel: ")]),
+                  _vm._v(" "),
+                  _c("input", {
+                    ref: "file",
+                    staticClass: "form-control",
+                    attrs: {
+                      type: "file",
+                      required: "",
+                      placeholder: "Chọn file ..."
+                    },
+                    on: { change: _vm.addExcel }
+                  }),
+                  _vm._v(" "),
+                  _vm._m(4)
+                ])
+              ]),
+              _vm._v(" "),
+              _vm._m(5)
+            ]
+          )
         ])
-      ]
-    )
+      ])
+    ])
   ])
 }
 var staticRenderFns = [
@@ -14141,11 +14133,15 @@ var staticRenderFns = [
       [
         _c("thead", [
           _c("tr", [
-            _c("th", [_vm._v("Tên giảng viên")]),
+            _c("th", [_vm._v("Mã sinh viên")]),
             _vm._v(" "),
-            _c("th", [_vm._v("Khoa giảng dạy")]),
+            _c("th", [_vm._v("Tên")]),
             _vm._v(" "),
-            _c("th", [_vm._v("Tài khoản")]),
+            _c("th", [_vm._v("Khoa")]),
+            _vm._v(" "),
+            _c("th", [_vm._v("Ngành")]),
+            _vm._v(" "),
+            _c("th", [_vm._v("Khóa")]),
             _vm._v(" "),
             _c("th", [_vm._v("Email")]),
             _vm._v(" "),
@@ -14156,194 +14152,6 @@ var staticRenderFns = [
         _c("tbody")
       ]
     )
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c(
-      "div",
-      { staticClass: "modal fade", attrs: { id: "modal_iconified" } },
-      [
-        _c("div", { staticClass: "modal-dialog modal-lg" }, [
-          _c("div", { staticClass: "modal-content" }, [
-            _c("div", { staticClass: "modal-header" }, [
-              _c(
-                "button",
-                {
-                  staticClass: "close",
-                  attrs: { type: "button", "data-dismiss": "modal" }
-                },
-                [_vm._v("×")]
-              ),
-              _vm._v(" "),
-              _c("h5", { staticClass: "modal-title" }, [
-                _c("i", { staticClass: "icon-menu7" }),
-                _vm._v("  Thông tin giảng viên")
-              ])
-            ]),
-            _vm._v(" "),
-            _c("input", { attrs: { type: "text", id: "id_lec", hidden: "" } }),
-            _vm._v(" "),
-            _c(
-              "form",
-              {
-                staticClass: "form-horizontal",
-                attrs: {
-                  onsubmit: "event.preventDefault()",
-                  id: "form_infor",
-                  action: "#"
-                }
-              },
-              [
-                _c("div", { staticClass: "modal-body" }, [
-                  _c("fieldset", { staticClass: "content-group" }, [
-                    _c("legend", { staticClass: "text-bold" }, [
-                      _vm._v("Điền đầy đủ thông tin")
-                    ]),
-                    _vm._v(" "),
-                    _c("div", { staticClass: "form-group" }, [
-                      _c("label", { staticClass: "control-label col-lg-2" }, [
-                        _vm._v("Tên giảng viên")
-                      ]),
-                      _vm._v(" "),
-                      _c("div", { staticClass: "col-lg-10" }, [
-                        _c("input", {
-                          staticClass: "form-control",
-                          attrs: { type: "text", name: "name_lecturer" }
-                        })
-                      ])
-                    ]),
-                    _vm._v(" "),
-                    _c("div", { staticClass: "form-group" }, [
-                      _c("label", { staticClass: "control-label col-lg-2" }, [
-                        _vm._v("Địa chỉ")
-                      ]),
-                      _vm._v(" "),
-                      _c("div", { staticClass: "col-lg-10" }, [
-                        _c("input", {
-                          staticClass: "form-control",
-                          attrs: { type: "text", name: "address_lecturer" }
-                        })
-                      ])
-                    ]),
-                    _vm._v(" "),
-                    _c("div", { staticClass: "form-group" }, [
-                      _c("label", { staticClass: "control-label col-lg-2" }, [
-                        _vm._v("Email")
-                      ]),
-                      _vm._v(" "),
-                      _c("div", { staticClass: "col-lg-10" }, [
-                        _c("input", {
-                          staticClass: "form-control",
-                          attrs: {
-                            type: "email",
-                            name: "email_address_lecturer",
-                            placeholder: "Điền Email của bạn"
-                          }
-                        })
-                      ])
-                    ]),
-                    _vm._v(" "),
-                    _c("div", { staticClass: "form-group" }, [
-                      _c("label", { staticClass: "control-label col-lg-2" }, [
-                        _vm._v("Số điện thoại")
-                      ]),
-                      _vm._v(" "),
-                      _c("div", { staticClass: "col-lg-10" }, [
-                        _c("input", {
-                          staticClass: "form-control",
-                          attrs: { type: "text", name: "phone_number" }
-                        })
-                      ])
-                    ]),
-                    _vm._v(" "),
-                    _c("div", { staticClass: "form-group" }, [
-                      _c("label", { staticClass: "control-label col-lg-2" }, [
-                        _vm._v("Chọn khoa")
-                      ]),
-                      _vm._v(" "),
-                      _c("div", { staticClass: "col-lg-10" }, [
-                        _c("select", {
-                          staticClass: "form-control",
-                          attrs: { name: "id_department" }
-                        })
-                      ])
-                    ]),
-                    _vm._v(" "),
-                    _c("div", { staticClass: "form-group" }, [
-                      _c("label", { staticClass: "control-label col-lg-2" }, [
-                        _vm._v("Chọn chủ đề hướng dẫn")
-                      ]),
-                      _vm._v(" "),
-                      _c("div", { staticClass: "col-lg-10" }, [
-                        _c("select", {
-                          staticClass: "form-control",
-                          attrs: { name: "id_field" }
-                        })
-                      ])
-                    ])
-                  ])
-                ]),
-                _vm._v(" "),
-                _c("div", { staticClass: "modal-footer" }, [
-                  _c(
-                    "button",
-                    {
-                      staticClass: "btn btn-link",
-                      attrs: { "data-dismiss": "modal" }
-                    },
-                    [_c("i", { staticClass: "icon-cross" }), _vm._v(" Đóng")]
-                  ),
-                  _vm._v(" "),
-                  _c(
-                    "button",
-                    {
-                      staticClass: "btn btn-primary",
-                      attrs: { id: "submit_edit", type: "submit" }
-                    },
-                    [_c("i", { staticClass: "icon-check" }), _vm._v(" Lưu")]
-                  )
-                ])
-              ]
-            )
-          ])
-        ])
-      ]
-    )
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "modal-header bg-danger" }, [
-      _c(
-        "button",
-        {
-          staticClass: "close",
-          attrs: { type: "button", "data-dismiss": "modal" }
-        },
-        [_vm._v("×")]
-      ),
-      _vm._v(" "),
-      _c("h6", { staticClass: "modal-title" }, [
-        _vm._v("Xóa thông tin giảng viên")
-      ])
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "modal-body" }, [
-      _c("h6", { staticClass: "text-semibold" }, [_vm._v("Bạn chắc chắn chứ")]),
-      _vm._v(" "),
-      _c("p", [
-        _vm._v("Sau khi xóa, sẽ không thể phục hồi dữ liệu. Bạn chắc chắn chứ?")
-      ]),
-      _vm._v(" "),
-      _c("hr")
-    ])
   },
   function() {
     var _vm = this
@@ -14361,7 +14169,7 @@ var staticRenderFns = [
       _vm._v(" "),
       _c("h5", { staticClass: "modal-title" }, [
         _c("i", { staticClass: "icon-menu7" }),
-        _vm._v("  Thông tin giảng viên")
+        _vm._v("  Thông tin sinh viên")
       ])
     ])
   },
@@ -14369,11 +14177,22 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c(
-      "button",
-      { staticClass: "btn btn-link", attrs: { "data-dismiss": "modal" } },
-      [_c("i", { staticClass: "icon-cross" }), _vm._v(" Đóng")]
-    )
+    return _c("div", { staticClass: "modal-footer" }, [
+      _c(
+        "button",
+        { staticClass: "btn btn-link", attrs: { "data-dismiss": "modal" } },
+        [_c("i", { staticClass: "icon-cross" }), _vm._v(" Đóng")]
+      ),
+      _vm._v(" "),
+      _c(
+        "button",
+        {
+          staticClass: "btn btn-primary",
+          attrs: { id: "submit_add", type: "submit" }
+        },
+        [_c("i", { staticClass: "icon-check" }), _vm._v(" Lưu")]
+      )
+    ])
   },
   function() {
     var _vm = this
@@ -14409,7 +14228,7 @@ module.exports = { render: render, staticRenderFns: staticRenderFns }
 if (false) {
   module.hot.accept()
   if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-5eba4d1f", module.exports)
+    require("vue-hot-reload-api")      .rerender("data-v-7d185a7c", module.exports)
   }
 }
 

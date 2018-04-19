@@ -34,6 +34,12 @@ class StudentRequest extends FormRequest
                 }
             case 'POST':
                 {
+                    if($this->hasFile("excel"))
+                    {
+                        return [
+                            "excel" => "required | file"
+                        ];
+                    }
                     return [
                         //
                         "code" => "required|unique:students,code",
