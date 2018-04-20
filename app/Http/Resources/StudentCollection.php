@@ -14,6 +14,7 @@ class StudentCollection extends ResourceCollection
      */
     public function toArray($request)
     {
+        $arrd = 1;
         return parent::toArray($request);
     }
 }
