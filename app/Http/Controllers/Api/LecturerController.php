@@ -61,8 +61,8 @@ class LecturerController extends Controller
         //
 
         $profile = new ProfileService();
-        $profile->updateLecturer($id,$request);
-        return ["sc" => true];
+        return $profile->updateLecturer($id,$request);
+
     }
 
 

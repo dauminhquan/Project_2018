@@ -214,6 +214,7 @@ class ProfileService
             $user->password = Hash::make($request->input("password"));
         }
         $lecturer->update();
+        return $lecturer;
     }
     //
 
@@ -391,7 +392,7 @@ class ProfileService
     public function getFieldInfo($id)
     {
 
-        $fields = Field::where("fields.id",$id)->join("lecturers","lecturers.id_field","fields.id")->select("fields.*","lecturers.name_lecturer",DB::raw("lecturers.id as id_lecturer"))->get();
+        $fields = Field::where("fields.id",$id)->leftjoin("lecturers","lecturers.id_field","fields.id")->select("fields.*","lecturers.name_lecturer",DB::raw("lecturers.id as id_lecturer"))->get();
         // 1 arr
 
         $field = new \stdClass();
@@ -435,6 +436,19 @@ class ProfileService
         {
             $field->field_name = $request->input("field_name");
         }
+        if($request->has("dataDelete"))
+        {
+            foreach ($request->input("dataDelete") as $item) {
+                Lecturer::where("id",$item)->update(["id_field" => null]);
+            }
+        }
+        if($request->has("dataNewAdd"))
+        {
+            foreach ($request->input("dataNewAdd") as $item) {
+                Lecturer::where("id",$item)->update(["id_field" => $id]);
+            }
+        }
+
 
         $field->update();
     }

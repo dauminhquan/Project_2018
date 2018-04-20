@@ -37,8 +37,8 @@
                                 <div class="form-group">
                                     <label class="control-label col-lg-2">Tên lĩnh vực</label>
                                     <div class="col-lg-10">
-                                        <select type="text" v-model="dataEdit.listLecturer" multiple  class="form-control">
-                                            <option v-for="lecturer in dataEdit.lecturers"  :value="lecturer.id">{{lecturer.name_lecturer}}</option>
+                                        <select type="text" v-model="dataEdit.listLecturer" multiple id="selectLecturer"  class="form-control">
+                                            <option v-for="lecturer in lecturers"  :value="lecturer.id">{{lecturer.name_lecturer}}</option>
                                         </select>
                                     </div>
                                 </div>
@@ -152,6 +152,9 @@
                         .then( (response) => {
 
                             this.dataEdit = response.data;
+                            this.dataEdit.listLecturer = this.dataEdit.lecturers.map(function(value){
+                                return value.id
+                            })
                             console.log(this.dataEdit)
                         }).catch((err) =>{
                         console.log(err)
@@ -165,12 +168,20 @@
         mounted(){
 
             this.getData()
-
+            this.getLecturers()
 
         },
         methods: {
 
+            getLecturers(){
 
+                axios.get("/api/lecturer").then((data) => {
+                    this.lecturers = data.data
+                }).catch((err) => {
+                    console.log(err)
+                })
+
+            },
             drawTable(data){
                 $.extend( $.fn.dataTable.defaults, {
                     autoWidth: false,
@@ -211,6 +222,10 @@
                     minimumResultsForSearch: Infinity,
                     width: 'auto'
                 });
+                // $('#selectLecturer').select2({
+                //     minimumResultsForSearch: Infinity,
+                //
+                // });
             },
             // them moi 1 data
             submitAdd(){
@@ -229,7 +244,33 @@
                 })
             },
             submitEdit(){
+                var dataOld = this.dataEdit.lecturers.map(function (value) {
+                    return value.id
+                })
 
+
+                var dataNew = this.dataEdit.listLecturer
+                console.log(dataNew)
+                var dataDelete = dataOld.filter(function(value){
+                    if(dataNew.find(function (item) {
+                        return item==value
+                    },value) == undefined)
+                    {
+                        return value
+                    }
+                },dataNew)
+
+                var dataNewAdd = dataNew.filter(function(value){
+                    if(dataOld.find(function (item) {
+                        return item==value
+                    },value) == undefined)
+                    {
+                        return value
+                    }
+                },dataOld)
+
+                this.dataEdit.dataDelete = dataDelete
+                this.dataEdit.dataNewAdd = dataNewAdd
                 axios.put("/api/field/"+this.$store.state.idData,this.dataEdit).then((data) => {
 
                     this.resetData()
@@ -340,9 +381,12 @@
                 dataEdit: {
                     field_name: "",
                     lecturers: "",
-                    listLecturer: []
+                    listLecturer: [],
+                    dataDelete: [],
+                    dataNewAdd: []
 
                 },
+                lecturers: [],
                 // chuyen nganh
 
                 idEdit: -1,

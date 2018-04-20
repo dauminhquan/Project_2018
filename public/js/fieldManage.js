@@ -14371,6 +14371,9 @@ window.store = new Vuex.Store({
                 axios.get('/api/field/' + this.$store.state.idData).then(function (response) {
 
                     _this.dataEdit = response.data;
+                    _this.dataEdit.listLecturer = _this.dataEdit.lecturers.map(function (value) {
+                        return value.id;
+                    });
                     console.log(_this.dataEdit);
                 }).catch(function (err) {
                     console.log(err);
@@ -14382,9 +14385,19 @@ window.store = new Vuex.Store({
     mounted: function mounted() {
 
         this.getData();
+        this.getLecturers();
     },
 
     methods: {
+        getLecturers: function getLecturers() {
+            var _this2 = this;
+
+            axios.get("/api/lecturer").then(function (data) {
+                _this2.lecturers = data.data;
+            }).catch(function (err) {
+                console.log(err);
+            });
+        },
         drawTable: function drawTable(data) {
             $.extend($.fn.dataTable.defaults, {
                 autoWidth: false,
@@ -14421,14 +14434,18 @@ window.store = new Vuex.Store({
                 minimumResultsForSearch: Infinity,
                 width: 'auto'
             });
+            // $('#selectLecturer').select2({
+            //     minimumResultsForSearch: Infinity,
+            //
+            // });
         },
 
         // them moi 1 data
         submitAdd: function submitAdd() {
-            var _this2 = this;
+            var _this3 = this;
 
             axios.post("/api/field", this.dataAdd).then(function (data) {
-                _this2.resetData();
+                _this3.resetData();
                 swal({
                     title: "Thành công!",
                     text: "Thêm mới thành công!",
@@ -14441,11 +14458,35 @@ window.store = new Vuex.Store({
             });
         },
         submitEdit: function submitEdit() {
-            var _this3 = this;
+            var _this4 = this;
 
+            var dataOld = this.dataEdit.lecturers.map(function (value) {
+                return value.id;
+            });
+
+            var dataNew = this.dataEdit.listLecturer;
+            console.log(dataNew);
+            var dataDelete = dataOld.filter(function (value) {
+                if (dataNew.find(function (item) {
+                    return item == value;
+                }, value) == undefined) {
+                    return value;
+                }
+            }, dataNew);
+
+            var dataNewAdd = dataNew.filter(function (value) {
+                if (dataOld.find(function (item) {
+                    return item == value;
+                }, value) == undefined) {
+                    return value;
+                }
+            }, dataOld);
+
+            this.dataEdit.dataDelete = dataDelete;
+            this.dataEdit.dataNewAdd = dataNewAdd;
             axios.put("/api/field/" + this.$store.state.idData, this.dataEdit).then(function (data) {
 
-                _this3.resetData();
+                _this4.resetData();
                 swal({
                     title: "Thành công!",
                     text: "Sửa lĩnh vực thành công!",
@@ -14470,11 +14511,11 @@ window.store = new Vuex.Store({
 
         //reset lại dữ liệu bảng
         resetData: function resetData() {
-            var _this4 = this;
+            var _this5 = this;
 
             axios.get("/api/field").then(function (data) {
                 $('#datatable-basic').dataTable().fnClearTable();
-                $('#datatable-basic').dataTable().fnAddData(_this4.filData(data.data));
+                $('#datatable-basic').dataTable().fnAddData(_this5.filData(data.data));
             }).catch(function (err) {
                 console.log(err);
             });
@@ -14482,7 +14523,7 @@ window.store = new Vuex.Store({
 
         // xác định delete người dùng
         successDelete: function successDelete() {
-            var _this5 = this;
+            var _this6 = this;
 
             var id = $("#deleteButton").attr("data");
             axios.delete("/api/field/" + id).then(function (data) {
@@ -14493,7 +14534,7 @@ window.store = new Vuex.Store({
                     confirmButtonColor: "#66BB6A",
                     type: "success"
                 });
-                _this5.resetData();
+                _this6.resetData();
                 $("#modalDelete").modal("hide");
             }).catch(function (err) {
                 console.log(err);
@@ -14510,11 +14551,11 @@ window.store = new Vuex.Store({
 
 
         getData: function getData() {
-            var _this6 = this;
+            var _this7 = this;
 
             axios.get("/api/field").then(function (data) {
-                _this6.infoData = _this6.filData(data.data);
-                _this6.drawTable(_this6.infoData);
+                _this7.infoData = _this7.filData(data.data);
+                _this7.drawTable(_this7.infoData);
             }).catch(function (err) {
                 console.log(err);
             });
@@ -14532,9 +14573,12 @@ window.store = new Vuex.Store({
             dataEdit: {
                 field_name: "",
                 lecturers: "",
-                listLecturer: []
+                listLecturer: [],
+                dataDelete: [],
+                dataNewAdd: []
 
             },
+            lecturers: [],
             // chuyen nganh
 
             idEdit: -1,
@@ -14643,7 +14687,11 @@ var render = function() {
                             }
                           ],
                           staticClass: "form-control",
-                          attrs: { type: "text", multiple: "" },
+                          attrs: {
+                            type: "text",
+                            multiple: "",
+                            id: "selectLecturer"
+                          },
                           on: {
                             change: function($event) {
                               var $$selectedVal = Array.prototype.filter
@@ -14664,7 +14712,7 @@ var render = function() {
                             }
                           }
                         },
-                        _vm._l(_vm.dataEdit.lecturers, function(lecturer) {
+                        _vm._l(_vm.lecturers, function(lecturer) {
                           return _c(
                             "option",
                             { domProps: { value: lecturer.id } },
