@@ -35,7 +35,8 @@ class ProfileService
     // lay thong tin sinh vien theo id
     public function getStudentInfo($id)
     {
-        return Student::where("students.id",$id) ->join("courses","courses.id","students.id_course")
+        return Student::where("students.id",$id)->join("departments","departments.id","students.id_department")
+            ->join("courses","courses.id","students.id_course")
             ->join("branches","branches.id","students.id_branch")->select(["students.*","courses.name_course",
                 "branches.name_branch","departments.department_name"])->first();
     }

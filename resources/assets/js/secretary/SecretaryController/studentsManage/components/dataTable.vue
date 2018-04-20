@@ -1,5 +1,6 @@
 <template>
     <div>
+
         <table class="table" id="datatable-basic" style="min-height: 100px">
             <thead>
             <tr>
@@ -17,26 +18,26 @@
             </tbody>
         </table>
         <!-- Iconified modal -->
-        <!--<div id="modalInfo" class="modal fade">-->
-            <!--<div class="modal-dialog modal-lg">-->
-                <!--<div class="modal-content">-->
-                    <!--<div class="modal-header">-->
-                        <!--<button type="button" class="close" data-dismiss="modal">&times;</button>-->
-                        <!--<h5 class="modal-title"><i class="icon-menu7"></i> &nbsp;Thông tin sinh viên</h5>-->
-                    <!--</div>-->
-                    <!--<input type="text" id="id_lec" hidden />-->
-                    <!--<form onsubmit="event.preventDefault()"  class="form-horizontal" id="form_infor" action="#">-->
-                        <!--<div class="modal-body">-->
+        <div id="modalInfo" class="modal fade">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h5 class="modal-title"><i class="icon-menu7"></i> &nbsp;Thông tin sinh viên</h5>
+                    </div>
+                    <input type="text" id="id_lec" hidden />
+                    <form onsubmit="event.preventDefault()"  class="form-horizontal" id="form_infor" action="#">
+                        <div class="modal-body">
 
-                            <!--<fieldset class="content-group">-->
-                                <!--<legend class="text-bold">Điền đầy đủ thông tin</legend>-->
+                            <fieldset class="content-group">
+                                <legend class="text-bold">Điền đầy đủ thông tin</legend>
 
-                                <!--<div class="form-group">-->
-                                    <!--<label class="control-label col-lg-2">Tên sinh viên</label>-->
-                                    <!--<div class="col-lg-10">-->
-                                        <!--<input type="text" name="name_lecturer" class="form-control">-->
-                                    <!--</div>-->
-                                <!--</div>-->
+                                <div class="form-group">
+                                    <label class="control-label col-lg-2">Tên sinh viên</label>
+                                    <div class="col-lg-10">
+                                        <input type="text" :value="ten_sv"  name="name_lecturer" class="form-control">
+                                    </div>
+                                </div>
 
                                 <!--<div class="form-group">-->
                                     <!--<label class="control-label col-lg-2">Chọn khoa</label>-->
@@ -71,19 +72,19 @@
                                     <!--</div>-->
                                 <!--</div>-->
 
-                            <!--</fieldset>-->
+                            </fieldset>
 
 
-                        <!--</div>-->
+                        </div>
 
-                        <!--<div class="modal-footer">-->
-                            <!--<button class="btn btn-link" data-dismiss="modal"><i class="icon-cross"></i> Đóng</button>-->
-                            <!--<button class="btn btn-primary" id="submit_edit" type="submit"><i class="icon-check"></i> Lưu</button>-->
-                        <!--</div>-->
-                    <!--</form>-->
-                <!--</div>-->
-            <!--</div>-->
-        <!--</div>-->
+                        <div class="modal-footer">
+                            <button class="btn btn-link" data-dismiss="modal"><i class="icon-cross"></i> Đóng</button>
+                            <button class="btn btn-primary" id="submit_edit" type="submit"><i class="icon-check"></i> Lưu</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
         <!--&lt;!&ndash; /iconified modal &ndash;&gt;-->
         <!--&lt;!&ndash; Danger modal &ndash;&gt;-->
         <!--&lt;!&ndash;modal cảnh báo&ndash;&gt;-->
@@ -230,8 +231,42 @@
 
 </template>
 <script>
-
+    window.Vuex = require('vuex')
+    Vue.use(Vuex)
+    window.store = new Vuex.Store({
+        state: {
+            idData: 0
+        },
+        mutations: {
+            idEdit (state,id) {
+                // mutate state
+                state.idData = id
+            },
+            idDelete (state,id) {
+                // mutate state
+                state.idData = id
+            }
+        }
+    })
     export default {
+
+
+        store: store,
+        computed:{
+            ten_sv () {
+                console.log(this.$store.state.idData)
+                axios.get('/api/student/'+this.$store.state.idData)
+                    .then( (response) => {
+
+                        this.dataEdit = response.data;
+                        console.log(this.dataEdit)
+                    }).catch((err) =>{
+                    console.log(err)
+                })
+                return this.dataEdit.student_name
+
+            }
+        },
         mounted(){
 //hien thi thong tin sinh vien
             this.getData()
@@ -365,7 +400,7 @@
                         '       </a>' +
                         '<ul class="dropdown-menu dropdown-menu-right">' +
                         '<li>' +
-                        '   <a href="#" onclick="showInfor('+value.id+')">' +
+                        '   <a href="#" onclick="editInfo('+value.id+')">' +
                         '       <i class=" icon-user"></i> Thông tin chi tiết' +
                         '   </a>' +
                         '</li>' +
@@ -379,7 +414,7 @@
                         '</ul>'
                     ]
                 })
-
+                // showInfor('+value.id+')
 
             },
             //reset lại dữ liệu bảng
@@ -394,7 +429,7 @@
             // xác định delete người dùng
             successDelete(){
                 var id = $("#delete_button").attr("data")
-                axios.delete("/api/lecturer/"+id).then((data) =>{
+                axios.delete("/api/student/"+id).then((data) =>{
                     console.log(data)
                     swal({
                         title: "Good job!",
@@ -502,14 +537,26 @@
                     id_branch: "",
                     password: ""
                 },
+                dataEdit: {
+                    code: "",
+                    student_name: "",
+                    address: "",
+                    id_department: "",
+                    id_course: "",
+                    id_branch: "",
+                },
                 // chuyen nganh
                 departments: [],
                 branchs: [],
-                courses: []
+                courses: [],
+
 
 
             }
         },
+       watch: {
+
+       }
 
 
     }

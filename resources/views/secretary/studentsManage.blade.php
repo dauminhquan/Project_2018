@@ -25,6 +25,9 @@
         <data-table></data-table>
 
     </div>
+    <div id="action">
+
+    </div>
     <!-- /basic datatable -->
 @endsection
 @section("script")
@@ -34,5 +37,6 @@
     <script type="text/javascript" src="{{asset("assets/js/plugins/forms/selects/select2.min.js")}}"></script>
     <script type="text/javascript" src="{{asset("assets/js/core/app.js")}}"></script>
     <script src="{{asset("js/studentsManage.js")}}"></script>
+    <script src="{{asset("js/buildstudentManage.js")}}"></script>
     {{--<script src="{{asset("js/build_lecturersManage.js")}}"></script>--}}
 @endsection
