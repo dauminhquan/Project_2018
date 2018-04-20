@@ -16,4 +16,5 @@ let mix = require('laravel-mix');
 
 mix.js('resources/assets/js/secretary/SecretaryController/lecturersManage/lecturersManage.js', 'public/js');
 mix.js('resources/assets/js/secretary/SecretaryController/studentsManage/studentsManage.js', 'public/js');
+mix.js('resources/assets/js/secretary/SecretaryController/fieldManage/fieldManage.js', 'public/js');
 

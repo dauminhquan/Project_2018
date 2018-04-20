@@ -32,3 +32,4 @@ Route::group(["prefix" => "api","name" =>"api.","namespace" => "Api"],function()
 // chức năng dành cho thư ký
 Route::get("quan-ly-giang-vien",["as" => "thuky.quanlygiangvien","uses" => "SecretaryController@lecturersManage"]);
 Route::get("quan-ly-sinh-vien",["as" => "thuky.quanlysinhvien","uses" => "SecretaryController@studentsManage"]);
+Route::get("quan-ly-linh-vuc",["as" => "thuky.quanlysinhvien","uses" => "SecretaryController@fieldsManage"]);

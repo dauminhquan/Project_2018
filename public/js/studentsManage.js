@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "/";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 37);
+/******/ 	return __webpack_require__(__webpack_require__.s = 38);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -13187,627 +13187,7 @@ module.exports = function normalizeComponent (
 
 
 /***/ }),
-/* 32 */,
-/* 33 */,
-/* 34 */,
-/* 35 */,
-/* 36 */,
-/* 37 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = __webpack_require__(38);
-
-
-/***/ }),
-/* 38 */
-/***/ (function(module, exports, __webpack_require__) {
-
-
-
-window.Vue = __webpack_require__(9);
-window.axios = __webpack_require__(12);
-
-Vue.component('data-table', __webpack_require__(39));
-
-var table = new Vue({
-    el: '#data-table'
-
-});
-
-/***/ }),
-/* 39 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var disposed = false
-var normalizeComponent = __webpack_require__(31)
-/* script */
-var __vue_script__ = __webpack_require__(40)
-/* template */
-var __vue_template__ = __webpack_require__(42)
-/* template functional */
-var __vue_template_functional__ = false
-/* styles */
-var __vue_styles__ = null
-/* scopeId */
-var __vue_scopeId__ = null
-/* moduleIdentifier (server only) */
-var __vue_module_identifier__ = null
-var Component = normalizeComponent(
-  __vue_script__,
-  __vue_template__,
-  __vue_template_functional__,
-  __vue_styles__,
-  __vue_scopeId__,
-  __vue_module_identifier__
-)
-Component.options.__file = "resources\\assets\\js\\secretary\\SecretaryController\\studentsManage\\components\\dataTable.vue"
-
-/* hot reload */
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-7d185a7c", Component.options)
-  } else {
-    hotAPI.reload("data-v-7d185a7c", Component.options)
-  }
-  module.hot.dispose(function (data) {
-    disposed = true
-  })
-})()}
-
-module.exports = Component.exports
-
-
-/***/ }),
-/* 40 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
-window.Vuex = __webpack_require__(41);
-Vue.use(Vuex);
-window.store = new Vuex.Store({
-    state: {
-        idData: 0
-    },
-    mutations: {
-        idEdit: function idEdit(state, id) {
-            // mutate state
-            state.idData = id;
-        },
-        idDelete: function idDelete(state, id) {
-            // mutate state
-            state.idData = id;
-        }
-    }
-});
-/* harmony default export */ __webpack_exports__["default"] = ({
-
-    store: store,
-    computed: {
-        showIdEdit: function showIdEdit() {
-            var _this = this;
-
-            if (this.$store.state.idData != this.idEdit) {
-                this.idEdit = this.$store.state.idData;
-                axios.get('/api/student/' + this.$store.state.idData).then(function (response) {
-
-                    _this.dataEdit = response.data;
-                }).catch(function (err) {
-                    console.log(err);
-                });
-                return this.$store.state.idData;
-            }
-        }
-    },
-    mounted: function mounted() {
-        //hien thi thong tin sinh vien
-        this.getData();
-        this.getDepartment();
-        this.getBranch();
-        this.getCourse();
-    },
-
-    methods: {
-        // lấy thông tin khoa
-        getDepartment: function getDepartment() {
-            var _this2 = this;
-
-            axios.get('/api/department').then(function (response) {
-                _this2.departments = response.data;
-            }).catch(function (err) {
-                console.log(err);
-            });
-        },
-
-        //lay thong tin nganh
-
-        getBranch: function getBranch() {
-            var _this3 = this;
-
-            axios.get('/api/branch').then(function (response) {
-                _this3.branchs = response.data;
-            }).catch(function (err) {
-                console.log(err);
-            });
-        },
-
-        //lay thong khoa hoc
-        getCourse: function getCourse() {
-            var _this4 = this;
-
-            axios.get('/api/course').then(function (response) {
-                _this4.courses = response.data;
-            }).catch(function (err) {
-                console.log(err);
-            });
-        },
-        drawTable: function drawTable(data) {
-            $.extend($.fn.dataTable.defaults, {
-                autoWidth: false,
-                dom: '<"datatable-header"fBl><"datatable-scroll-wrap"t><"datatable-footer"ip>',
-                language: {
-                    search: '<span>Tìm kiếm:</span> _INPUT_',
-                    lengthMenu: '<span>Hiển thị:</span> _MENU_',
-                    paginate: { 'first': 'First', 'last': 'Last', 'next': '&rarr;', 'previous': '&larr;' }
-                }
-            });
-
-            $('#datatable-basic').dataTable({
-                data: data,
-                columnDefs: [],
-                buttons: {
-                    dom: {
-                        button: {
-                            className: 'btn btn-default'
-                        }
-                    },
-                    buttons: [{ extend: 'copy' }, { extend: 'csv' }, { extend: 'excel' }, { extend: 'pdf' }, { extend: 'print' }, {
-                        text: 'Thêm sinh viên',
-                        className: 'btn bg-teal-400',
-                        action: function action(e, dt, node, config) {
-                            $("#modalAdd").modal("show");
-                        }
-                    }, {
-                        text: 'Thêm bằng Excel',
-                        className: 'btn bg-info-400',
-                        action: function action(e, dt, node, config) {
-                            $("#modalAddExcel").modal("show");
-                        }
-                    }]
-                }
-            });
-
-            $('.dataTables_filter input[type=search]').attr('placeholder', 'Nhập từ khóa...');
-
-            $('.dataTables_length select').select2({
-                minimumResultsForSearch: Infinity,
-                width: 'auto'
-            });
-        },
-
-        // them moi 1 data
-        submitAdd: function submitAdd() {
-            var _this5 = this;
-
-            axios.post("/api/student", this.dataAdd).then(function (data) {
-                _this5.resetData();
-                swal({
-                    title: "Thành công!",
-                    text: "Thêm mới thành công!",
-                    confirmButtonColor: "#66BB6A",
-                    type: "success"
-                });
-                $("#modalAdd").modal("hide");
-            }).catch(function (err) {
-                console.log(err);
-            });
-        },
-        submitEdit: function submitEdit() {
-            var _this6 = this;
-
-            axios.put("/api/student/" + this.$store.state.idData, this.dataEdit).then(function (data) {
-                console.log(data);
-                _this6.resetData();
-                swal({
-                    title: "Thành công!",
-                    text: "Sửa sinh viên thành công!",
-                    confirmButtonColor: "#66BB6A",
-                    type: "success"
-                });
-                $("#modalInfo").modal("hide");
-            }).catch(function (err) {
-                console.log(err);
-            });
-        },
-
-        //loc du lieu
-        // edit
-        filData: function filData(data) {
-
-            return data.map(function (value, index) {
-                return [value.code, value.student_name, value.department_name, value.name_branch, value.name_course, value.address, '<ul style="text-align: center;" class="icons-list">' + '   <li class="dropdown">' + '       <a href="#" class="dropdown-toggle" data-toggle="dropdown">' + '           <i class="icon-menu9"></i>' + '       </a>' + '<ul class="dropdown-menu dropdown-menu-right">' + '<li>' + '   <a href="#" onclick="editInfo(' + value.id + ')">' + '       <i class=" icon-user"></i> Thông tin chi tiết' + '   </a>' + '</li>' + '<li>' + '   <a href="#"  onclick="deleteInfo(' + value.id + ')">' + '<i class="icon-user-cancel"></i> Xóa' + '</a>' + '</li>' + '</ul>' + '</li>' + '</ul>'];
-            });
-            // showInfor('+value.id+')
-        },
-
-        //reset lại dữ liệu bảng
-        resetData: function resetData() {
-            var _this7 = this;
-
-            axios.get("/api/student").then(function (data) {
-                $('#datatable-basic').dataTable().fnClearTable();
-                $('#datatable-basic').dataTable().fnAddData(_this7.filData(data.data));
-            }).catch(function (err) {
-                console.log(err);
-            });
-        },
-
-        // xác định delete người dùng
-        successDelete: function successDelete() {
-            var _this8 = this;
-
-            var id = $("#deleteButton").attr("data");
-            axios.delete("/api/student/" + id).then(function (data) {
-                console.log(data);
-                swal({
-                    title: "Thành công!",
-                    text: "Sinh viên đã được xóa!!",
-                    confirmButtonColor: "#66BB6A",
-                    type: "success"
-                });
-                _this8.resetData();
-                $("#modalDelete").modal("hide");
-            }).catch(function (err) {
-                console.log(err);
-                swal({
-                    title: "Oops...",
-                    text: "Đã có lỗi xảy ra!",
-                    confirmButtonColor: "#EF5350",
-                    type: "error"
-                });
-            });
-        },
-
-        // Thêm excel
-        addExcel: function addExcel() {
-            this.file_excel = this.$refs.file.files[0];
-        },
-
-        //gửi file excel
-        submitFile: function submitFile() {
-            var _this9 = this;
-
-            var formData = new FormData();
-
-            formData.append('excel', this.file_excel);
-            console.log(this.file_excel);
-            axios.post('/api/student', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data'
-                }
-            }).then(function (data) {
-                if (data.data.length > 0) {
-                    var code = "";
-                    console.log(data.data);
-                    for (var i = 0; i < data.data.length; i++) {
-                        code += data.data[i].code + ";";
-                    }
-                    $("#modalAddExcel").modal("hide");
-                    swal({
-                        title: "Thêm thành công!",
-                        text: "Có " + data.data.length + " user không thể thêm. Tại mã sinh viên " + code + "!",
-                        confirmButtonColor: "#66BB6A",
-                        type: "success"
-                    });
-                    _this9.resetData();
-                    $("#modalAddExcel").modal("hide");
-                } else {
-                    swal({
-                        title: "Thêm thành công!",
-                        text: "Danh sách sinh viên đã được thêm vào!",
-                        confirmButtonColor: "#66BB6A",
-                        type: "success"
-                    });
-                    _this9.resetData();
-                    $("#modalAddExcel").modal("hide");
-                }
-            }).catch(function (err) {
-                console.log(err);
-            });
-        },
-        getData: function getData() {
-            var _this10 = this;
-
-            axios.get("/api/student").then(function (data) {
-                _this10.infoData = _this10.filData(data.data);
-                _this10.drawTable(_this10.infoData);
-            }).catch(function (err) {
-                console.log(err);
-            });
-        }
-    },
-    data: function data() {
-        return {
-
-            fileExcel: "",
-            //Thông tin data
-            infoData: [],
-            dataAdd: {
-                code: "",
-                student_name: "",
-                address: "",
-                id_department: "",
-                id_course: "",
-                id_branch: "",
-                password: ""
-            },
-            dataEdit: {
-                code: "",
-                student_name: "",
-                address: "",
-                id_department: "",
-                id_course: "",
-                id_branch: ""
-            },
-            // chuyen nganh
-            departments: [],
-            branchs: [],
-            courses: [],
-            idEdit: -1,
-            idDelete: -1
-
-        };
-    },
-
-    watch: {
-        idEdit: function idEdit(value) {}
-    }
-
-});
-
-/***/ }),
-/* 41 */
+/* 32 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -14751,6 +14131,626 @@ var index_esm = {
 
 /* harmony default export */ __webpack_exports__["default"] = (index_esm);
 
+
+/***/ }),
+/* 33 */,
+/* 34 */,
+/* 35 */,
+/* 36 */,
+/* 37 */,
+/* 38 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__(39);
+
+
+/***/ }),
+/* 39 */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+
+window.Vue = __webpack_require__(9);
+window.axios = __webpack_require__(12);
+
+Vue.component('data-table', __webpack_require__(40));
+
+var table = new Vue({
+    el: '#data-table'
+
+});
+
+/***/ }),
+/* 40 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(31)
+/* script */
+var __vue_script__ = __webpack_require__(41)
+/* template */
+var __vue_template__ = __webpack_require__(42)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources\\assets\\js\\secretary\\SecretaryController\\studentsManage\\components\\dataTable.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-7d185a7c", Component.options)
+  } else {
+    hotAPI.reload("data-v-7d185a7c", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 41 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+window.Vuex = __webpack_require__(32);
+Vue.use(Vuex);
+window.store = new Vuex.Store({
+    state: {
+        idData: 0
+    },
+    mutations: {
+        idEdit: function idEdit(state, id) {
+            // mutate state
+            state.idData = id;
+        },
+        idDelete: function idDelete(state, id) {
+            // mutate state
+            state.idData = id;
+        }
+    }
+});
+/* harmony default export */ __webpack_exports__["default"] = ({
+
+    store: store,
+    computed: {
+        showIdEdit: function showIdEdit() {
+            var _this = this;
+
+            if (this.$store.state.idData != this.idEdit) {
+                this.idEdit = this.$store.state.idData;
+                axios.get('/api/student/' + this.$store.state.idData).then(function (response) {
+
+                    _this.dataEdit = response.data;
+                }).catch(function (err) {
+                    console.log(err);
+                });
+                return this.$store.state.idData;
+            }
+        }
+    },
+    mounted: function mounted() {
+        //hien thi thong tin sinh vien
+        this.getData();
+        this.getDepartment();
+        this.getBranch();
+        this.getCourse();
+    },
+
+    methods: {
+        // lấy thông tin khoa
+        getDepartment: function getDepartment() {
+            var _this2 = this;
+
+            axios.get('/api/department').then(function (response) {
+                _this2.departments = response.data;
+            }).catch(function (err) {
+                console.log(err);
+            });
+        },
+
+        //lay thong tin nganh
+
+        getBranch: function getBranch() {
+            var _this3 = this;
+
+            axios.get('/api/branch').then(function (response) {
+                _this3.branchs = response.data;
+            }).catch(function (err) {
+                console.log(err);
+            });
+        },
+
+        //lay thong khoa hoc
+        getCourse: function getCourse() {
+            var _this4 = this;
+
+            axios.get('/api/course').then(function (response) {
+                _this4.courses = response.data;
+            }).catch(function (err) {
+                console.log(err);
+            });
+        },
+        drawTable: function drawTable(data) {
+            $.extend($.fn.dataTable.defaults, {
+                autoWidth: false,
+                dom: '<"datatable-header"fBl><"datatable-scroll-wrap"t><"datatable-footer"ip>',
+                language: {
+                    search: '<span>Tìm kiếm:</span> _INPUT_',
+                    lengthMenu: '<span>Hiển thị:</span> _MENU_',
+                    paginate: { 'first': 'First', 'last': 'Last', 'next': '&rarr;', 'previous': '&larr;' }
+                }
+            });
+
+            $('#datatable-basic').dataTable({
+                data: data,
+                columnDefs: [],
+                buttons: {
+                    dom: {
+                        button: {
+                            className: 'btn btn-default'
+                        }
+                    },
+                    buttons: [{ extend: 'copy' }, { extend: 'csv' }, { extend: 'excel' }, { extend: 'pdf' }, { extend: 'print' }, {
+                        text: 'Thêm sinh viên',
+                        className: 'btn bg-teal-400',
+                        action: function action(e, dt, node, config) {
+                            $("#modalAdd").modal("show");
+                        }
+                    }, {
+                        text: 'Thêm bằng Excel',
+                        className: 'btn bg-info-400',
+                        action: function action(e, dt, node, config) {
+                            $("#modalAddExcel").modal("show");
+                        }
+                    }]
+                }
+            });
+
+            $('.dataTables_filter input[type=search]').attr('placeholder', 'Nhập từ khóa...');
+
+            $('.dataTables_length select').select2({
+                minimumResultsForSearch: Infinity,
+                width: 'auto'
+            });
+        },
+
+        // them moi 1 data
+        submitAdd: function submitAdd() {
+            var _this5 = this;
+
+            axios.post("/api/student", this.dataAdd).then(function (data) {
+                _this5.resetData();
+                swal({
+                    title: "Thành công!",
+                    text: "Thêm mới thành công!",
+                    confirmButtonColor: "#66BB6A",
+                    type: "success"
+                });
+                $("#modalAdd").modal("hide");
+            }).catch(function (err) {
+                console.log(err);
+            });
+        },
+        submitEdit: function submitEdit() {
+            var _this6 = this;
+
+            axios.put("/api/student/" + this.$store.state.idData, this.dataEdit).then(function (data) {
+                console.log(data);
+                _this6.resetData();
+                swal({
+                    title: "Thành công!",
+                    text: "Sửa sinh viên thành công!",
+                    confirmButtonColor: "#66BB6A",
+                    type: "success"
+                });
+                $("#modalInfo").modal("hide");
+            }).catch(function (err) {
+                console.log(err);
+            });
+        },
+
+        //loc du lieu
+        // edit
+        filData: function filData(data) {
+
+            return data.map(function (value, index) {
+                return [value.code, value.student_name, value.department_name, value.name_branch, value.name_course, value.address, '<ul style="text-align: center;" class="icons-list">' + '   <li class="dropdown">' + '       <a href="#" class="dropdown-toggle" data-toggle="dropdown">' + '           <i class="icon-menu9"></i>' + '       </a>' + '<ul class="dropdown-menu dropdown-menu-right">' + '<li>' + '   <a href="#" onclick="editInfo(' + value.id + ')">' + '       <i class=" icon-user"></i> Thông tin chi tiết' + '   </a>' + '</li>' + '<li>' + '   <a href="#"  onclick="deleteInfo(' + value.id + ')">' + '<i class="icon-user-cancel"></i> Xóa' + '</a>' + '</li>' + '</ul>' + '</li>' + '</ul>'];
+            });
+            // showInfor('+value.id+')
+        },
+
+        //reset lại dữ liệu bảng
+        resetData: function resetData() {
+            var _this7 = this;
+
+            axios.get("/api/student").then(function (data) {
+                $('#datatable-basic').dataTable().fnClearTable();
+                $('#datatable-basic').dataTable().fnAddData(_this7.filData(data.data));
+            }).catch(function (err) {
+                console.log(err);
+            });
+        },
+
+        // xác định delete người dùng
+        successDelete: function successDelete() {
+            var _this8 = this;
+
+            var id = $("#deleteButton").attr("data");
+            axios.delete("/api/student/" + id).then(function (data) {
+                console.log(data);
+                swal({
+                    title: "Thành công!",
+                    text: "Sinh viên đã được xóa!!",
+                    confirmButtonColor: "#66BB6A",
+                    type: "success"
+                });
+                _this8.resetData();
+                $("#modalDelete").modal("hide");
+            }).catch(function (err) {
+                console.log(err);
+                swal({
+                    title: "Oops...",
+                    text: "Đã có lỗi xảy ra!",
+                    confirmButtonColor: "#EF5350",
+                    type: "error"
+                });
+            });
+        },
+
+        // Thêm excel
+        addExcel: function addExcel() {
+            this.file_excel = this.$refs.file.files[0];
+        },
+
+        //gửi file excel
+        submitFile: function submitFile() {
+            var _this9 = this;
+
+            var formData = new FormData();
+
+            formData.append('excel', this.file_excel);
+            console.log(this.file_excel);
+            axios.post('/api/student', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            }).then(function (data) {
+                if (data.data.length > 0) {
+                    var code = "";
+                    console.log(data.data);
+                    for (var i = 0; i < data.data.length; i++) {
+                        code += data.data[i].code + ";";
+                    }
+                    $("#modalAddExcel").modal("hide");
+                    swal({
+                        title: "Thêm thành công!",
+                        text: "Có " + data.data.length + " user không thể thêm. Tại mã sinh viên " + code + "!",
+                        confirmButtonColor: "#66BB6A",
+                        type: "success"
+                    });
+                    _this9.resetData();
+                    $("#modalAddExcel").modal("hide");
+                } else {
+                    swal({
+                        title: "Thêm thành công!",
+                        text: "Danh sách sinh viên đã được thêm vào!",
+                        confirmButtonColor: "#66BB6A",
+                        type: "success"
+                    });
+                    _this9.resetData();
+                    $("#modalAddExcel").modal("hide");
+                }
+            }).catch(function (err) {
+                console.log(err);
+            });
+        },
+        getData: function getData() {
+            var _this10 = this;
+
+            axios.get("/api/student").then(function (data) {
+                _this10.infoData = _this10.filData(data.data);
+                _this10.drawTable(_this10.infoData);
+            }).catch(function (err) {
+                console.log(err);
+            });
+        }
+    },
+    data: function data() {
+        return {
+
+            fileExcel: "",
+            //Thông tin data
+            infoData: [],
+            dataAdd: {
+                code: "",
+                student_name: "",
+                address: "",
+                id_department: "",
+                id_course: "",
+                id_branch: "",
+                password: ""
+            },
+            dataEdit: {
+                code: "",
+                student_name: "",
+                address: "",
+                id_department: "",
+                id_course: "",
+                id_branch: ""
+            },
+            // chuyen nganh
+            departments: [],
+            branchs: [],
+            courses: [],
+            idEdit: -1,
+            idDelete: -1
+
+        };
+    },
+
+    watch: {
+        idEdit: function idEdit(value) {}
+    }
+
+});
 
 /***/ }),
 /* 42 */

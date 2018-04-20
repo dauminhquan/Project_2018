@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Http\Requests\FieldRequest;
 use App\Http\Requests\LecturerRequest;
 use App\Http\Requests\StudentRequest;
 use App\Models\Branch;
@@ -389,8 +390,32 @@ class ProfileService
     public function getFieldInfo($id)
     {
 
-        $field = Field::where("fields.id",$id)->first();
-        return $field;
+        $fields = Field::where("fields.id",$id)->join("lecturers","lecturers.id_field","fields.id")->select("fields.*","lecturers.name_lecturer")->get();
+        // 1 arr
+
+        $field = new \stdClass();
+        $field->id ="";
+        $field->field_name="";
+        $arr = [];
+        if($fields->count() > 0)
+        {
+            $field->id = $fields[0]->id;
+            $field->field_name = $fields[0]->field_name;
+
+            foreach ($fields as $item)
+            {
+                $lec = new \stdClass();
+                $lec->name_lecturer = $item->name_lecturer;
+                    $arr[] = $lec;
+            }
+        }
+
+
+        return [
+            "id" => $field->id,
+            "field_name" => $field->field_name,
+            "lecturers" => $arr
+        ];
     }
 
     public function updateFieldAsColumn($id,$data,$column)
@@ -413,13 +438,11 @@ class ProfileService
     }
     //
 
-    public function addField(Request $request)
+    public function addField(FieldRequest $request)
     {
         $field = new Field();
         $field->field_name = $request->input("field_name");
-
         $field->save();
-
     }
 
     public function addFields(array $fields)

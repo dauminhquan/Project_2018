@@ -27,7 +27,7 @@ class FieldRequest extends FormRequest
         {
             return [
                 //
-                "field_name" => "required|  unique.fields,field_name",
+                "field_name" => "required|  unique:fields,field_name",
 
             ];
         }
