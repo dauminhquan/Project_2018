@@ -26,51 +26,55 @@
                         <h5 class="modal-title"><i class="icon-menu7"></i> &nbsp;Thông tin sinh viên</h5>
                     </div>
                     <input type="text" id="id_lec" hidden />
-                    <form onsubmit="event.preventDefault()"  class="form-horizontal" id="form_infor" action="#">
+                    <form v-on:submit.prevent="submitEdit"  class="form-horizontal" id="" action="#">
                         <div class="modal-body">
 
                             <fieldset class="content-group">
                                 <legend class="text-bold">Điền đầy đủ thông tin</legend>
-
+                                <input type="text" hidden :value="showIdEdit"/>
                                 <div class="form-group">
                                     <label class="control-label col-lg-2">Tên sinh viên</label>
                                     <div class="col-lg-10">
-                                        <input type="text" :value="ten_sv"  name="name_lecturer" class="form-control">
+                                        <input type="text" v-model="dataEdit.student_name"  name="name_lecturer" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-lg-2">Địa chỉ</label>
+                                    <div class="col-lg-10">
+                                        <input type="text"  v-model="dataEdit.address" name="email_address_lecturer" class="form-control" placeholder="Điền Email của bạn">
                                     </div>
                                 </div>
 
-                                <!--<div class="form-group">-->
-                                    <!--<label class="control-label col-lg-2">Chọn khoa</label>-->
-                                    <!--<div class="col-lg-10">-->
-                                        <!--<select  name="id_department" class="form-control">-->
-
-                                        <!--</select>-->
-                                    <!--</div>-->
-                                <!--</div>-->
-                                <!--<div class="form-group">-->
-                                    <!--<label class="control-label col-lg-2">Chọn ngành</label>-->
-                                    <!--<div class="col-lg-10">-->
-                                        <!--<select  name="id_field" class="form-control">-->
-
-                                        <!--</select>-->
-                                    <!--</div>-->
-                                <!--</div>-->
-                                <!--<div class="form-group">-->
-                                    <!--<label class="control-label col-lg-2">Chọn khóa</label>-->
-                                    <!--<div class="col-lg-10">-->
-                                        <!--<select  name="id_field" class="form-control">-->
-
-                                        <!--</select>-->
-                                    <!--</div>-->
-                                <!--</div>-->
-
-
-                                <!--<div class="form-group">-->
-                                    <!--<label class="control-label col-lg-2">Email</label>-->
-                                    <!--<div class="col-lg-10">-->
-                                        <!--<input type="email"  name="email_address_lecturer" class="form-control" placeholder="Điền Email của bạn">-->
-                                    <!--</div>-->
-                                <!--</div>-->
+                                <div class="form-group">
+                                    <label class="control-label col-lg-2">Chọn khoa</label>
+                                    <div class="col-lg-10">
+                                        <select v-model="dataEdit.id_department"  name="id_department" class="form-control">
+                                            <option v-for="department in departments" v-bind:value="department.id">{{department.department_name}}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-lg-2">Chọn ngành</label>
+                                    <div class="col-lg-10">
+                                        <select  v-model="dataEdit.id_branch" name="id_field" class="form-control">
+                                            <option v-for="branch in branchs" v-bind:value="branch.id">{{branch.name_branch}}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-lg-2">Chọn khóa</label>
+                                    <div class="col-lg-10">
+                                        <select  v-model="dataEdit.id_course" class="form-control">
+                                            <option v-for="course in courses" v-bind:value="course.id">{{course.name_course}}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-lg-2">Điền mật khẩu</label>
+                                    <div class="col-lg-10">
+                                        <input type="password" v-model="dataAdd.password"  name="password" class="form-control" placeholder="Nhập mật khẩu">
+                                    </div>
+                                </div>
 
                             </fieldset>
 
@@ -85,42 +89,42 @@
                 </div>
             </div>
         </div>
-        <!--&lt;!&ndash; /iconified modal &ndash;&gt;-->
-        <!--&lt;!&ndash; Danger modal &ndash;&gt;-->
-        <!--&lt;!&ndash;modal cảnh báo&ndash;&gt;-->
-        <!--<div id="modal_theme_danger" class="modal fade">-->
-            <!--<div class="modal-dialog">-->
-                <!--<div class="modal-content">-->
-                    <!--<div class="modal-header bg-danger">-->
-                        <!--<button type="button" class="close" data-dismiss="modal">&times;</button>-->
-                        <!--<h6 class="modal-title">Xóa thông tin sinh viên</h6>-->
-                    <!--</div>-->
+        <!-- /iconified modal -->
+        <!-- Danger modal -->
+        <!--modal cảnh báo-->
+        <div id="modalDelete" class="modal fade">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header bg-danger">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h6 class="modal-title">Xóa thông tin sinh viên</h6>
+                    </div>
 
-                    <!--<div class="modal-body">-->
-                        <!--<h6 class="text-semibold">Bạn chắc chắn chứ</h6>-->
-                        <!--<p>Sau khi xóa, sẽ không thể phục hồi dữ liệu. Bạn chắc chắn chứ?</p>-->
+                    <div class="modal-body">
+                        <h6 class="text-semibold">Bạn chắc chắn chứ</h6>
+                        <p>Sau khi xóa, sẽ không thể phục hồi dữ liệu. Bạn chắc chắn chứ?</p>
 
-                        <!--<hr>-->
+                        <hr>
 
 
-                    <!--</div>-->
+                    </div>
 
-                    <!--<div class="modal-footer">-->
-                        <!--<button type="button" class="btn btn-link" data-dismiss="modal">Close</button>-->
-                        <!--<button type="button" id="delete_button" @click="success_delete" class="btn btn-danger">Xóa</button>-->
-                    <!--</div>-->
-                <!--</div>-->
-            <!--</div>-->
-        <!--</div>-->
-        <!--&lt;!&ndash; /default modal &ndash;&gt;-->
-        <!--&lt;!&ndash; Iconified modal &ndash;&gt;-->
-        <!--&lt;!&ndash;thêm mới 1 sinh viên&ndash;&gt;-->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-link" data-dismiss="modal">Close</button>
+                        <button type="button" id="deleteButton" @click="successDelete" class="btn btn-danger">Xóa</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /default modal -->
+        <!-- Iconified modal -->
+        <!--thêm mới 1 sinh viên-->
         <div id="modalAdd" class="modal fade">
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal">&times;</button>
-                        <h5 class="modal-title"><i class="icon-menu7"></i> &nbsp;Thông tin sinh viên</h5>
+                        <h5 class="modal-title"><i class="icon-menu7"></i> &nbsp;Điền thông tin sinh viên</h5>
                     </div>
 
                     <form v-on:submit.prevent="submitAdd"  class="form-horizontal" id="form_add" action="#">
@@ -253,17 +257,21 @@
 
         store: store,
         computed:{
-            ten_sv () {
-                console.log(this.$store.state.idData)
-                axios.get('/api/student/'+this.$store.state.idData)
-                    .then( (response) => {
+            showIdEdit () {
+                if(this.$store.state.idData != this.idEdit)
+                {
+                    this.idEdit = this.$store.state.idData
+                    axios.get('/api/student/'+this.$store.state.idData)
+                        .then( (response) => {
 
-                        this.dataEdit = response.data;
-                        console.log(this.dataEdit)
-                    }).catch((err) =>{
-                    console.log(err)
-                })
-                return this.dataEdit.student_name
+                            this.dataEdit = response.data;
+
+                        }).catch((err) =>{
+                        console.log(err)
+                    })
+                    return this.$store.state.idData
+                }
+
 
             }
         },
@@ -367,7 +375,7 @@
             },
             // them moi 1 data
             submitAdd(){
-                console.log(this.add_u)
+
                 axios.post("/api/student",this.dataAdd).then((data) => {
                     this.resetData()
                     swal({
@@ -377,6 +385,22 @@
                         type: "success"
                     });
                     $("#modalAdd").modal("hide")
+                }).catch((err) => {
+                    console.log(err)
+                })
+            },
+            submitEdit(){
+
+                axios.put("/api/student/"+this.$store.state.idData,this.dataEdit).then((data) => {
+                    console.log(data)
+                    this.resetData()
+                    swal({
+                        title: "Thành công!",
+                        text: "Sửa sinh viên thành công!",
+                        confirmButtonColor: "#66BB6A",
+                        type: "success"
+                    });
+                    $("#modalInfo").modal("hide")
                 }).catch((err) => {
                     console.log(err)
                 })
@@ -405,7 +429,7 @@
                         '   </a>' +
                         '</li>' +
                         '<li>' +
-                        '   <a href="#" @click="" onclick="deleteInfo('+value.id+')">' +
+                        '   <a href="#"  onclick="deleteInfo('+value.id+')">' +
                         '<i class="icon-user-cancel"></i> Xóa' +
                         '</a>' +
                         '</li>' +
@@ -428,25 +452,17 @@
             },
             // xác định delete người dùng
             successDelete(){
-                var id = $("#delete_button").attr("data")
+                var id = $("#deleteButton").attr("data")
                 axios.delete("/api/student/"+id).then((data) =>{
                     console.log(data)
                     swal({
-                        title: "Good job!",
-                        text: "You clicked the button!",
+                        title: "Thành công!",
+                        text: "Sinh viên đã được xóa!!",
                         confirmButtonColor: "#66BB6A",
                         type: "success"
                     });
-                    axios.get("/api/lecturer").then((data) => {
-                        var data1 = filData(data.data)
-                        console.log(data1)
-                        $('#datatable-basic').dataTable().fnClearTable();
-                        $('#datatable-basic').dataTable().fnAddData(data1);
-                        $("#modal_theme_danger").modal("hide")
-
-                    }).catch((err) => {
-                        console.log(err)
-                    })
+                    this.resetData()
+                    $("#modalDelete").modal("hide")
                 }).catch((err) => {
                     console.log(err)
                     swal({
@@ -456,6 +472,7 @@
                         type: "error"
                     });
                 })
+
             },
 // Thêm excel
             addExcel(){
@@ -549,13 +566,16 @@
                 departments: [],
                 branchs: [],
                 courses: [],
-
+                idEdit: -1,
+                idDelete: -1
 
 
             }
         },
        watch: {
+            idEdit(value){
 
+            }
        }
 
 

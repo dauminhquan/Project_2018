@@ -63,7 +63,8 @@ class StudentController extends Controller
     {
 
         $studentProfile = new ProfileService();
-        $studentProfile->updateStudent($id,$request);
+
+       return  $studentProfile->updateStudent($id,$request);
         return ["sc" => true];
     }
 

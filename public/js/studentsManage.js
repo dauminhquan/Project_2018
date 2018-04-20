@@ -13499,6 +13499,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
 
 window.Vuex = __webpack_require__(41);
 Vue.use(Vuex);
@@ -13521,18 +13525,19 @@ window.store = new Vuex.Store({
 
     store: store,
     computed: {
-        ten_sv: function ten_sv() {
+        showIdEdit: function showIdEdit() {
             var _this = this;
 
-            console.log(this.$store.state.idData);
-            axios.get('/api/student/' + this.$store.state.idData).then(function (response) {
+            if (this.$store.state.idData != this.idEdit) {
+                this.idEdit = this.$store.state.idData;
+                axios.get('/api/student/' + this.$store.state.idData).then(function (response) {
 
-                _this.dataEdit = response.data;
-                console.log(_this.dataEdit);
-            }).catch(function (err) {
-                console.log(err);
-            });
-            return this.dataEdit.student_name;
+                    _this.dataEdit = response.data;
+                }).catch(function (err) {
+                    console.log(err);
+                });
+                return this.$store.state.idData;
+            }
         }
     },
     mounted: function mounted() {
@@ -13625,7 +13630,6 @@ window.store = new Vuex.Store({
         submitAdd: function submitAdd() {
             var _this5 = this;
 
-            console.log(this.add_u);
             axios.post("/api/student", this.dataAdd).then(function (data) {
                 _this5.resetData();
                 swal({
@@ -13639,24 +13643,41 @@ window.store = new Vuex.Store({
                 console.log(err);
             });
         },
+        submitEdit: function submitEdit() {
+            var _this6 = this;
+
+            axios.put("/api/student/" + this.$store.state.idData, this.dataEdit).then(function (data) {
+                console.log(data);
+                _this6.resetData();
+                swal({
+                    title: "Thành công!",
+                    text: "Sửa sinh viên thành công!",
+                    confirmButtonColor: "#66BB6A",
+                    type: "success"
+                });
+                $("#modalInfo").modal("hide");
+            }).catch(function (err) {
+                console.log(err);
+            });
+        },
 
         //loc du lieu
         // edit
         filData: function filData(data) {
 
             return data.map(function (value, index) {
-                return [value.code, value.student_name, value.department_name, value.name_branch, value.name_course, value.address, '<ul style="text-align: center;" class="icons-list">' + '   <li class="dropdown">' + '       <a href="#" class="dropdown-toggle" data-toggle="dropdown">' + '           <i class="icon-menu9"></i>' + '       </a>' + '<ul class="dropdown-menu dropdown-menu-right">' + '<li>' + '   <a href="#" onclick="editInfo(' + value.id + ')">' + '       <i class=" icon-user"></i> Thông tin chi tiết' + '   </a>' + '</li>' + '<li>' + '   <a href="#" @click="" onclick="deleteInfo(' + value.id + ')">' + '<i class="icon-user-cancel"></i> Xóa' + '</a>' + '</li>' + '</ul>' + '</li>' + '</ul>'];
+                return [value.code, value.student_name, value.department_name, value.name_branch, value.name_course, value.address, '<ul style="text-align: center;" class="icons-list">' + '   <li class="dropdown">' + '       <a href="#" class="dropdown-toggle" data-toggle="dropdown">' + '           <i class="icon-menu9"></i>' + '       </a>' + '<ul class="dropdown-menu dropdown-menu-right">' + '<li>' + '   <a href="#" onclick="editInfo(' + value.id + ')">' + '       <i class=" icon-user"></i> Thông tin chi tiết' + '   </a>' + '</li>' + '<li>' + '   <a href="#"  onclick="deleteInfo(' + value.id + ')">' + '<i class="icon-user-cancel"></i> Xóa' + '</a>' + '</li>' + '</ul>' + '</li>' + '</ul>'];
             });
             // showInfor('+value.id+')
         },
 
         //reset lại dữ liệu bảng
         resetData: function resetData() {
-            var _this6 = this;
+            var _this7 = this;
 
             axios.get("/api/student").then(function (data) {
                 $('#datatable-basic').dataTable().fnClearTable();
-                $('#datatable-basic').dataTable().fnAddData(_this6.filData(data.data));
+                $('#datatable-basic').dataTable().fnAddData(_this7.filData(data.data));
             }).catch(function (err) {
                 console.log(err);
             });
@@ -13664,24 +13685,19 @@ window.store = new Vuex.Store({
 
         // xác định delete người dùng
         successDelete: function successDelete() {
-            var id = $("#delete_button").attr("data");
+            var _this8 = this;
+
+            var id = $("#deleteButton").attr("data");
             axios.delete("/api/student/" + id).then(function (data) {
                 console.log(data);
                 swal({
-                    title: "Good job!",
-                    text: "You clicked the button!",
+                    title: "Thành công!",
+                    text: "Sinh viên đã được xóa!!",
                     confirmButtonColor: "#66BB6A",
                     type: "success"
                 });
-                axios.get("/api/lecturer").then(function (data) {
-                    var data1 = filData(data.data);
-                    console.log(data1);
-                    $('#datatable-basic').dataTable().fnClearTable();
-                    $('#datatable-basic').dataTable().fnAddData(data1);
-                    $("#modal_theme_danger").modal("hide");
-                }).catch(function (err) {
-                    console.log(err);
-                });
+                _this8.resetData();
+                $("#modalDelete").modal("hide");
             }).catch(function (err) {
                 console.log(err);
                 swal({
@@ -13700,7 +13716,7 @@ window.store = new Vuex.Store({
 
         //gửi file excel
         submitFile: function submitFile() {
-            var _this7 = this;
+            var _this9 = this;
 
             var formData = new FormData();
 
@@ -13724,7 +13740,7 @@ window.store = new Vuex.Store({
                         confirmButtonColor: "#66BB6A",
                         type: "success"
                     });
-                    _this7.resetData();
+                    _this9.resetData();
                     $("#modalAddExcel").modal("hide");
                 } else {
                     swal({
@@ -13733,7 +13749,7 @@ window.store = new Vuex.Store({
                         confirmButtonColor: "#66BB6A",
                         type: "success"
                     });
-                    _this7.resetData();
+                    _this9.resetData();
                     $("#modalAddExcel").modal("hide");
                 }
             }).catch(function (err) {
@@ -13741,11 +13757,11 @@ window.store = new Vuex.Store({
             });
         },
         getData: function getData() {
-            var _this8 = this;
+            var _this10 = this;
 
             axios.get("/api/student").then(function (data) {
-                _this8.infoData = _this8.filData(data.data);
-                _this8.drawTable(_this8.infoData);
+                _this10.infoData = _this10.filData(data.data);
+                _this10.drawTable(_this10.infoData);
             }).catch(function (err) {
                 console.log(err);
             });
@@ -13777,12 +13793,16 @@ window.store = new Vuex.Store({
             // chuyen nganh
             departments: [],
             branchs: [],
-            courses: []
+            courses: [],
+            idEdit: -1,
+            idDelete: -1
 
         };
     },
 
-    watch: {}
+    watch: {
+        idEdit: function idEdit(value) {}
+    }
 
 });
 
@@ -14754,10 +14774,12 @@ var render = function() {
             "form",
             {
               staticClass: "form-horizontal",
-              attrs: {
-                onsubmit: "event.preventDefault()",
-                id: "form_infor",
-                action: "#"
+              attrs: { id: "", action: "#" },
+              on: {
+                submit: function($event) {
+                  $event.preventDefault()
+                  return _vm.submitEdit($event)
+                }
               }
             },
             [
@@ -14767,6 +14789,11 @@ var render = function() {
                     _vm._v("Điền đầy đủ thông tin")
                   ]),
                   _vm._v(" "),
+                  _c("input", {
+                    attrs: { type: "text", hidden: "" },
+                    domProps: { value: _vm.showIdEdit }
+                  }),
+                  _vm._v(" "),
                   _c("div", { staticClass: "form-group" }, [
                     _c("label", { staticClass: "control-label col-lg-2" }, [
                       _vm._v("Tên sinh viên")
@@ -14774,9 +14801,254 @@ var render = function() {
                     _vm._v(" "),
                     _c("div", { staticClass: "col-lg-10" }, [
                       _c("input", {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: _vm.dataEdit.student_name,
+                            expression: "dataEdit.student_name"
+                          }
+                        ],
                         staticClass: "form-control",
                         attrs: { type: "text", name: "name_lecturer" },
-                        domProps: { value: _vm.ten_sv }
+                        domProps: { value: _vm.dataEdit.student_name },
+                        on: {
+                          input: function($event) {
+                            if ($event.target.composing) {
+                              return
+                            }
+                            _vm.$set(
+                              _vm.dataEdit,
+                              "student_name",
+                              $event.target.value
+                            )
+                          }
+                        }
+                      })
+                    ])
+                  ]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "form-group" }, [
+                    _c("label", { staticClass: "control-label col-lg-2" }, [
+                      _vm._v("Địa chỉ")
+                    ]),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "col-lg-10" }, [
+                      _c("input", {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: _vm.dataEdit.address,
+                            expression: "dataEdit.address"
+                          }
+                        ],
+                        staticClass: "form-control",
+                        attrs: {
+                          type: "text",
+                          name: "email_address_lecturer",
+                          placeholder: "Điền Email của bạn"
+                        },
+                        domProps: { value: _vm.dataEdit.address },
+                        on: {
+                          input: function($event) {
+                            if ($event.target.composing) {
+                              return
+                            }
+                            _vm.$set(
+                              _vm.dataEdit,
+                              "address",
+                              $event.target.value
+                            )
+                          }
+                        }
+                      })
+                    ])
+                  ]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "form-group" }, [
+                    _c("label", { staticClass: "control-label col-lg-2" }, [
+                      _vm._v("Chọn khoa")
+                    ]),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "col-lg-10" }, [
+                      _c(
+                        "select",
+                        {
+                          directives: [
+                            {
+                              name: "model",
+                              rawName: "v-model",
+                              value: _vm.dataEdit.id_department,
+                              expression: "dataEdit.id_department"
+                            }
+                          ],
+                          staticClass: "form-control",
+                          attrs: { name: "id_department" },
+                          on: {
+                            change: function($event) {
+                              var $$selectedVal = Array.prototype.filter
+                                .call($event.target.options, function(o) {
+                                  return o.selected
+                                })
+                                .map(function(o) {
+                                  var val = "_value" in o ? o._value : o.value
+                                  return val
+                                })
+                              _vm.$set(
+                                _vm.dataEdit,
+                                "id_department",
+                                $event.target.multiple
+                                  ? $$selectedVal
+                                  : $$selectedVal[0]
+                              )
+                            }
+                          }
+                        },
+                        _vm._l(_vm.departments, function(department) {
+                          return _c(
+                            "option",
+                            { domProps: { value: department.id } },
+                            [_vm._v(_vm._s(department.department_name))]
+                          )
+                        })
+                      )
+                    ])
+                  ]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "form-group" }, [
+                    _c("label", { staticClass: "control-label col-lg-2" }, [
+                      _vm._v("Chọn ngành")
+                    ]),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "col-lg-10" }, [
+                      _c(
+                        "select",
+                        {
+                          directives: [
+                            {
+                              name: "model",
+                              rawName: "v-model",
+                              value: _vm.dataEdit.id_branch,
+                              expression: "dataEdit.id_branch"
+                            }
+                          ],
+                          staticClass: "form-control",
+                          attrs: { name: "id_field" },
+                          on: {
+                            change: function($event) {
+                              var $$selectedVal = Array.prototype.filter
+                                .call($event.target.options, function(o) {
+                                  return o.selected
+                                })
+                                .map(function(o) {
+                                  var val = "_value" in o ? o._value : o.value
+                                  return val
+                                })
+                              _vm.$set(
+                                _vm.dataEdit,
+                                "id_branch",
+                                $event.target.multiple
+                                  ? $$selectedVal
+                                  : $$selectedVal[0]
+                              )
+                            }
+                          }
+                        },
+                        _vm._l(_vm.branchs, function(branch) {
+                          return _c(
+                            "option",
+                            { domProps: { value: branch.id } },
+                            [_vm._v(_vm._s(branch.name_branch))]
+                          )
+                        })
+                      )
+                    ])
+                  ]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "form-group" }, [
+                    _c("label", { staticClass: "control-label col-lg-2" }, [
+                      _vm._v("Chọn khóa")
+                    ]),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "col-lg-10" }, [
+                      _c(
+                        "select",
+                        {
+                          directives: [
+                            {
+                              name: "model",
+                              rawName: "v-model",
+                              value: _vm.dataEdit.id_course,
+                              expression: "dataEdit.id_course"
+                            }
+                          ],
+                          staticClass: "form-control",
+                          on: {
+                            change: function($event) {
+                              var $$selectedVal = Array.prototype.filter
+                                .call($event.target.options, function(o) {
+                                  return o.selected
+                                })
+                                .map(function(o) {
+                                  var val = "_value" in o ? o._value : o.value
+                                  return val
+                                })
+                              _vm.$set(
+                                _vm.dataEdit,
+                                "id_course",
+                                $event.target.multiple
+                                  ? $$selectedVal
+                                  : $$selectedVal[0]
+                              )
+                            }
+                          }
+                        },
+                        _vm._l(_vm.courses, function(course) {
+                          return _c(
+                            "option",
+                            { domProps: { value: course.id } },
+                            [_vm._v(_vm._s(course.name_course))]
+                          )
+                        })
+                      )
+                    ])
+                  ]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "form-group" }, [
+                    _c("label", { staticClass: "control-label col-lg-2" }, [
+                      _vm._v("Điền mật khẩu")
+                    ]),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "col-lg-10" }, [
+                      _c("input", {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: _vm.dataAdd.password,
+                            expression: "dataAdd.password"
+                          }
+                        ],
+                        staticClass: "form-control",
+                        attrs: {
+                          type: "password",
+                          name: "password",
+                          placeholder: "Nhập mật khẩu"
+                        },
+                        domProps: { value: _vm.dataAdd.password },
+                        on: {
+                          input: function($event) {
+                            if ($event.target.composing) {
+                              return
+                            }
+                            _vm.$set(
+                              _vm.dataAdd,
+                              "password",
+                              $event.target.value
+                            )
+                          }
+                        }
                       })
                     ])
                   ])
@@ -14790,10 +15062,41 @@ var render = function() {
       ])
     ]),
     _vm._v(" "),
+    _c("div", { staticClass: "modal fade", attrs: { id: "modalDelete" } }, [
+      _c("div", { staticClass: "modal-dialog" }, [
+        _c("div", { staticClass: "modal-content" }, [
+          _vm._m(3),
+          _vm._v(" "),
+          _vm._m(4),
+          _vm._v(" "),
+          _c("div", { staticClass: "modal-footer" }, [
+            _c(
+              "button",
+              {
+                staticClass: "btn btn-link",
+                attrs: { type: "button", "data-dismiss": "modal" }
+              },
+              [_vm._v("Close")]
+            ),
+            _vm._v(" "),
+            _c(
+              "button",
+              {
+                staticClass: "btn btn-danger",
+                attrs: { type: "button", id: "deleteButton" },
+                on: { click: _vm.successDelete }
+              },
+              [_vm._v("Xóa")]
+            )
+          ])
+        ])
+      ])
+    ]),
+    _vm._v(" "),
     _c("div", { staticClass: "modal fade", attrs: { id: "modalAdd" } }, [
       _c("div", { staticClass: "modal-dialog modal-lg" }, [
         _c("div", { staticClass: "modal-content" }, [
-          _vm._m(3),
+          _vm._m(5),
           _vm._v(" "),
           _c(
             "form",
@@ -15106,7 +15409,7 @@ var render = function() {
                 ])
               ]),
               _vm._v(" "),
-              _vm._m(4)
+              _vm._m(6)
             ]
           )
         ])
@@ -15116,7 +15419,7 @@ var render = function() {
     _c("div", { staticClass: "modal fade", attrs: { id: "modalAddExcel" } }, [
       _c("div", { staticClass: "modal-dialog" }, [
         _c("div", { staticClass: "modal-content text-center" }, [
-          _vm._m(5),
+          _vm._m(7),
           _vm._v(" "),
           _c(
             "form",
@@ -15146,11 +15449,11 @@ var render = function() {
                     on: { change: _vm.addExcel }
                   }),
                   _vm._v(" "),
-                  _vm._m(6)
+                  _vm._m(8)
                 ])
               ]),
               _vm._v(" "),
-              _vm._m(7)
+              _vm._m(9)
             ]
           )
         ])
@@ -15238,6 +15541,39 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "modal-header bg-danger" }, [
+      _c(
+        "button",
+        {
+          staticClass: "close",
+          attrs: { type: "button", "data-dismiss": "modal" }
+        },
+        [_vm._v("×")]
+      ),
+      _vm._v(" "),
+      _c("h6", { staticClass: "modal-title" }, [
+        _vm._v("Xóa thông tin sinh viên")
+      ])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "modal-body" }, [
+      _c("h6", { staticClass: "text-semibold" }, [_vm._v("Bạn chắc chắn chứ")]),
+      _vm._v(" "),
+      _c("p", [
+        _vm._v("Sau khi xóa, sẽ không thể phục hồi dữ liệu. Bạn chắc chắn chứ?")
+      ]),
+      _vm._v(" "),
+      _c("hr")
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
     return _c("div", { staticClass: "modal-header" }, [
       _c(
         "button",
@@ -15250,7 +15586,7 @@ var staticRenderFns = [
       _vm._v(" "),
       _c("h5", { staticClass: "modal-title" }, [
         _c("i", { staticClass: "icon-menu7" }),
-        _vm._v("  Thông tin sinh viên")
+        _vm._v("  Điền thông tin sinh viên")
       ])
     ])
   },

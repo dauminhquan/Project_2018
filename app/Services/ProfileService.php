@@ -55,25 +55,29 @@ class ProfileService
         $student = Student::findOrFail($id);
         if($request->has("student_name"))
         {
-            $student->student_name = $request->input("student_name");
+            $student->student_name = $request->student_name;
+
         }
+
         if($request->has("address"))
         {
             $student->address = $request->input("address");
         }
+
         if($request->has("id_department"))
         {
             $student->id_department = $request->input("id_department");
         }
         if($request->has("id_course"))
         {
-            $student->student_name = $request->input("id_course");
+            $student->id_course = $request->input("id_course");
         }
         if($request->has("id_branch"))
         {
             $student->id_branch = $request->input("id_branch");
         }
         $student->update();
+        return $student;
     }
     // them moi mot sinh vien
     public function addStudent(StudentRequest $request)
@@ -110,7 +114,7 @@ class ProfileService
             $student->id_department = $item->id_department;
             $student->id_course = $item->id_course;
             $student->id_branch = $item->id_branch;
-            $student->password= $item->password;
+            $student->password= Hash::make($item->password);
             $student->save();
         }
         return $catch;
