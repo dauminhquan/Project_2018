@@ -17,6 +17,7 @@ use App\Models\Student;
 use App\Models\Topic;
 use App\Models\Users;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 
@@ -390,7 +391,7 @@ class ProfileService
     public function getFieldInfo($id)
     {
 
-        $fields = Field::where("fields.id",$id)->join("lecturers","lecturers.id_field","fields.id")->select("fields.*","lecturers.name_lecturer")->get();
+        $fields = Field::where("fields.id",$id)->join("lecturers","lecturers.id_field","fields.id")->select("fields.*","lecturers.name_lecturer",DB::raw("lecturers.id as id_lecturer"))->get();
         // 1 arr
 
         $field = new \stdClass();
@@ -405,6 +406,7 @@ class ProfileService
             foreach ($fields as $item)
             {
                 $lec = new \stdClass();
+                $lec->id = $item->id_lecturer;
                 $lec->name_lecturer = $item->name_lecturer;
                     $arr[] = $lec;
             }

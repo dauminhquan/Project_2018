@@ -29,12 +29,19 @@
                                 <legend class="text-bold">Điền đầy đủ thông tin</legend>
                                 <input type="text" hidden :value="showIdEdit"/>
                                 <div class="form-group">
-                                    <label class="control-label col-lg-2">Điền tên lĩnh vực</label>
+                                    <label class="control-label col-lg-2">Tên lĩnh vực</label>
                                     <div class="col-lg-10">
                                         <input type="text" v-model="dataEdit.field_name"  name="name_lecturer" class="form-control">
                                     </div>
                                 </div>
-
+                                <div class="form-group">
+                                    <label class="control-label col-lg-2">Tên lĩnh vực</label>
+                                    <div class="col-lg-10">
+                                        <select type="text" v-model="dataEdit.listLecturer" multiple  class="form-control">
+                                            <option v-for="lecturer in dataEdit.lecturers"  :value="lecturer.id">{{lecturer.name_lecturer}}</option>
+                                        </select>
+                                    </div>
+                                </div>
                             </fieldset>
 
 
@@ -48,9 +55,7 @@
                 </div>
             </div>
         </div>
-        <!-- /iconified modal -->
-        <!-- Danger modal -->
-        <!--modal cảnh báo-->
+
         <div id="modalDelete" class="modal fade">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -75,9 +80,7 @@
                 </div>
             </div>
         </div>
-        <!-- /default modal -->
-        <!-- Iconified modal -->
-        <!--thêm mới 1 sinh viên-->
+
         <div id="modalAdd" class="modal fade">
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
@@ -336,6 +339,8 @@
                 },
                 dataEdit: {
                     field_name: "",
+                    lecturers: "",
+                    listLecturer: []
 
                 },
                 // chuyen nganh

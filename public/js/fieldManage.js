@@ -14338,6 +14338,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
 
 window.Vuex = __webpack_require__(32);
 Vue.use(Vuex);
@@ -14527,7 +14530,9 @@ window.store = new Vuex.Store({
 
             },
             dataEdit: {
-                field_name: ""
+                field_name: "",
+                lecturers: "",
+                listLecturer: []
 
             },
             // chuyen nganh
@@ -14588,7 +14593,7 @@ var render = function() {
                   _vm._v(" "),
                   _c("div", { staticClass: "form-group" }, [
                     _c("label", { staticClass: "control-label col-lg-2" }, [
-                      _vm._v("Điền tên lĩnh vực")
+                      _vm._v("Tên lĩnh vực")
                     ]),
                     _vm._v(" "),
                     _c("div", { staticClass: "col-lg-10" }, [
@@ -14617,6 +14622,56 @@ var render = function() {
                           }
                         }
                       })
+                    ])
+                  ]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "form-group" }, [
+                    _c("label", { staticClass: "control-label col-lg-2" }, [
+                      _vm._v("Tên lĩnh vực")
+                    ]),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "col-lg-10" }, [
+                      _c(
+                        "select",
+                        {
+                          directives: [
+                            {
+                              name: "model",
+                              rawName: "v-model",
+                              value: _vm.dataEdit.listLecturer,
+                              expression: "dataEdit.listLecturer"
+                            }
+                          ],
+                          staticClass: "form-control",
+                          attrs: { type: "text", multiple: "" },
+                          on: {
+                            change: function($event) {
+                              var $$selectedVal = Array.prototype.filter
+                                .call($event.target.options, function(o) {
+                                  return o.selected
+                                })
+                                .map(function(o) {
+                                  var val = "_value" in o ? o._value : o.value
+                                  return val
+                                })
+                              _vm.$set(
+                                _vm.dataEdit,
+                                "listLecturer",
+                                $event.target.multiple
+                                  ? $$selectedVal
+                                  : $$selectedVal[0]
+                              )
+                            }
+                          }
+                        },
+                        _vm._l(_vm.dataEdit.lecturers, function(lecturer) {
+                          return _c(
+                            "option",
+                            { domProps: { value: lecturer.id } },
+                            [_vm._v(_vm._s(lecturer.name_lecturer))]
+                          )
+                        })
+                      )
                     ])
                   ])
                 ])
