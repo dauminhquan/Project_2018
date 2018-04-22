@@ -7,6 +7,7 @@
                 <th>Đợt bảo vệ</th>
                 <th>Thời gian bắt đầu</th>
                 <th>Thời gian kết thúc</th>
+                <th>Mô tả</th>
             </tr>
             </thead>
             <tbody>
@@ -66,6 +67,21 @@
                                         <input type="date" v-model="dataAdd.timeEnd"  class="form-control">
                                     </div>
                                 </div>
+                                <div class="form-group">
+                                    <label class="control-label col-lg-2">Danh sách giáo viên phản biện</label>
+                                    <div class="col-lg-10">
+                                        <select name="" multiple v-model="dataAdd.listLecturer" class="form-control">
+                                            <option v-for="lecturer in listLecturer" :value="lecturer.id">{{lecturer.name_lecturer}}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-lg-2">Mô tả</label>
+                                    <div class="col-lg-10">
+                                        <textarea class="form-control" v-model="dataAdd.detail"></textarea>
+                                    </div>
+                                </div>
+
 
 
                             </fieldset>
@@ -111,12 +127,23 @@
         mounted(){
 
             this.getData()
+            this.getLecturers()
 
 
         },
         methods: {
 
+            getLecturers(){
 
+                axios.get("/api/lecturer").then((data) => {
+
+                    this.listLecturer = data.data
+                    console.log(data)
+                }).catch((err) => {
+                    console.log(err)
+                })
+
+            },
             drawTable(data){
                 $.extend( $.fn.dataTable.defaults, {
                     autoWidth: false,
@@ -188,7 +215,8 @@
                     return [
                         '<a href="/quan-ly-dot-bao-ve/'+value.id+'">'+value.id+'</a>',
                         value.time_start,
-                        value.time_end
+                        value.time_end,
+                        value.detail
                     ]
                 })
                 // showInfor('+value.id+')
@@ -250,10 +278,12 @@
                 //Thông tin data
                 dataAdd: {
                     time_start: "",
-                    time_end: ""
+                    time_end: "",
+                    detail: "",
+                    listLecturer: []
 
                 },
-
+                listLecturer: [],
                 idEdit: -1,
                 idDelete: -1
 

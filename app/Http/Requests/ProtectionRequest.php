@@ -38,7 +38,8 @@ class ProtectionRequest extends FormRequest
 
                     return [
                         "timeStart" => "required| date",
-                        "timeEnd" => "required|date"
+                        "timeEnd" => "required|date",
+
                     ];
                 }
             case 'PUT':

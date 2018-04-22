@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\LecturerProtection;
 use App\Services\ProfileService;
 use Illuminate\Http\Request;
 
@@ -24,7 +25,14 @@ class AdministratorController extends Controller
         //Thông tin sinh viên thực hiện
         // Dùng table
         $pro = new ProfileService();
-        return view("admin.protectionManage_id",["data" => (object)$pro->getProtection($id)]);
+        $lecturers = LecturerProtection::where("id_protection",$id)->get();
+        $listLecturer =[];
+        foreach ($lecturers as $item)
+        {
+            $listLecturer[] = $item->id_lecturer;
+        }
+        $listLecturer = implode(",",$listLecturer);
+        return view("admin.protectionManage_id",["data" => (object)$pro->getProtection($id),"listLecturer" => $listLecturer]);
     }
     public function topicProtectionManage()
     {

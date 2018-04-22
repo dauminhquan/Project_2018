@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "/";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 33);
+/******/ 	return __webpack_require__(__webpack_require__.s = 66);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -13187,15 +13187,993 @@ module.exports = function spread(callback) {
 
 
 /***/ }),
-/* 32 */,
-/* 33 */
-/***/ (function(module, exports, __webpack_require__) {
+/* 32 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
-module.exports = __webpack_require__(34);
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Store", function() { return Store; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "install", function() { return install; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "mapState", function() { return mapState; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "mapMutations", function() { return mapMutations; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "mapGetters", function() { return mapGetters; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "mapActions", function() { return mapActions; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "createNamespacedHelpers", function() { return createNamespacedHelpers; });
+/**
+ * vuex v3.0.1
+ * (c) 2017 Evan You
+ * @license MIT
+ */
+var applyMixin = function (Vue) {
+  var version = Number(Vue.version.split('.')[0]);
+
+  if (version >= 2) {
+    Vue.mixin({ beforeCreate: vuexInit });
+  } else {
+    // override init and inject vuex init procedure
+    // for 1.x backwards compatibility.
+    var _init = Vue.prototype._init;
+    Vue.prototype._init = function (options) {
+      if ( options === void 0 ) options = {};
+
+      options.init = options.init
+        ? [vuexInit].concat(options.init)
+        : vuexInit;
+      _init.call(this, options);
+    };
+  }
+
+  /**
+   * Vuex init hook, injected into each instances init hooks list.
+   */
+
+  function vuexInit () {
+    var options = this.$options;
+    // store injection
+    if (options.store) {
+      this.$store = typeof options.store === 'function'
+        ? options.store()
+        : options.store;
+    } else if (options.parent && options.parent.$store) {
+      this.$store = options.parent.$store;
+    }
+  }
+};
+
+var devtoolHook =
+  typeof window !== 'undefined' &&
+  window.__VUE_DEVTOOLS_GLOBAL_HOOK__;
+
+function devtoolPlugin (store) {
+  if (!devtoolHook) { return }
+
+  store._devtoolHook = devtoolHook;
+
+  devtoolHook.emit('vuex:init', store);
+
+  devtoolHook.on('vuex:travel-to-state', function (targetState) {
+    store.replaceState(targetState);
+  });
+
+  store.subscribe(function (mutation, state) {
+    devtoolHook.emit('vuex:mutation', mutation, state);
+  });
+}
+
+/**
+ * Get the first item that pass the test
+ * by second argument function
+ *
+ * @param {Array} list
+ * @param {Function} f
+ * @return {*}
+ */
+/**
+ * Deep copy the given object considering circular structure.
+ * This function caches all nested objects and its copies.
+ * If it detects circular structure, use cached copy to avoid infinite loop.
+ *
+ * @param {*} obj
+ * @param {Array<Object>} cache
+ * @return {*}
+ */
+
+
+/**
+ * forEach for object
+ */
+function forEachValue (obj, fn) {
+  Object.keys(obj).forEach(function (key) { return fn(obj[key], key); });
+}
+
+function isObject (obj) {
+  return obj !== null && typeof obj === 'object'
+}
+
+function isPromise (val) {
+  return val && typeof val.then === 'function'
+}
+
+function assert (condition, msg) {
+  if (!condition) { throw new Error(("[vuex] " + msg)) }
+}
+
+var Module = function Module (rawModule, runtime) {
+  this.runtime = runtime;
+  this._children = Object.create(null);
+  this._rawModule = rawModule;
+  var rawState = rawModule.state;
+  this.state = (typeof rawState === 'function' ? rawState() : rawState) || {};
+};
+
+var prototypeAccessors$1 = { namespaced: { configurable: true } };
+
+prototypeAccessors$1.namespaced.get = function () {
+  return !!this._rawModule.namespaced
+};
+
+Module.prototype.addChild = function addChild (key, module) {
+  this._children[key] = module;
+};
+
+Module.prototype.removeChild = function removeChild (key) {
+  delete this._children[key];
+};
+
+Module.prototype.getChild = function getChild (key) {
+  return this._children[key]
+};
+
+Module.prototype.update = function update (rawModule) {
+  this._rawModule.namespaced = rawModule.namespaced;
+  if (rawModule.actions) {
+    this._rawModule.actions = rawModule.actions;
+  }
+  if (rawModule.mutations) {
+    this._rawModule.mutations = rawModule.mutations;
+  }
+  if (rawModule.getters) {
+    this._rawModule.getters = rawModule.getters;
+  }
+};
+
+Module.prototype.forEachChild = function forEachChild (fn) {
+  forEachValue(this._children, fn);
+};
+
+Module.prototype.forEachGetter = function forEachGetter (fn) {
+  if (this._rawModule.getters) {
+    forEachValue(this._rawModule.getters, fn);
+  }
+};
+
+Module.prototype.forEachAction = function forEachAction (fn) {
+  if (this._rawModule.actions) {
+    forEachValue(this._rawModule.actions, fn);
+  }
+};
+
+Module.prototype.forEachMutation = function forEachMutation (fn) {
+  if (this._rawModule.mutations) {
+    forEachValue(this._rawModule.mutations, fn);
+  }
+};
+
+Object.defineProperties( Module.prototype, prototypeAccessors$1 );
+
+var ModuleCollection = function ModuleCollection (rawRootModule) {
+  // register root module (Vuex.Store options)
+  this.register([], rawRootModule, false);
+};
+
+ModuleCollection.prototype.get = function get (path) {
+  return path.reduce(function (module, key) {
+    return module.getChild(key)
+  }, this.root)
+};
+
+ModuleCollection.prototype.getNamespace = function getNamespace (path) {
+  var module = this.root;
+  return path.reduce(function (namespace, key) {
+    module = module.getChild(key);
+    return namespace + (module.namespaced ? key + '/' : '')
+  }, '')
+};
+
+ModuleCollection.prototype.update = function update$1 (rawRootModule) {
+  update([], this.root, rawRootModule);
+};
+
+ModuleCollection.prototype.register = function register (path, rawModule, runtime) {
+    var this$1 = this;
+    if ( runtime === void 0 ) runtime = true;
+
+  if (true) {
+    assertRawModule(path, rawModule);
+  }
+
+  var newModule = new Module(rawModule, runtime);
+  if (path.length === 0) {
+    this.root = newModule;
+  } else {
+    var parent = this.get(path.slice(0, -1));
+    parent.addChild(path[path.length - 1], newModule);
+  }
+
+  // register nested modules
+  if (rawModule.modules) {
+    forEachValue(rawModule.modules, function (rawChildModule, key) {
+      this$1.register(path.concat(key), rawChildModule, runtime);
+    });
+  }
+};
+
+ModuleCollection.prototype.unregister = function unregister (path) {
+  var parent = this.get(path.slice(0, -1));
+  var key = path[path.length - 1];
+  if (!parent.getChild(key).runtime) { return }
+
+  parent.removeChild(key);
+};
+
+function update (path, targetModule, newModule) {
+  if (true) {
+    assertRawModule(path, newModule);
+  }
+
+  // update target module
+  targetModule.update(newModule);
+
+  // update nested modules
+  if (newModule.modules) {
+    for (var key in newModule.modules) {
+      if (!targetModule.getChild(key)) {
+        if (true) {
+          console.warn(
+            "[vuex] trying to add a new module '" + key + "' on hot reloading, " +
+            'manual reload is needed'
+          );
+        }
+        return
+      }
+      update(
+        path.concat(key),
+        targetModule.getChild(key),
+        newModule.modules[key]
+      );
+    }
+  }
+}
+
+var functionAssert = {
+  assert: function (value) { return typeof value === 'function'; },
+  expected: 'function'
+};
+
+var objectAssert = {
+  assert: function (value) { return typeof value === 'function' ||
+    (typeof value === 'object' && typeof value.handler === 'function'); },
+  expected: 'function or object with "handler" function'
+};
+
+var assertTypes = {
+  getters: functionAssert,
+  mutations: functionAssert,
+  actions: objectAssert
+};
+
+function assertRawModule (path, rawModule) {
+  Object.keys(assertTypes).forEach(function (key) {
+    if (!rawModule[key]) { return }
+
+    var assertOptions = assertTypes[key];
+
+    forEachValue(rawModule[key], function (value, type) {
+      assert(
+        assertOptions.assert(value),
+        makeAssertionMessage(path, key, type, value, assertOptions.expected)
+      );
+    });
+  });
+}
+
+function makeAssertionMessage (path, key, type, value, expected) {
+  var buf = key + " should be " + expected + " but \"" + key + "." + type + "\"";
+  if (path.length > 0) {
+    buf += " in module \"" + (path.join('.')) + "\"";
+  }
+  buf += " is " + (JSON.stringify(value)) + ".";
+  return buf
+}
+
+var Vue; // bind on install
+
+var Store = function Store (options) {
+  var this$1 = this;
+  if ( options === void 0 ) options = {};
+
+  // Auto install if it is not done yet and `window` has `Vue`.
+  // To allow users to avoid auto-installation in some cases,
+  // this code should be placed here. See #731
+  if (!Vue && typeof window !== 'undefined' && window.Vue) {
+    install(window.Vue);
+  }
+
+  if (true) {
+    assert(Vue, "must call Vue.use(Vuex) before creating a store instance.");
+    assert(typeof Promise !== 'undefined', "vuex requires a Promise polyfill in this browser.");
+    assert(this instanceof Store, "Store must be called with the new operator.");
+  }
+
+  var plugins = options.plugins; if ( plugins === void 0 ) plugins = [];
+  var strict = options.strict; if ( strict === void 0 ) strict = false;
+
+  var state = options.state; if ( state === void 0 ) state = {};
+  if (typeof state === 'function') {
+    state = state() || {};
+  }
+
+  // store internal state
+  this._committing = false;
+  this._actions = Object.create(null);
+  this._actionSubscribers = [];
+  this._mutations = Object.create(null);
+  this._wrappedGetters = Object.create(null);
+  this._modules = new ModuleCollection(options);
+  this._modulesNamespaceMap = Object.create(null);
+  this._subscribers = [];
+  this._watcherVM = new Vue();
+
+  // bind commit and dispatch to self
+  var store = this;
+  var ref = this;
+  var dispatch = ref.dispatch;
+  var commit = ref.commit;
+  this.dispatch = function boundDispatch (type, payload) {
+    return dispatch.call(store, type, payload)
+  };
+  this.commit = function boundCommit (type, payload, options) {
+    return commit.call(store, type, payload, options)
+  };
+
+  // strict mode
+  this.strict = strict;
+
+  // init root module.
+  // this also recursively registers all sub-modules
+  // and collects all module getters inside this._wrappedGetters
+  installModule(this, state, [], this._modules.root);
+
+  // initialize the store vm, which is responsible for the reactivity
+  // (also registers _wrappedGetters as computed properties)
+  resetStoreVM(this, state);
+
+  // apply plugins
+  plugins.forEach(function (plugin) { return plugin(this$1); });
+
+  if (Vue.config.devtools) {
+    devtoolPlugin(this);
+  }
+};
+
+var prototypeAccessors = { state: { configurable: true } };
+
+prototypeAccessors.state.get = function () {
+  return this._vm._data.$$state
+};
+
+prototypeAccessors.state.set = function (v) {
+  if (true) {
+    assert(false, "Use store.replaceState() to explicit replace store state.");
+  }
+};
+
+Store.prototype.commit = function commit (_type, _payload, _options) {
+    var this$1 = this;
+
+  // check object-style commit
+  var ref = unifyObjectStyle(_type, _payload, _options);
+    var type = ref.type;
+    var payload = ref.payload;
+    var options = ref.options;
+
+  var mutation = { type: type, payload: payload };
+  var entry = this._mutations[type];
+  if (!entry) {
+    if (true) {
+      console.error(("[vuex] unknown mutation type: " + type));
+    }
+    return
+  }
+  this._withCommit(function () {
+    entry.forEach(function commitIterator (handler) {
+      handler(payload);
+    });
+  });
+  this._subscribers.forEach(function (sub) { return sub(mutation, this$1.state); });
+
+  if (
+    "development" !== 'production' &&
+    options && options.silent
+  ) {
+    console.warn(
+      "[vuex] mutation type: " + type + ". Silent option has been removed. " +
+      'Use the filter functionality in the vue-devtools'
+    );
+  }
+};
+
+Store.prototype.dispatch = function dispatch (_type, _payload) {
+    var this$1 = this;
+
+  // check object-style dispatch
+  var ref = unifyObjectStyle(_type, _payload);
+    var type = ref.type;
+    var payload = ref.payload;
+
+  var action = { type: type, payload: payload };
+  var entry = this._actions[type];
+  if (!entry) {
+    if (true) {
+      console.error(("[vuex] unknown action type: " + type));
+    }
+    return
+  }
+
+  this._actionSubscribers.forEach(function (sub) { return sub(action, this$1.state); });
+
+  return entry.length > 1
+    ? Promise.all(entry.map(function (handler) { return handler(payload); }))
+    : entry[0](payload)
+};
+
+Store.prototype.subscribe = function subscribe (fn) {
+  return genericSubscribe(fn, this._subscribers)
+};
+
+Store.prototype.subscribeAction = function subscribeAction (fn) {
+  return genericSubscribe(fn, this._actionSubscribers)
+};
+
+Store.prototype.watch = function watch (getter, cb, options) {
+    var this$1 = this;
+
+  if (true) {
+    assert(typeof getter === 'function', "store.watch only accepts a function.");
+  }
+  return this._watcherVM.$watch(function () { return getter(this$1.state, this$1.getters); }, cb, options)
+};
+
+Store.prototype.replaceState = function replaceState (state) {
+    var this$1 = this;
+
+  this._withCommit(function () {
+    this$1._vm._data.$$state = state;
+  });
+};
+
+Store.prototype.registerModule = function registerModule (path, rawModule, options) {
+    if ( options === void 0 ) options = {};
+
+  if (typeof path === 'string') { path = [path]; }
+
+  if (true) {
+    assert(Array.isArray(path), "module path must be a string or an Array.");
+    assert(path.length > 0, 'cannot register the root module by using registerModule.');
+  }
+
+  this._modules.register(path, rawModule);
+  installModule(this, this.state, path, this._modules.get(path), options.preserveState);
+  // reset store to update getters...
+  resetStoreVM(this, this.state);
+};
+
+Store.prototype.unregisterModule = function unregisterModule (path) {
+    var this$1 = this;
+
+  if (typeof path === 'string') { path = [path]; }
+
+  if (true) {
+    assert(Array.isArray(path), "module path must be a string or an Array.");
+  }
+
+  this._modules.unregister(path);
+  this._withCommit(function () {
+    var parentState = getNestedState(this$1.state, path.slice(0, -1));
+    Vue.delete(parentState, path[path.length - 1]);
+  });
+  resetStore(this);
+};
+
+Store.prototype.hotUpdate = function hotUpdate (newOptions) {
+  this._modules.update(newOptions);
+  resetStore(this, true);
+};
+
+Store.prototype._withCommit = function _withCommit (fn) {
+  var committing = this._committing;
+  this._committing = true;
+  fn();
+  this._committing = committing;
+};
+
+Object.defineProperties( Store.prototype, prototypeAccessors );
+
+function genericSubscribe (fn, subs) {
+  if (subs.indexOf(fn) < 0) {
+    subs.push(fn);
+  }
+  return function () {
+    var i = subs.indexOf(fn);
+    if (i > -1) {
+      subs.splice(i, 1);
+    }
+  }
+}
+
+function resetStore (store, hot) {
+  store._actions = Object.create(null);
+  store._mutations = Object.create(null);
+  store._wrappedGetters = Object.create(null);
+  store._modulesNamespaceMap = Object.create(null);
+  var state = store.state;
+  // init all modules
+  installModule(store, state, [], store._modules.root, true);
+  // reset vm
+  resetStoreVM(store, state, hot);
+}
+
+function resetStoreVM (store, state, hot) {
+  var oldVm = store._vm;
+
+  // bind store public getters
+  store.getters = {};
+  var wrappedGetters = store._wrappedGetters;
+  var computed = {};
+  forEachValue(wrappedGetters, function (fn, key) {
+    // use computed to leverage its lazy-caching mechanism
+    computed[key] = function () { return fn(store); };
+    Object.defineProperty(store.getters, key, {
+      get: function () { return store._vm[key]; },
+      enumerable: true // for local getters
+    });
+  });
+
+  // use a Vue instance to store the state tree
+  // suppress warnings just in case the user has added
+  // some funky global mixins
+  var silent = Vue.config.silent;
+  Vue.config.silent = true;
+  store._vm = new Vue({
+    data: {
+      $$state: state
+    },
+    computed: computed
+  });
+  Vue.config.silent = silent;
+
+  // enable strict mode for new vm
+  if (store.strict) {
+    enableStrictMode(store);
+  }
+
+  if (oldVm) {
+    if (hot) {
+      // dispatch changes in all subscribed watchers
+      // to force getter re-evaluation for hot reloading.
+      store._withCommit(function () {
+        oldVm._data.$$state = null;
+      });
+    }
+    Vue.nextTick(function () { return oldVm.$destroy(); });
+  }
+}
+
+function installModule (store, rootState, path, module, hot) {
+  var isRoot = !path.length;
+  var namespace = store._modules.getNamespace(path);
+
+  // register in namespace map
+  if (module.namespaced) {
+    store._modulesNamespaceMap[namespace] = module;
+  }
+
+  // set state
+  if (!isRoot && !hot) {
+    var parentState = getNestedState(rootState, path.slice(0, -1));
+    var moduleName = path[path.length - 1];
+    store._withCommit(function () {
+      Vue.set(parentState, moduleName, module.state);
+    });
+  }
+
+  var local = module.context = makeLocalContext(store, namespace, path);
+
+  module.forEachMutation(function (mutation, key) {
+    var namespacedType = namespace + key;
+    registerMutation(store, namespacedType, mutation, local);
+  });
+
+  module.forEachAction(function (action, key) {
+    var type = action.root ? key : namespace + key;
+    var handler = action.handler || action;
+    registerAction(store, type, handler, local);
+  });
+
+  module.forEachGetter(function (getter, key) {
+    var namespacedType = namespace + key;
+    registerGetter(store, namespacedType, getter, local);
+  });
+
+  module.forEachChild(function (child, key) {
+    installModule(store, rootState, path.concat(key), child, hot);
+  });
+}
+
+/**
+ * make localized dispatch, commit, getters and state
+ * if there is no namespace, just use root ones
+ */
+function makeLocalContext (store, namespace, path) {
+  var noNamespace = namespace === '';
+
+  var local = {
+    dispatch: noNamespace ? store.dispatch : function (_type, _payload, _options) {
+      var args = unifyObjectStyle(_type, _payload, _options);
+      var payload = args.payload;
+      var options = args.options;
+      var type = args.type;
+
+      if (!options || !options.root) {
+        type = namespace + type;
+        if ("development" !== 'production' && !store._actions[type]) {
+          console.error(("[vuex] unknown local action type: " + (args.type) + ", global type: " + type));
+          return
+        }
+      }
+
+      return store.dispatch(type, payload)
+    },
+
+    commit: noNamespace ? store.commit : function (_type, _payload, _options) {
+      var args = unifyObjectStyle(_type, _payload, _options);
+      var payload = args.payload;
+      var options = args.options;
+      var type = args.type;
+
+      if (!options || !options.root) {
+        type = namespace + type;
+        if ("development" !== 'production' && !store._mutations[type]) {
+          console.error(("[vuex] unknown local mutation type: " + (args.type) + ", global type: " + type));
+          return
+        }
+      }
+
+      store.commit(type, payload, options);
+    }
+  };
+
+  // getters and state object must be gotten lazily
+  // because they will be changed by vm update
+  Object.defineProperties(local, {
+    getters: {
+      get: noNamespace
+        ? function () { return store.getters; }
+        : function () { return makeLocalGetters(store, namespace); }
+    },
+    state: {
+      get: function () { return getNestedState(store.state, path); }
+    }
+  });
+
+  return local
+}
+
+function makeLocalGetters (store, namespace) {
+  var gettersProxy = {};
+
+  var splitPos = namespace.length;
+  Object.keys(store.getters).forEach(function (type) {
+    // skip if the target getter is not match this namespace
+    if (type.slice(0, splitPos) !== namespace) { return }
+
+    // extract local getter type
+    var localType = type.slice(splitPos);
+
+    // Add a port to the getters proxy.
+    // Define as getter property because
+    // we do not want to evaluate the getters in this time.
+    Object.defineProperty(gettersProxy, localType, {
+      get: function () { return store.getters[type]; },
+      enumerable: true
+    });
+  });
+
+  return gettersProxy
+}
+
+function registerMutation (store, type, handler, local) {
+  var entry = store._mutations[type] || (store._mutations[type] = []);
+  entry.push(function wrappedMutationHandler (payload) {
+    handler.call(store, local.state, payload);
+  });
+}
+
+function registerAction (store, type, handler, local) {
+  var entry = store._actions[type] || (store._actions[type] = []);
+  entry.push(function wrappedActionHandler (payload, cb) {
+    var res = handler.call(store, {
+      dispatch: local.dispatch,
+      commit: local.commit,
+      getters: local.getters,
+      state: local.state,
+      rootGetters: store.getters,
+      rootState: store.state
+    }, payload, cb);
+    if (!isPromise(res)) {
+      res = Promise.resolve(res);
+    }
+    if (store._devtoolHook) {
+      return res.catch(function (err) {
+        store._devtoolHook.emit('vuex:error', err);
+        throw err
+      })
+    } else {
+      return res
+    }
+  });
+}
+
+function registerGetter (store, type, rawGetter, local) {
+  if (store._wrappedGetters[type]) {
+    if (true) {
+      console.error(("[vuex] duplicate getter key: " + type));
+    }
+    return
+  }
+  store._wrappedGetters[type] = function wrappedGetter (store) {
+    return rawGetter(
+      local.state, // local state
+      local.getters, // local getters
+      store.state, // root state
+      store.getters // root getters
+    )
+  };
+}
+
+function enableStrictMode (store) {
+  store._vm.$watch(function () { return this._data.$$state }, function () {
+    if (true) {
+      assert(store._committing, "Do not mutate vuex store state outside mutation handlers.");
+    }
+  }, { deep: true, sync: true });
+}
+
+function getNestedState (state, path) {
+  return path.length
+    ? path.reduce(function (state, key) { return state[key]; }, state)
+    : state
+}
+
+function unifyObjectStyle (type, payload, options) {
+  if (isObject(type) && type.type) {
+    options = payload;
+    payload = type;
+    type = type.type;
+  }
+
+  if (true) {
+    assert(typeof type === 'string', ("Expects string as the type, but found " + (typeof type) + "."));
+  }
+
+  return { type: type, payload: payload, options: options }
+}
+
+function install (_Vue) {
+  if (Vue && _Vue === Vue) {
+    if (true) {
+      console.error(
+        '[vuex] already installed. Vue.use(Vuex) should be called only once.'
+      );
+    }
+    return
+  }
+  Vue = _Vue;
+  applyMixin(Vue);
+}
+
+var mapState = normalizeNamespace(function (namespace, states) {
+  var res = {};
+  normalizeMap(states).forEach(function (ref) {
+    var key = ref.key;
+    var val = ref.val;
+
+    res[key] = function mappedState () {
+      var state = this.$store.state;
+      var getters = this.$store.getters;
+      if (namespace) {
+        var module = getModuleByNamespace(this.$store, 'mapState', namespace);
+        if (!module) {
+          return
+        }
+        state = module.context.state;
+        getters = module.context.getters;
+      }
+      return typeof val === 'function'
+        ? val.call(this, state, getters)
+        : state[val]
+    };
+    // mark vuex getter for devtools
+    res[key].vuex = true;
+  });
+  return res
+});
+
+var mapMutations = normalizeNamespace(function (namespace, mutations) {
+  var res = {};
+  normalizeMap(mutations).forEach(function (ref) {
+    var key = ref.key;
+    var val = ref.val;
+
+    res[key] = function mappedMutation () {
+      var args = [], len = arguments.length;
+      while ( len-- ) args[ len ] = arguments[ len ];
+
+      var commit = this.$store.commit;
+      if (namespace) {
+        var module = getModuleByNamespace(this.$store, 'mapMutations', namespace);
+        if (!module) {
+          return
+        }
+        commit = module.context.commit;
+      }
+      return typeof val === 'function'
+        ? val.apply(this, [commit].concat(args))
+        : commit.apply(this.$store, [val].concat(args))
+    };
+  });
+  return res
+});
+
+var mapGetters = normalizeNamespace(function (namespace, getters) {
+  var res = {};
+  normalizeMap(getters).forEach(function (ref) {
+    var key = ref.key;
+    var val = ref.val;
+
+    val = namespace + val;
+    res[key] = function mappedGetter () {
+      if (namespace && !getModuleByNamespace(this.$store, 'mapGetters', namespace)) {
+        return
+      }
+      if ("development" !== 'production' && !(val in this.$store.getters)) {
+        console.error(("[vuex] unknown getter: " + val));
+        return
+      }
+      return this.$store.getters[val]
+    };
+    // mark vuex getter for devtools
+    res[key].vuex = true;
+  });
+  return res
+});
+
+var mapActions = normalizeNamespace(function (namespace, actions) {
+  var res = {};
+  normalizeMap(actions).forEach(function (ref) {
+    var key = ref.key;
+    var val = ref.val;
+
+    res[key] = function mappedAction () {
+      var args = [], len = arguments.length;
+      while ( len-- ) args[ len ] = arguments[ len ];
+
+      var dispatch = this.$store.dispatch;
+      if (namespace) {
+        var module = getModuleByNamespace(this.$store, 'mapActions', namespace);
+        if (!module) {
+          return
+        }
+        dispatch = module.context.dispatch;
+      }
+      return typeof val === 'function'
+        ? val.apply(this, [dispatch].concat(args))
+        : dispatch.apply(this.$store, [val].concat(args))
+    };
+  });
+  return res
+});
+
+var createNamespacedHelpers = function (namespace) { return ({
+  mapState: mapState.bind(null, namespace),
+  mapGetters: mapGetters.bind(null, namespace),
+  mapMutations: mapMutations.bind(null, namespace),
+  mapActions: mapActions.bind(null, namespace)
+}); };
+
+function normalizeMap (map) {
+  return Array.isArray(map)
+    ? map.map(function (key) { return ({ key: key, val: key }); })
+    : Object.keys(map).map(function (key) { return ({ key: key, val: map[key] }); })
+}
+
+function normalizeNamespace (fn) {
+  return function (namespace, map) {
+    if (typeof namespace !== 'string') {
+      map = namespace;
+      namespace = '';
+    } else if (namespace.charAt(namespace.length - 1) !== '/') {
+      namespace += '/';
+    }
+    return fn(namespace, map)
+  }
+}
+
+function getModuleByNamespace (store, helper, namespace) {
+  var module = store._modulesNamespaceMap[namespace];
+  if ("development" !== 'production' && !module) {
+    console.error(("[vuex] module namespace not found in " + helper + "(): " + namespace));
+  }
+  return module
+}
+
+var index_esm = {
+  Store: Store,
+  install: install,
+  version: '3.0.1',
+  mapState: mapState,
+  mapMutations: mapMutations,
+  mapGetters: mapGetters,
+  mapActions: mapActions,
+  createNamespacedHelpers: createNamespacedHelpers
+};
+
+
+/* harmony default export */ __webpack_exports__["default"] = (index_esm);
 
 
 /***/ }),
-/* 34 */
+/* 33 */,
+/* 34 */,
+/* 35 */,
+/* 36 */,
+/* 37 */,
+/* 38 */,
+/* 39 */,
+/* 40 */,
+/* 41 */,
+/* 42 */,
+/* 43 */,
+/* 44 */,
+/* 45 */,
+/* 46 */,
+/* 47 */,
+/* 48 */,
+/* 49 */,
+/* 50 */,
+/* 51 */,
+/* 52 */,
+/* 53 */,
+/* 54 */,
+/* 55 */,
+/* 56 */,
+/* 57 */,
+/* 58 */,
+/* 59 */,
+/* 60 */,
+/* 61 */,
+/* 62 */,
+/* 63 */,
+/* 64 */,
+/* 65 */,
+/* 66 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__(67);
+
+
+/***/ }),
+/* 67 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
@@ -13203,22 +14181,23 @@ module.exports = __webpack_require__(34);
 window.Vue = __webpack_require__(10);
 window.axios = __webpack_require__(13);
 
-Vue.component('table-lecturer', __webpack_require__(35));
+Vue.component('data-table', __webpack_require__(68));
 
 var table = new Vue({
-    el: '#lecturers-table'
+    el: '#data-table'
+
 });
 
 /***/ }),
-/* 35 */
+/* 68 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 var normalizeComponent = __webpack_require__(9)
 /* script */
-var __vue_script__ = __webpack_require__(36)
+var __vue_script__ = __webpack_require__(69)
 /* template */
-var __vue_template__ = __webpack_require__(37)
+var __vue_template__ = __webpack_require__(70)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -13235,7 +14214,7 @@ var Component = normalizeComponent(
   __vue_scopeId__,
   __vue_module_identifier__
 )
-Component.options.__file = "resources\\assets\\js\\secretary\\SecretaryController\\lecturersManage\\components\\tableLecturer.vue"
+Component.options.__file = "resources\\assets\\js\\student\\StudentController\\topics\\components\\dataTable.vue"
 
 /* hot reload */
 if (false) {(function () {
@@ -13244,9 +14223,9 @@ if (false) {(function () {
   if (!hotAPI.compatible) return
   module.hot.accept()
   if (!module.hot.data) {
-    hotAPI.createRecord("data-v-5eba4d1f", Component.options)
+    hotAPI.createRecord("data-v-bed868be", Component.options)
   } else {
-    hotAPI.reload("data-v-5eba4d1f", Component.options)
+    hotAPI.reload("data-v-bed868be", Component.options)
   }
   module.hot.dispose(function (data) {
     disposed = true
@@ -13257,7 +14236,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 36 */
+/* 69 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -13326,205 +14305,54 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 
-
+window.Vuex = __webpack_require__(32);
+Vue.use(Vuex);
+window.store = new Vuex.Store({
+    state: {
+        idData: 0
+    },
+    mutations: {
+        idEdit: function idEdit(state, id) {
+            // mutate state
+            state.idData = id;
+        },
+        idDelete: function idDelete(state, id) {
+            // mutate state
+            state.idData = id;
+        }
+    }
+});
 /* harmony default export */ __webpack_exports__["default"] = ({
+
+    store: store,
+    computed: {
+        showIdEdit: function showIdEdit() {
+            var _this = this;
+
+            if (this.$store.state.idData != this.idEdit) {
+                console.log(this.$store.state.idData);
+                this.idEdit = this.$store.state.idData;
+                axios.get('/api/topic/' + this.$store.state.idData).then(function (response) {
+                    console.log(response);
+                    _this.dataEdit = response.data;
+                    _this.dataEdit.listLecturer = _this.dataEdit.lecturers.map(function (value) {
+                        return value.id;
+                    });
+                    console.log(_this.dataEdit);
+                }).catch(function (err) {
+                    console.log(err);
+                });
+                return this.$store.state.idData;
+            }
+        }
+    },
     mounted: function mounted() {
 
-        // this.drawTable()
-        this.get_department();
-        this.get_field();
-        this.getLecturers();
-        // console.log(this.department)
+        this.getData();
     },
 
     methods: {
-        get_department: function get_department() {
-            var _this = this;
-
-            axios.get('/api/department').then(function (response) {
-                _this.departments = response.data;
-                console.log(_this.departments);
-            }).catch(function (err) {
-                console.log(err);
-            });
-        },
-        get_field: function get_field() {
-            var _this2 = this;
-
-            axios.get('/api/field').then(function (response) {
-                console.log(response.data);
-                _this2.fields = response.data;
-            }).catch(function (err) {
-                console.log(err);
-            });
-        },
         drawTable: function drawTable(data) {
             $.extend($.fn.dataTable.defaults, {
                 autoWidth: false,
@@ -13536,8 +14364,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 }
             });
 
-            data = this.filData(data);
-            console.log(data);
             $('#datatable-basic').dataTable({
                 data: data,
                 columnDefs: [],
@@ -13547,17 +14373,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                             className: 'btn btn-default'
                         }
                     },
-                    buttons: [{ extend: 'copy' }, { extend: 'csv' }, { extend: 'excel' }, { extend: 'pdf' }, { extend: 'print' }, {
-                        text: 'Thêm giảng viên',
+                    buttons: [{
+                        text: 'Thêm lĩnh vực',
                         className: 'btn bg-teal-400',
                         action: function action(e, dt, node, config) {
-                            $("#modal_add").modal("show");
-                        }
-                    }, {
-                        text: 'Thêm bằng Excel',
-                        className: 'btn bg-info-400',
-                        action: function action(e, dt, node, config) {
-                            $("#modal_form_inline").modal("show");
+                            $("#modalAdd").modal("show");
                         }
                     }]
                 }
@@ -13569,113 +14389,69 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 minimumResultsForSearch: Infinity,
                 width: 'auto'
             });
+            // $('#selectLecturer').select2({
+            //     minimumResultsForSearch: Infinity,
+            //
+            // });
         },
-        submit_add: function submit_add() {
-            var _this3 = this;
 
-            console.log(this.add_u);
-            axios.post("/api/lecturer", this.add_u).then(function (data) {
-                _this3.resetData();
+        // them moi 1 data
+
+        submitEdit: function submitEdit() {
+            var _this2 = this;
+
+            axios.post("/api/topic/" + this.$store.state.idData, {
+                id: this.$store.state.idData
+            }).then(function (data) {
+
+                _this2.resetData();
                 swal({
                     title: "Thành công!",
-                    text: "Thêm mới thành công!",
+                    text: "Sửa lĩnh vực thành công!",
                     confirmButtonColor: "#66BB6A",
                     type: "success"
                 });
-                $("#modal_add").modal("hide");
+                $("#modalInfo").modal("hide");
             }).catch(function (err) {
                 console.log(err);
             });
         },
-        getLecturers: function getLecturers() {
+
+        //loc du lieu
+        // edit
+        filData: function filData(data) {
+
+            return data.map(function (value, index) {
+
+                return [value.name_topic, value.name_lecturer, value.describe, '<ul style="text-align: center;" class="icons-list">' + '   <li class="dropdown">' + '       <a href="#" class="dropdown-toggle" data-toggle="dropdown">' + '           <i class="icon-menu9"></i>' + '       </a>' + '<ul class="dropdown-menu dropdown-menu-right">' + '<li>' + '   <a href="#" onclick="editInfo(' + value.id + ')">' + '       <i class=" icon-user"></i> Đăng ký topic' + '   </a>' + '</li>' + '</ul>' + '</li>' + '</ul>'];
+            });
+            // showInfor('+value.id+')
+        },
+
+        //reset lại dữ liệu bảng
+        resetData: function resetData() {
+            var _this3 = this;
+
+            axios.get("/api/topic").then(function (data) {
+                $('#datatable-basic').dataTable().fnClearTable();
+                $('#datatable-basic').dataTable().fnAddData(_this3.filData(data.data));
+            }).catch(function (err) {
+                console.log(err);
+            });
+        },
+
+        // xác định delete người dùng
+
+        // Thêm excel
+
+
+        getData: function getData() {
             var _this4 = this;
 
-            axios.get("/api/lecturer").then(function (data) {
-                _this4.drawTable(data.data);
-            }).catch(function (err) {
-                console.log(err);
-            });
-        },
-        filData: function filData(data_lec) {
-
-            var td = data_lec.map(function (value, index) {
-                var htmlAction = '';
-                return [value.name_lecturer, value.department_name, value.email, value.email_address_lecturer, '<ul style="text-align: center;" class="icons-list">' + '   <li class="dropdown">' + '       <a href="#" class="dropdown-toggle" data-toggle="dropdown">' + '           <i class="icon-menu9"></i>' + '       </a>' + '<ul class="dropdown-menu dropdown-menu-right">' + '<li>' + '   <a href="#" onclick="showModalLec(' + value.id + ')">' + '       <i class=" icon-user"></i> Thông tin chi tiết' + '   </a>' + '</li>' + '<li>' + '   <a href="#" onclick="delete_lec(' + value.id + ')">' + '<i class="icon-user-cancel"></i> Xóa' + '</a>' + '</li>' + '</ul>' + '</li>' + '</ul>'];
-            });
-
-            console.log(td);
-            return td;
-        },
-        resetData: function resetData() {
-            var _this5 = this;
-
-            axios.get("/api/lecturer").then(function (data) {
-                $('#datatable-basic').dataTable().fnClearTable();
-                $('#datatable-basic').dataTable().fnAddData(_this5.filData(data.data));
-            }).catch(function (err) {
-                console.log(err);
-            });
-        },
-        success_delete: function success_delete() {
-            var id = $("#delete_button").attr("data");
-            axios.delete("/api/lecturer/" + id).then(function (data) {
-                console.log(data);
-                swal({
-                    title: "Good job!",
-                    text: "You clicked the button!",
-                    confirmButtonColor: "#66BB6A",
-                    type: "success"
-                });
-                axios.get("/api/lecturer").then(function (data) {
-                    var data1 = filData(data.data);
-                    console.log(data1);
-                    $('#datatable-basic').dataTable().fnClearTable();
-                    $('#datatable-basic').dataTable().fnAddData(data1);
-                    $("#modal_theme_danger").modal("hide");
-                }).catch(function (err) {
-                    console.log(err);
-                });
-            }).catch(function (err) {
-                console.log(err);
-                swal({
-                    title: "Oops...",
-                    text: "Đã có lỗi xảy ra!",
-                    confirmButtonColor: "#EF5350",
-                    type: "error"
-                });
-            });
-        },
-        add_excel: function add_excel() {
-            this.file_excel = this.$refs.file.files[0];
-        },
-        submit_file: function submit_file() {
-            var _this6 = this;
-
-            var formData = new FormData();
-
-            formData.append('excel', this.file_excel);
-            console.log(this.file_excel);
-            axios.post('/api/lecturer', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data'
-                }
-            }).then(function (data) {
-                if (data.data.length > 0) {
-                    var email_err = "";
-                    console.log(data.data);
-                    for (var i = 0; i < data.data.length; i++) {
-                        email_err += data.data[i].email_address_lecturer + ";";
-                    }
-                    $("#modal_form_inline").modal("hide");
-                    swal({
-                        title: "Thêm thành công!",
-                        text: "Có " + data.data.length + " user không thể thêm. Tại vị trí " + email_err + "!",
-                        confirmButtonColor: "#66BB6A",
-                        type: "success"
-                    });
-                    _this6.resetData();
-                    $("#modal_form_inline").modal("hide");
-                }
+            axios.get("/api/topic").then(function (data) {
+                _this4.infoData = _this4.filData(data.data);
+                console.log(_this4.infoData);
+                _this4.drawTable(_this4.infoData);
             }).catch(function (err) {
                 console.log(err);
             });
@@ -13684,30 +14460,34 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     data: function data() {
         return {
 
-            file_excel: "",
+            //Thông tin data
+            infoData: [],
+            dataAdd: {
+                field_name: ""
 
-            add_u: {
-                name_lecturer: "",
-                address_lecturer: "",
-                email_address_lecturer: "",
-                phone_number: "",
-                id_department: "",
-                id_field: "",
-                password: ""
             },
-            departments: [],
-            fields: []
+            dataEdit: {
+                name_lecturer: "",
+                name_topic: "",
+                describe: "",
+                accept: ""
+
+            },
+
+            idEdit: -1,
+            idDelete: -1
 
         };
     },
-    created: function created() {},
 
-    computed: {}
+    watch: {
+        idEdit: function idEdit(value) {}
+    }
 
 });
 
 /***/ }),
-/* 37 */
+/* 70 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -13717,411 +14497,62 @@ var render = function() {
   return _c("div", [
     _vm._m(0),
     _vm._v(" "),
-    _vm._m(1),
-    _vm._v(" "),
-    _c(
-      "div",
-      { staticClass: "modal fade", attrs: { id: "modal_theme_danger" } },
-      [
-        _c("div", { staticClass: "modal-dialog" }, [
-          _c("div", { staticClass: "modal-content" }, [
-            _vm._m(2),
-            _vm._v(" "),
-            _vm._m(3),
-            _vm._v(" "),
-            _c("div", { staticClass: "modal-footer" }, [
-              _c(
-                "button",
-                {
-                  staticClass: "btn btn-link",
-                  attrs: { type: "button", "data-dismiss": "modal" }
-                },
-                [_vm._v("Close")]
-              ),
-              _vm._v(" "),
-              _c(
-                "button",
-                {
-                  staticClass: "btn btn-danger",
-                  attrs: { type: "button", id: "delete_button" },
-                  on: { click: _vm.success_delete }
-                },
-                [_vm._v("Xóa")]
-              )
-            ])
-          ])
-        ])
-      ]
-    ),
-    _vm._v(" "),
-    _c("div", { staticClass: "modal fade", attrs: { id: "modal_add" } }, [
+    _c("div", { staticClass: "modal fade", attrs: { id: "modalInfo" } }, [
       _c("div", { staticClass: "modal-dialog modal-lg" }, [
         _c("div", { staticClass: "modal-content" }, [
-          _vm._m(4),
+          _vm._m(1),
+          _vm._v(" "),
+          _c("input", { attrs: { type: "text", id: "id_lec", hidden: "" } }),
           _vm._v(" "),
           _c(
             "form",
             {
               staticClass: "form-horizontal",
-              attrs: {
-                onsubmit: "event.preventDefault()",
-                id: "form_add",
-                action: "#"
+              attrs: { id: "", action: "#" },
+              on: {
+                submit: function($event) {
+                  $event.preventDefault()
+                  return _vm.submitEdit($event)
+                }
               }
             },
             [
               _c("div", { staticClass: "modal-body" }, [
                 _c("fieldset", { staticClass: "content-group" }, [
-                  _c("legend", { staticClass: "text-bold" }, [
-                    _vm._v("Điền đầy đủ thông tin")
-                  ]),
+                  _c("input", {
+                    attrs: { type: "text", hidden: "" },
+                    domProps: { value: _vm.showIdEdit }
+                  }),
                   _vm._v(" "),
                   _c("div", { staticClass: "form-group" }, [
-                    _c("label", { staticClass: "control-label col-lg-2" }, [
-                      _vm._v("Tên giảng viên")
-                    ]),
-                    _vm._v(" "),
-                    _c("div", { staticClass: "col-lg-10" }, [
-                      _c("input", {
-                        directives: [
-                          {
-                            name: "model",
-                            rawName: "v-model",
-                            value: _vm.add_u.name_lecturer,
-                            expression: "add_u.name_lecturer"
-                          }
-                        ],
-                        staticClass: "form-control",
-                        attrs: { type: "text", name: "name_lecturer" },
-                        domProps: { value: _vm.add_u.name_lecturer },
-                        on: {
-                          input: function($event) {
-                            if ($event.target.composing) {
-                              return
-                            }
-                            _vm.$set(
-                              _vm.add_u,
-                              "name_lecturer",
-                              $event.target.value
-                            )
-                          }
-                        }
-                      })
+                    _c("p", [
+                      _vm._v("Tên topic : "),
+                      _c("b", [_vm._v(_vm._s(_vm.dataEdit.name_topic))])
                     ])
                   ]),
                   _vm._v(" "),
                   _c("div", { staticClass: "form-group" }, [
-                    _c("label", { staticClass: "control-label col-lg-2" }, [
-                      _vm._v("Địa chỉ")
-                    ]),
-                    _vm._v(" "),
-                    _c("div", { staticClass: "col-lg-10" }, [
-                      _c("input", {
-                        directives: [
-                          {
-                            name: "model",
-                            rawName: "v-model",
-                            value: _vm.add_u.address_lecturer,
-                            expression: "add_u.address_lecturer"
-                          }
-                        ],
-                        staticClass: "form-control",
-                        attrs: { type: "text ", name: "address_lecturer" },
-                        domProps: { value: _vm.add_u.address_lecturer },
-                        on: {
-                          input: function($event) {
-                            if ($event.target.composing) {
-                              return
-                            }
-                            _vm.$set(
-                              _vm.add_u,
-                              "address_lecturer",
-                              $event.target.value
-                            )
-                          }
-                        }
-                      })
+                    _c("p", [
+                      _vm._v("Tên giảng viên hướng dẫn: "),
+                      _c("b", [_vm._v(_vm._s(_vm.dataEdit.name_lecturer))])
                     ])
                   ]),
                   _vm._v(" "),
                   _c("div", { staticClass: "form-group" }, [
-                    _c("label", { staticClass: "control-label col-lg-2" }, [
-                      _vm._v("Email")
-                    ]),
-                    _vm._v(" "),
-                    _c("div", { staticClass: "col-lg-10" }, [
-                      _c("input", {
-                        directives: [
-                          {
-                            name: "model",
-                            rawName: "v-model",
-                            value: _vm.add_u.email_address_lecturer,
-                            expression: "add_u.email_address_lecturer"
-                          }
-                        ],
-                        staticClass: "form-control",
-                        attrs: {
-                          type: "email",
-                          name: "email_address_lecturer",
-                          placeholder: ""
-                        },
-                        domProps: { value: _vm.add_u.email_address_lecturer },
-                        on: {
-                          input: function($event) {
-                            if ($event.target.composing) {
-                              return
-                            }
-                            _vm.$set(
-                              _vm.add_u,
-                              "email_address_lecturer",
-                              $event.target.value
-                            )
-                          }
-                        }
-                      })
-                    ])
-                  ]),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "form-group" }, [
-                    _c("label", { staticClass: "control-label col-lg-2" }, [
-                      _vm._v("Số điện thoại")
-                    ]),
-                    _vm._v(" "),
-                    _c("div", { staticClass: "col-lg-10" }, [
-                      _c("input", {
-                        directives: [
-                          {
-                            name: "model",
-                            rawName: "v-model",
-                            value: _vm.add_u.phone_number,
-                            expression: "add_u.phone_number"
-                          }
-                        ],
-                        staticClass: "form-control",
-                        attrs: { type: "text", name: "phone_number" },
-                        domProps: { value: _vm.add_u.phone_number },
-                        on: {
-                          input: function($event) {
-                            if ($event.target.composing) {
-                              return
-                            }
-                            _vm.$set(
-                              _vm.add_u,
-                              "phone_number",
-                              $event.target.value
-                            )
-                          }
-                        }
-                      })
-                    ])
-                  ]),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "form-group" }, [
-                    _c("label", { staticClass: "control-label col-lg-2" }, [
-                      _vm._v("Chọn khoa")
-                    ]),
-                    _vm._v(" "),
-                    _c("div", { staticClass: "col-lg-10" }, [
-                      _c(
-                        "select",
-                        {
-                          directives: [
-                            {
-                              name: "model",
-                              rawName: "v-model",
-                              value: _vm.add_u.id_department,
-                              expression: "add_u.id_department"
-                            }
-                          ],
-                          staticClass: "form-control",
-                          attrs: { name: "id_department" },
-                          on: {
-                            change: function($event) {
-                              var $$selectedVal = Array.prototype.filter
-                                .call($event.target.options, function(o) {
-                                  return o.selected
-                                })
-                                .map(function(o) {
-                                  var val = "_value" in o ? o._value : o.value
-                                  return val
-                                })
-                              _vm.$set(
-                                _vm.add_u,
-                                "id_department",
-                                $event.target.multiple
-                                  ? $$selectedVal
-                                  : $$selectedVal[0]
-                              )
-                            }
-                          }
-                        },
-                        _vm._l(_vm.departments, function(department) {
-                          return _c(
-                            "option",
-                            { domProps: { value: department.id } },
-                            [_vm._v(_vm._s(department.department_name))]
-                          )
-                        })
-                      )
-                    ])
-                  ]),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "form-group" }, [
-                    _c("label", { staticClass: "control-label col-lg-2" }, [
-                      _vm._v("Chọn chủ đề hướng dẫn")
-                    ]),
-                    _vm._v(" "),
-                    _c("div", { staticClass: "col-lg-10" }, [
-                      _c(
-                        "select",
-                        {
-                          directives: [
-                            {
-                              name: "model",
-                              rawName: "v-model",
-                              value: _vm.add_u.id_field,
-                              expression: "add_u.id_field"
-                            }
-                          ],
-                          staticClass: "form-control",
-                          attrs: { name: "id_field" },
-                          on: {
-                            change: function($event) {
-                              var $$selectedVal = Array.prototype.filter
-                                .call($event.target.options, function(o) {
-                                  return o.selected
-                                })
-                                .map(function(o) {
-                                  var val = "_value" in o ? o._value : o.value
-                                  return val
-                                })
-                              _vm.$set(
-                                _vm.add_u,
-                                "id_field",
-                                $event.target.multiple
-                                  ? $$selectedVal
-                                  : $$selectedVal[0]
-                              )
-                            }
-                          }
-                        },
-                        _vm._l(_vm.fields, function(field) {
-                          return _c(
-                            "option",
-                            { domProps: { value: field.id } },
-                            [_vm._v(_vm._s(field.field_name))]
-                          )
-                        })
-                      )
-                    ])
-                  ]),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "form-group" }, [
-                    _c("label", { staticClass: "control-label col-lg-2" }, [
-                      _vm._v("Điền mật khẩu")
-                    ]),
-                    _vm._v(" "),
-                    _c("div", { staticClass: "col-lg-10" }, [
-                      _c("input", {
-                        directives: [
-                          {
-                            name: "model",
-                            rawName: "v-model",
-                            value: _vm.add_u.password,
-                            expression: "add_u.password"
-                          }
-                        ],
-                        staticClass: "form-control",
-                        attrs: {
-                          type: "password",
-                          name: "password",
-                          placeholder: "Nhập mật khẩu"
-                        },
-                        domProps: { value: _vm.add_u.password },
-                        on: {
-                          input: function($event) {
-                            if ($event.target.composing) {
-                              return
-                            }
-                            _vm.$set(_vm.add_u, "password", $event.target.value)
-                          }
-                        }
-                      })
+                    _c("p", [
+                      _vm._v("Mô tả: "),
+                      _c("b", [_vm._v(_vm._s(_vm.dataEdit.describe))])
                     ])
                   ])
                 ])
               ]),
               _vm._v(" "),
-              _c("div", { staticClass: "modal-footer" }, [
-                _vm._m(5),
-                _vm._v(" "),
-                _c(
-                  "button",
-                  {
-                    staticClass: "btn btn-primary",
-                    attrs: { id: "submit_add", type: "submit" },
-                    on: {
-                      click: function($event) {
-                        _vm.submit_add()
-                      }
-                    }
-                  },
-                  [_c("i", { staticClass: "icon-check" }), _vm._v(" Lưu")]
-                )
-              ])
+              _vm._m(2)
             ]
           )
         ])
       ])
-    ]),
-    _vm._v(" "),
-    _c(
-      "div",
-      { staticClass: "modal fade", attrs: { id: "modal_form_inline" } },
-      [
-        _c("div", { staticClass: "modal-dialog" }, [
-          _c("div", { staticClass: "modal-content text-center" }, [
-            _vm._m(6),
-            _vm._v(" "),
-            _c(
-              "form",
-              {
-                staticClass: "form-inline",
-                attrs: { action: "#" },
-                on: {
-                  submit: function($event) {
-                    $event.preventDefault()
-                    return _vm.submit_file($event)
-                  }
-                }
-              },
-              [
-                _c("div", { staticClass: "modal-body" }, [
-                  _c("div", { staticClass: "form-group has-feedback" }, [
-                    _c("label", [_vm._v("Chọn file Excel: ")]),
-                    _vm._v(" "),
-                    _c("input", {
-                      ref: "file",
-                      staticClass: "form-control",
-                      attrs: {
-                        type: "file",
-                        required: "",
-                        placeholder: "Chọn file ..."
-                      },
-                      on: { change: _vm.add_excel }
-                    }),
-                    _vm._v(" "),
-                    _vm._m(7)
-                  ])
-                ]),
-                _vm._v(" "),
-                _vm._m(8)
-              ]
-            )
-          ])
-        ])
-      ]
-    )
+    ])
   ])
 }
 var staticRenderFns = [
@@ -14139,13 +14570,11 @@ var staticRenderFns = [
       [
         _c("thead", [
           _c("tr", [
-            _c("th", [_vm._v("Tên giảng viên")]),
+            _c("th", [_vm._v("Tên topic")]),
             _vm._v(" "),
-            _c("th", [_vm._v("Khoa giảng dạy")]),
+            _c("th", [_vm._v("Giảng viên hướng dẫn")]),
             _vm._v(" "),
-            _c("th", [_vm._v("Tài khoản")]),
-            _vm._v(" "),
-            _c("th", [_vm._v("Email")]),
+            _c("th", [_vm._v("Mô tả")]),
             _vm._v(" "),
             _c("th", [_vm._v("Action")])
           ])
@@ -14154,194 +14583,6 @@ var staticRenderFns = [
         _c("tbody")
       ]
     )
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c(
-      "div",
-      { staticClass: "modal fade", attrs: { id: "modal_iconified" } },
-      [
-        _c("div", { staticClass: "modal-dialog modal-lg" }, [
-          _c("div", { staticClass: "modal-content" }, [
-            _c("div", { staticClass: "modal-header" }, [
-              _c(
-                "button",
-                {
-                  staticClass: "close",
-                  attrs: { type: "button", "data-dismiss": "modal" }
-                },
-                [_vm._v("×")]
-              ),
-              _vm._v(" "),
-              _c("h5", { staticClass: "modal-title" }, [
-                _c("i", { staticClass: "icon-menu7" }),
-                _vm._v("  Thông tin giảng viên")
-              ])
-            ]),
-            _vm._v(" "),
-            _c("input", { attrs: { type: "text", id: "id_lec", hidden: "" } }),
-            _vm._v(" "),
-            _c(
-              "form",
-              {
-                staticClass: "form-horizontal",
-                attrs: {
-                  onsubmit: "event.preventDefault()",
-                  id: "form_infor",
-                  action: "#"
-                }
-              },
-              [
-                _c("div", { staticClass: "modal-body" }, [
-                  _c("fieldset", { staticClass: "content-group" }, [
-                    _c("legend", { staticClass: "text-bold" }, [
-                      _vm._v("Điền đầy đủ thông tin")
-                    ]),
-                    _vm._v(" "),
-                    _c("div", { staticClass: "form-group" }, [
-                      _c("label", { staticClass: "control-label col-lg-2" }, [
-                        _vm._v("Tên giảng viên")
-                      ]),
-                      _vm._v(" "),
-                      _c("div", { staticClass: "col-lg-10" }, [
-                        _c("input", {
-                          staticClass: "form-control",
-                          attrs: { type: "text", name: "name_lecturer" }
-                        })
-                      ])
-                    ]),
-                    _vm._v(" "),
-                    _c("div", { staticClass: "form-group" }, [
-                      _c("label", { staticClass: "control-label col-lg-2" }, [
-                        _vm._v("Địa chỉ")
-                      ]),
-                      _vm._v(" "),
-                      _c("div", { staticClass: "col-lg-10" }, [
-                        _c("input", {
-                          staticClass: "form-control",
-                          attrs: { type: "text", name: "address_lecturer" }
-                        })
-                      ])
-                    ]),
-                    _vm._v(" "),
-                    _c("div", { staticClass: "form-group" }, [
-                      _c("label", { staticClass: "control-label col-lg-2" }, [
-                        _vm._v("Email")
-                      ]),
-                      _vm._v(" "),
-                      _c("div", { staticClass: "col-lg-10" }, [
-                        _c("input", {
-                          staticClass: "form-control",
-                          attrs: {
-                            type: "email",
-                            name: "email_address_lecturer",
-                            placeholder: "Điền Email của bạn"
-                          }
-                        })
-                      ])
-                    ]),
-                    _vm._v(" "),
-                    _c("div", { staticClass: "form-group" }, [
-                      _c("label", { staticClass: "control-label col-lg-2" }, [
-                        _vm._v("Số điện thoại")
-                      ]),
-                      _vm._v(" "),
-                      _c("div", { staticClass: "col-lg-10" }, [
-                        _c("input", {
-                          staticClass: "form-control",
-                          attrs: { type: "text", name: "phone_number" }
-                        })
-                      ])
-                    ]),
-                    _vm._v(" "),
-                    _c("div", { staticClass: "form-group" }, [
-                      _c("label", { staticClass: "control-label col-lg-2" }, [
-                        _vm._v("Chọn khoa")
-                      ]),
-                      _vm._v(" "),
-                      _c("div", { staticClass: "col-lg-10" }, [
-                        _c("select", {
-                          staticClass: "form-control",
-                          attrs: { name: "id_department" }
-                        })
-                      ])
-                    ]),
-                    _vm._v(" "),
-                    _c("div", { staticClass: "form-group" }, [
-                      _c("label", { staticClass: "control-label col-lg-2" }, [
-                        _vm._v("Chọn chủ đề hướng dẫn")
-                      ]),
-                      _vm._v(" "),
-                      _c("div", { staticClass: "col-lg-10" }, [
-                        _c("select", {
-                          staticClass: "form-control",
-                          attrs: { name: "id_field" }
-                        })
-                      ])
-                    ])
-                  ])
-                ]),
-                _vm._v(" "),
-                _c("div", { staticClass: "modal-footer" }, [
-                  _c(
-                    "button",
-                    {
-                      staticClass: "btn btn-link",
-                      attrs: { "data-dismiss": "modal" }
-                    },
-                    [_c("i", { staticClass: "icon-cross" }), _vm._v(" Đóng")]
-                  ),
-                  _vm._v(" "),
-                  _c(
-                    "button",
-                    {
-                      staticClass: "btn btn-primary",
-                      attrs: { id: "submit_edit", type: "submit" }
-                    },
-                    [_c("i", { staticClass: "icon-check" }), _vm._v(" Lưu")]
-                  )
-                ])
-              ]
-            )
-          ])
-        ])
-      ]
-    )
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "modal-header bg-danger" }, [
-      _c(
-        "button",
-        {
-          staticClass: "close",
-          attrs: { type: "button", "data-dismiss": "modal" }
-        },
-        [_vm._v("×")]
-      ),
-      _vm._v(" "),
-      _c("h6", { staticClass: "modal-title" }, [
-        _vm._v("Xóa thông tin giảng viên")
-      ])
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "modal-body" }, [
-      _c("h6", { staticClass: "text-semibold" }, [_vm._v("Bạn chắc chắn chứ")]),
-      _vm._v(" "),
-      _c("p", [
-        _vm._v("Sau khi xóa, sẽ không thể phục hồi dữ liệu. Bạn chắc chắn chứ?")
-      ]),
-      _vm._v(" "),
-      _c("hr")
-    ])
   },
   function() {
     var _vm = this
@@ -14359,7 +14600,7 @@ var staticRenderFns = [
       _vm._v(" "),
       _c("h5", { staticClass: "modal-title" }, [
         _c("i", { staticClass: "icon-menu7" }),
-        _vm._v("  Thông tin giảng viên")
+        _vm._v("  Thông tin topic")
       ])
     ])
   },
@@ -14367,37 +14608,20 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c(
-      "button",
-      { staticClass: "btn btn-link", attrs: { "data-dismiss": "modal" } },
-      [_c("i", { staticClass: "icon-cross" }), _vm._v(" Đóng")]
-    )
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "modal-header" }, [
-      _c("h5", { staticClass: "modal-title" }, [_vm._v("Tải file Execl")])
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "form-control-feedback" }, [
-      _c("i", { staticClass: "icon-user text-muted" })
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "modal-footer text-center" }, [
+    return _c("div", { staticClass: "modal-footer" }, [
       _c(
         "button",
-        { staticClass: "btn btn-primary", attrs: { type: "submit" } },
-        [_vm._v("Thêm mới "), _c("i", { staticClass: "icon-plus22" })]
+        { staticClass: "btn btn-link", attrs: { "data-dismiss": "modal" } },
+        [_c("i", { staticClass: "icon-cross" }), _vm._v(" Đóng")]
+      ),
+      _vm._v(" "),
+      _c(
+        "button",
+        {
+          staticClass: "btn btn-primary",
+          attrs: { id: "submit_edit", type: "submit" }
+        },
+        [_c("i", { staticClass: "icon-check" }), _vm._v(" Đăng ký")]
       )
     ])
   }
@@ -14407,7 +14631,7 @@ module.exports = { render: render, staticRenderFns: staticRenderFns }
 if (false) {
   module.hot.accept()
   if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-5eba4d1f", module.exports)
+    require("vue-hot-reload-api")      .rerender("data-v-bed868be", module.exports)
   }
 }
 

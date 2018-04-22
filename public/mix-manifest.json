@@ -1,7 +1,9 @@
 {
+    "/js/protectionManageId.js": "/js/protectionManageId.js",
+    "/js/student/topics.js": "/js/student/topics.js",
+    "/js/topicManage.js": "/js/topicManage.js",
     "/js/studentsManage.js": "/js/studentsManage.js",
     "/js/fieldManage.js": "/js/fieldManage.js",
     "/js/protectionManage.js": "/js/protectionManage.js",
-    "/js/protectionManageId.js": "/js/protectionManageId.js",
     "/js/lecturersManage.js": "/js/lecturersManage.js"
 }

@@ -4,8 +4,10 @@
         <table class="table" id="datatable-basic" style="min-height: 100px">
             <thead>
             <tr>
-                <th>Id lĩnh vực</th>
-                <th>Tên Lĩnh vực</th>
+                <th>Tên topic</th>
+                <th>Giảng viên hướng dẫn</th>
+                <th>Tình trạng</th>
+                <th>Mô tả</th>
                 <th>Action</th>
             </tr>
             </thead>
@@ -19,28 +21,32 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal">&times;</button>
-                        <h5 class="modal-title"><i class="icon-menu7"></i> &nbsp;Thông tin sinh viên</h5>
+                        <h5 class="modal-title"><i class="icon-menu7"></i> &nbsp;Thông tin topic</h5>
                     </div>
                     <input type="text" id="id_lec" hidden />
                     <form v-on:submit.prevent="submitEdit"  class="form-horizontal" id="" action="#">
                         <div class="modal-body">
 
                             <fieldset class="content-group">
-                                <legend class="text-bold">Điền đầy đủ thông tin</legend>
+
                                 <input type="text" hidden :value="showIdEdit"/>
                                 <div class="form-group">
-                                    <label class="control-label col-lg-2">Tên lĩnh vực</label>
-                                    <div class="col-lg-10">
-                                        <input type="text" v-model="dataEdit.field_name"  name="name_lecturer" class="form-control">
-                                    </div>
+                                    <p>Tên topic : <b>{{dataEdit.name_topic}}</b></p>
+
                                 </div>
                                 <div class="form-group">
-                                    <label class="control-label col-lg-2">Các giảng viên đăng ký</label>
-                                    <div class="col-lg-10">
-                                        <select type="text" v-model="dataEdit.listLecturer" multiple id="selectLecturer"  class="form-control">
-                                            <option v-for="lecturer in lecturers"  :value="lecturer.id">{{lecturer.name_lecturer}}</option>
-                                        </select>
-                                    </div>
+                                    <p>Tên giảng viên hướng dẫn: <b>{{dataEdit.name_lecturer}}</b></p>
+
+                                </div>
+                                <div class="form-group">
+                                    <p>Mô tả: <b>{{dataEdit.describe}}</b></p>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-lg-2">Tình trạng:</label>
+                                    <select v-model="dataEdit.accept" class="form-control">
+                                        <option value="0">Đang đợi</option>
+                                        <option value="1">Đang triển khai</option>
+                                    </select>
                                 </div>
                             </fieldset>
 
@@ -81,41 +87,7 @@
             </div>
         </div>
 
-        <div id="modalAdd" class="modal fade">
-            <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal">&times;</button>
-                        <h5 class="modal-title"><i class="icon-menu7"></i> &nbsp;Điền thông tin lĩnh vực</h5>
-                    </div>
 
-                    <form v-on:submit.prevent="submitAdd"  class="form-horizontal" id="form_add" action="#">
-                        <div class="modal-body">
-
-                            <fieldset class="content-group">
-                                <legend class="text-bold">Điền đầy đủ thông tin</legend>
-
-                                <div class="form-group">
-                                    <label class="control-label col-lg-2">Tên lĩnh vực</label>
-                                    <div class="col-lg-10">
-                                        <input type="text" v-model="dataAdd.field_name" name="name_lecturer" class="form-control">
-                                    </div>
-                                </div>
-
-
-                            </fieldset>
-
-
-                        </div>
-
-                        <div class="modal-footer">
-                            <button class="btn btn-link" data-dismiss="modal"><i class="icon-cross"></i> Đóng</button>
-                            <button class="btn btn-primary"  id="submit_add" type="submit"><i class="icon-check"></i> Lưu</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
 
     </div>
 
@@ -147,10 +119,11 @@
             showIdEdit () {
                 if(this.$store.state.idData != this.idEdit)
                 {
+                    console.log(this.$store.state.idData)
                     this.idEdit = this.$store.state.idData
-                    axios.get('/api/field/'+this.$store.state.idData)
+                    axios.get('/api/topic/'+this.$store.state.idData)
                         .then( (response) => {
-
+                            console.log(response)
                             this.dataEdit = response.data;
                             this.dataEdit.listLecturer = this.dataEdit.lecturers.map(function(value){
                                 return value.id
@@ -168,20 +141,12 @@
         mounted(){
 
             this.getData()
-            this.getLecturers()
+
 
         },
         methods: {
 
-            getLecturers(){
 
-                axios.get("/api/lecturer").then((data) => {
-                    this.lecturers = data.data
-                }).catch((err) => {
-                    console.log(err)
-                })
-
-            },
             drawTable(data){
                 $.extend( $.fn.dataTable.defaults, {
                     autoWidth: false,
@@ -244,34 +209,8 @@
                 })
             },
             submitEdit(){
-                var dataOld = this.dataEdit.lecturers.map(function (value) {
-                    return value.id
-                })
 
-
-                var dataNew = this.dataEdit.listLecturer
-                console.log(dataNew)
-                var dataDelete = dataOld.filter(function(value){
-                    if(dataNew.find(function (item) {
-                        return item==value
-                    },value) == undefined)
-                    {
-                        return value
-                    }
-                },dataNew)
-
-                var dataNewAdd = dataNew.filter(function(value){
-                    if(dataOld.find(function (item) {
-                        return item==value
-                    },value) == undefined)
-                    {
-                        return value
-                    }
-                },dataOld)
-
-                this.dataEdit.dataDelete = dataDelete
-                this.dataEdit.dataNewAdd = dataNewAdd
-                axios.put("/api/field/"+this.$store.state.idData,this.dataEdit).then((data) => {
+                axios.put("/api/topic/"+this.$store.state.idData,this.dataEdit).then((data) => {
 
                     this.resetData()
                     swal({
@@ -290,9 +229,20 @@
             filData(data){
 
                 return data.map(function (value,index) {
+                    var t = ""
+                    if(value.accept == 0)
+                    {
+                        t+='<span class="label label-info">Đang đợi </span>'
+                    }
+                    if(value.accept == 1)
+                    {
+                        t+='<span class="label label-success">Đang thực hiện</span>'
+                    }
                     return [
-                        value.id,
-                        value.field_name,
+                        value.name_topic,
+                        value.name_lecturer,
+                        t,
+                        value.describe,
                         '<ul style="text-align: center;" class="icons-list">' +
                         '   <li class="dropdown">' +
                         '       <a href="#" class="dropdown-toggle" data-toggle="dropdown">' +
@@ -319,7 +269,7 @@
             },
             //reset lại dữ liệu bảng
             resetData(){
-                axios.get("/api/field").then((data) => {
+                axios.get("/api/topic").then((data) => {
                     $('#datatable-basic').dataTable().fnClearTable();
                     $('#datatable-basic').dataTable().fnAddData(this.filData(data.data));
                 }).catch((err) => {
@@ -329,11 +279,11 @@
             // xác định delete người dùng
             successDelete(){
                 var id = $("#deleteButton").attr("data")
-                axios.delete("/api/field/"+id).then((data) =>{
+                axios.delete("/api/topic/"+id).then((data) =>{
 
                     swal({
                         title: "Thành công!",
-                        text: "Lĩnh vực đã được xóa!!",
+                        text: "Đề tài đã được xóa!!",
                         confirmButtonColor: "#66BB6A",
                         type: "success"
                     });
@@ -355,7 +305,7 @@
 
 
             getData(){
-                axios.get("/api/field").then((data) => {
+                axios.get("/api/topic").then((data) => {
                     this.infoData = this.filData(data.data)
                     console.log(this.infoData)
                     this.drawTable(this.infoData)
@@ -380,15 +330,12 @@
 
                 },
                 dataEdit: {
-                    field_name: "",
-                    lecturers: "",
-                    listLecturer: [],
-                    dataDelete: [],
-                    dataNewAdd: []
+                    name_lecturer: "",
+                    name_topic: "",
+                    describe: "",
+                    accept: "",
 
                 },
-                lecturers: [],
-                // chuyen nganh
 
                 idEdit: -1,
                 idDelete: -1

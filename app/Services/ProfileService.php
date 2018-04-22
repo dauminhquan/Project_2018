@@ -137,40 +137,31 @@ class ProfileService
     public function getLecturersInfo()
     {
         $lecturer = Lecturer::leftjoin("lecturer_protection","lecturer_protection.id_lecturer","lecturers.id")
-            ->leftjoin("departments","departments.id","lecturers.id_department")
+            ->join("departments","departments.id","lecturers.id_department")
             ->leftjoin("fields","fields.id","lecturers.id_field")
-            ->leftjoin("protections","protections.id","lecturer_protection.id_protection")
-            ->leftjoin("topics","topics.id_lecturer","lecturers.id")
             ->leftjoin("users","users.id","lecturers.id_user")
             ->select("lecturers.*",
-                "protections.time_start", "protections.time_end",
-                "topics.name_topic",
                 "fields.field_name",
                 "departments.department_name",
                 "users.email"
                 )
-
-            ->get();
+            ->distinct()->get();
         return $lecturer;
     }
 
     public function getLecturerInfo($id)
     {
         $lecturer = Lecturer::where("lecturers.id",$id)->leftjoin("lecturer_protection","lecturer_protection.id_lecturer","lecturers.id")
-        ->leftjoin("departments","departments.id","lecturers.id_department")
-        ->leftjoin("fields","fields.id","lecturers.id_field")
-        ->leftjoin("protections","protections.id","lecturer_protection.id_protection")
-        ->leftjoin("topics","topics.id_lecturer","lecturers.id")
-        ->leftjoin("users","users.id","lecturers.id_user")
-        ->select("lecturers.*",
-            "protections.time_start", "protections.time_end",
-            "topics.name_topic",
-            "fields.field_name",
-            "departments.department_name",
-            "users.email"
-        )
-
-        ->first();
+            ->join("departments","departments.id","lecturers.id_department")
+            ->leftjoin("fields","fields.id","lecturers.id_field")
+            ->leftjoin("users","users.id","lecturers.id_user")
+            ->select("lecturers.*",
+                "fields.field_name",
+                "departments.department_name",
+                "users.email"
+            )
+            ->distinct()
+                ->first();
         return $lecturer;
     }
 
@@ -514,7 +505,7 @@ class ProfileService
             ->get();
         $timeStart = $protection[0]->time_start;
         $timeEnd = $protection[0]->time_end;
-
+        $detail = $protection[0]->detail;
 
         $listTopic = [];
         foreach ($protection as $item)
@@ -550,7 +541,7 @@ class ProfileService
             }
 
         }
-        return ["timeStart" => $timeStart,"timeEnd" => $timeEnd,"topics" => $listTopic,"id"=> $id];
+        return ["timeStart" => $timeStart,"timeEnd" => $timeEnd,"topics" => $listTopic,"id"=> $id,"detail" =>$detail];
     }
 
     public function updateProtectionAsColumn($id,$data,$column)
@@ -562,13 +553,7 @@ class ProfileService
     }
     public function updateProtection($id,ProtectionRequest $request)
     {
-        if($request->has("timeStart") && $request->has("timeEnd"))
-        {
-            if(Protection::where("time_start",$request->input("timeStart"))->where("time_end",$request->input("timeEnd"))->count() > 0 )
-            {
-                return ["sc"=> false];
-            }
-        }
+
         $protection = Protection::findOrFail($id);
 
         if($request->has("timeStart"))
@@ -578,6 +563,10 @@ class ProfileService
         if($request->has("timeEnd"))
         {
             $protection->time_end = $request->input("timeEnd");
+        }
+        if($request->has("detail"))
+        {
+            $protection->detail = $request->input("detail");
         }
        if($request->has("idTopic"))
        {
@@ -602,7 +591,20 @@ class ProfileService
                 }
 
            }
+
+
        }
+        if($request->has("listLecturer"))
+        {
+            LecturerProtection::where("id_protection",$id)->delete();
+            foreach ($request->listLecturer as $item)
+            {
+                $l = new LecturerProtection();
+                $l->id_protection = $id;
+                $l->id_lecturer = $item;
+                $l->save();
+            }
+        }
 
         $protection->update();
         return $protection;
@@ -614,7 +616,19 @@ class ProfileService
         $protection = new Protection();
         $protection->time_start = $request->input("timeStart");
         $protection->time_end = $request->input("timeEnd");
+        $protection->detail = $request->detail;
+
+
         $protection->save();
+        $id = $protection->id;
+        foreach ($request->listLecturer as $item)
+        {
+            $l = new LecturerProtection();
+            $l->id_protection = $id;
+            $l->id_lecturer = $item;
+
+            $l->save();
+        }
 
     }
 
@@ -625,6 +639,7 @@ class ProfileService
             $protection = new Protection();
             $protection->field_name = $item->time_start;
             $protection->field_name = $item->time_end;
+
             $protection->save();
         }
     }
@@ -682,7 +697,7 @@ class ProfileService
         $topic->update();
     }
 
-    public function updateTopic($id,Request $request)
+    public function updateTopic(Request $request,$id)
     {
         $topic = Topic::findOrFail($id);
         if($request->has("id_lecturer"))
@@ -697,7 +712,6 @@ class ProfileService
         {
             $topic->accept = $request->input("accept");
         }
-
 
         $topic->update();
     }

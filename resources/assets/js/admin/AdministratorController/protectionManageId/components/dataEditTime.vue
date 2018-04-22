@@ -16,6 +16,20 @@
                     <input type="date" v-model="dataEditTime.timeEnd" class="form-control">
                 </div>
             </div>
+            <div class="form-group">
+                <label class="control-label col-lg-2">Danh sách giáo viên phản biện</label>
+                <div class="col-lg-10">
+                    <select name="" multiple v-model="dataEditTime.listLecturer" class="form-control">
+                        <option v-for="lecturer in lecturers" :value="lecturer.id">{{lecturer.name_lecturer}}</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-lg-2">Mô tả</label>
+                <div class="col-lg-10">
+                    <textarea class="form-control" v-model="dataEditTime.detail"></textarea>
+                </div>
+            </div>
             <div class="text-right">
                 <button type="submit" class="btn btn-primary">Lưu chỉnh sửa <i class="icon-arrow-right14 position-right"></i></button>
                 <button type="button" @click="showModel" class="btn btn-danger">Xóa đợt bảo vệ<i class="icon-arrow-right14 position-right"></i></button>
@@ -51,24 +65,41 @@
 <script>
     export default {
         mounted(){
-            console.log(this.time_start)
+            this.getLecturers()
+
             this.dataEditTime.timeStart = this.time_start
             this.dataEditTime.timeEnd = this.time_end
+            this.dataEditTime.detail = this.detail
+            this.dataEditTime.listLecturer = this.listlecturer.split(",")
+
         },
         data(){
             return {
                 dataEditTime: {
                     timeStart: "",
-                    timeEnd: ""
-
+                    timeEnd: "",
+                    detail: "",
+                    listLecturer:[]
                 },
+                lecturers : []
             }
         },
-        props: ["time_start","time_end","id_p"],
+        props: ["time_start","time_end","id_p","detail","listlecturer"],
         methods:{
+            getLecturers(){
+
+                axios.get("/api/lecturer").then((data) => {
+                    console.log(data)
+                    this.lecturers = data.data
+
+                }).catch((err) => {
+                    console.log(err)
+                })
+
+            },
             submitEditTime(){
                 axios.put("/api/protection/"+this.id_p,this.dataEditTime).then((data) => {
-                    console.log(data)
+
                     swal({
                         title: "Thành công!",
                         text: "Update thông tin thành công!",

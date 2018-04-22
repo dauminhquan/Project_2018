@@ -17,12 +17,12 @@
             <p class="content-group-lg">Lưu ý. Chỉ được chỉnh sửa đợt bảo vệ khi đợt bảo vệ chưa kết thúc</p>
 
 
-                <data-edit-time time_start="{{$data->timeStart}}" time_end = "{{$data->timeEnd}}" id_p="{{$data->id}}"></data-edit-time>
+                <data-edit-time time_start="{{$data->timeStart}}" time_end = "{{$data->timeEnd}}"  id_p="{{$data->id}}" detail="{{$data->detail}}" listlecturer="{{$listLecturer}}"></data-edit-time>
 
 
                 <fieldset class="content-group" >
                     <legend class="text-bold">Danh sách topic bảo vệ trong đợt</legend>
-                    <data-table id="{{$data->id}} " timeStart="{{$data->timeStart}}"  timeEnd="{{$data->timeEnd}}"></data-table>
+                    <data-table id="{{$data->id}} " timeStart="{{$data->timeStart}}"  timeEnd="{{$data->timeEnd}}" ></data-table>
 
                 </fieldset>
 
