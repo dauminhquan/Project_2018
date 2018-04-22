@@ -357,6 +357,7 @@
             getData(){
                 axios.get("/api/field").then((data) => {
                     this.infoData = this.filData(data.data)
+                    console.log(this.infoData)
                     this.drawTable(this.infoData)
                 }).catch((err) =>
                 {

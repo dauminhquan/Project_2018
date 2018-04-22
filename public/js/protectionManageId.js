@@ -14169,7 +14169,7 @@ window.Vue = __webpack_require__(9);
 window.axios = __webpack_require__(12);
 
 Vue.component('data-table', __webpack_require__(55));
-
+Vue.component("data-edit-time", __webpack_require__(61));
 var table = new Vue({
     el: '#data-table'
 
@@ -14318,6 +14318,22 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 window.Vuex = __webpack_require__(32);
 Vue.use(Vuex);
@@ -14326,6 +14342,10 @@ window.store = new Vuex.Store({
         idData: 0
     },
     mutations: {
+        idEdit: function idEdit(state, id) {
+            // mutate state
+            state.idData = id;
+        },
         idDelete: function idDelete(state, id) {
             // mutate state
             state.idData = id;
@@ -14335,10 +14355,49 @@ window.store = new Vuex.Store({
 /* harmony default export */ __webpack_exports__["default"] = ({
 
     store: store,
-    computed: {},
+    computed: {
+        showIdEdit: function showIdEdit() {
+            //thong tin topic co id
+
+            if (this.$store.state.idData != this.idEdit) {
+                var idEdit_cr = this.$store.state.idData;
+                for (var i = 0; i < this.infoDataJson.length; i++) {
+                    if (this.infoDataJson[i].id = idEdit_cr) {
+
+                        var rt = {
+                            listLecturer: [], //hoi dong bao ve
+                            status: "",
+                            scores: -1
+                        };
+                        rt.name_topic = this.infoDataJson[i].name_topic;
+                        rt.lecturer = this.infoDataJson[i].lecturer;
+                        rt.status = this.infoDataJson[i].status;
+                        rt.scores = this.infoDataJson[i].scores;
+                        rt.student_name = this.infoDataJson[i].student_name;
+                        rt.describe = this.infoDataJson[i].describe;
+                        rt.listLecturer = this.infoDataJson[i].listLecturer;
+                        rt.idTopic = this.infoDataJson[i].id;
+                        console.log(rt);
+                        this.dataEditTopic = rt;
+                    }
+                }
+
+                return this.$store.state.idData;
+            }
+        },
+        listLecturer: function listLecturer() {
+            var html = "<b>";
+            for (var i = 0; i < this.dataEditTopic.listLecturer.length; i++) {
+                html += this.dataEditTopic.listLecturer[i].name_lecturer + ";";
+            }
+            html += "</b>";
+            return html;
+        }
+    },
     mounted: function mounted() {
 
         this.getData();
+        this.getLecturers();
     },
 
     methods: {
@@ -14380,79 +14439,111 @@ window.store = new Vuex.Store({
                 width: 'auto'
             });
         },
+        submitEdit: function submitEdit() {
+            var _this = this;
 
-        // them moi 1 data
-        // submitAdd(){
-        //
-        //     axios.post("/api/protection",this.dataAdd).then((data) => {
-        //         this.resetData()
-        //         swal({
-        //             title: "Thành công!",
-        //             text: "Thêm mới thành công!",
-        //             confirmButtonColor: "#66BB6A",
-        //             type: "success"
-        //         });
-        //         $("#modalAdd").modal("hide")
-        //     }).catch((err) => {
-        //         console.log(err)
-        //     })
-        // },
+            console.log(this.dataEditTopic);
+            axios.put("/api/protection/" + this.id, this.dataEditTopic).then(function (data) {
 
-        //loc du lieu
-        // edit
+                _this.resetData();
+                swal({
+                    title: "Thành công!",
+                    text: "Sửa lĩnh vực thành công!",
+                    confirmButtonColor: "#66BB6A",
+                    type: "success"
+                });
+                $("#modalInfo").modal("hide");
+            }).catch(function (err) {
+                console.log(err);
+            });
+        },
+        getLecturers: function getLecturers() {
+            var _this2 = this;
+
+            axios.get("/api/lecturer").then(function (data) {
+                _this2.lecturers = data.data;
+            }).catch(function (err) {
+                console.log(err);
+            });
+        },
         filData: function filData(data) {
-
+            if (data[0][0] == null) {
+                return [];
+            }
             return data.map(function (value, index) {
-                return [value.name_topic, value.student_name, value.lecturer.name_lecturer_top_lec, 1, '<ul style="text-align: center;" class="icons-list">' + '   <li class="dropdown">' + '       <a href="#" class="dropdown-toggle" data-toggle="dropdown">' + '           <i class="icon-menu9"></i>' + '       </a>' + '<ul class="dropdown-menu dropdown-menu-right">' + '<li>' + '   <a href="#" onclick="editInfo(' + value.id + ')">' + '       <i class=" icon-user"></i> Thông tin chi tiết' + '   </a>' + '</li>' + '<li>' + '   <a href="#"  onclick="deleteInfo(' + value.id + ')">' + '<i class="icon-user-cancel"></i> Xóa' + '</a>' + '</li>' + '</ul>' + '</li>' + '</ul>'];
+                var t = "";
+                if (value.status == 0) {
+                    t += '<span class="label label-info">Đang đợi điểm</span>';
+                }
+                if (value.status == 1) {
+                    t += '<span class="label label-success">Đã hoàn thành</span>';
+                }
+                if (value.status == 2) {
+                    t += '<span class="label label-danger">Đã hủy</span>';
+                }
+                var p = "";
+                if (value.pass == 1) {
+                    p += '<span class="label label-info">Vượt qua</span>';
+                }
+                if (value.pass == 0) {
+                    p += '<span class="label label-danger">Không qua</span>';
+                }
+
+                return [value.name_topic, value.student_name, value.lecturer.name_lecturer_top_lec, t, p, '<ul style="text-align: center;" class="icons-list">' + '   <li class="dropdown">' + '       <a href="#" class="dropdown-toggle" data-toggle="dropdown">' + '           <i class="icon-menu9"></i>' + '       </a>' + '<ul class="dropdown-menu dropdown-menu-right">' + '<li>' + '   <a href="#" onclick="editInfo(' + value.id + ')">' + '       <i class=" icon-user"></i> Thông tin chi tiết' + '   </a>' + '</li>' + '<li>' + '   <a href="#"  onclick="deleteInfo(' + value.id + ')">' + '<i class="icon-user-cancel"></i> Xóa' + '</a>' + '</li>' + '</ul>' + '</li>' + '</ul>'];
             });
             // showInfor('+value.id+')
         },
 
         //reset lại dữ liệu bảng
         resetData: function resetData() {
-            var _this = this;
+            var _this3 = this;
 
             axios.get("/api/protection/" + this.id).then(function (data) {
                 $('#datatable-basic').dataTable().fnClearTable();
-                $('#datatable-basic').dataTable().fnAddData(_this.filData(data.data));
+                $('#datatable-basic').dataTable().fnAddData(_this3.filData(data.data.topics));
             }).catch(function (err) {
                 console.log(err);
             });
         },
 
         // xác định delete người dùng
-        // successDelete(){
-        //     var id = $("#deleteButton").attr("data")
-        //     axios.delete("/api/protection/"+id).then((data) =>{
-        //
-        //         swal({
-        //             title: "Thành công!",
-        //             text: "Xóa thành công đợt!!",
-        //             confirmButtonColor: "#66BB6A",
-        //             type: "success"
-        //         });
-        //         this.resetData()
-        //         $("#modalDelete").modal("hide")
-        //     }).catch((err) => {
-        //         console.log(err)
-        //         swal({
-        //             title: "Oops...",
-        //             text: "Đã có lỗi xảy ra!",
-        //             confirmButtonColor: "#EF5350",
-        //             type: "error"
-        //         });
-        //     })
-        //
-        // },
-        // Thêm excel
+        successDelete: function successDelete() {
+            var _this4 = this;
 
+            var id = $("#deleteButton").attr("data");
+            axios.delete("/api/protection/" + this.id, {
+                params: {
+                    idTopic: id
+                }
+            }).then(function (data) {
 
+                swal({
+                    title: "Thành công!",
+                    text: "Topic đã được xóa!!",
+                    confirmButtonColor: "#66BB6A",
+                    type: "success"
+                });
+                _this4.resetData();
+                $("#modalDelete").modal("hide");
+            }).catch(function (err) {
+                console.log(err);
+                swal({
+                    title: "Oops...",
+                    text: "Đã có lỗi xảy ra!",
+                    confirmButtonColor: "#EF5350",
+                    type: "error"
+                });
+            });
+        },
         getData: function getData() {
-            var _this2 = this;
+            var _this5 = this;
 
             axios.get("/api/protection/" + this.id).then(function (data) {
-                _this2.infoData = _this2.filData(data.data.topics);
-                _this2.drawTable(_this2.infoData);
+
+                _this5.infoData = _this5.filData(data.data.topics);
+                _this5.infoDataJson = data.data.topics;
+                console.log(_this5.infoDataJson);
+                _this5.drawTable(_this5.infoData);
             }).catch(function (err) {
                 console.log(err);
             });
@@ -14461,16 +14552,23 @@ window.store = new Vuex.Store({
     props: ["id"],
     data: function data() {
         return {
-
+            infoDataJson: [],
             infoData: [],
             //Thông tin data
-            // dataAdd: {
-            //     time_start: "",
-            //     time_end: ""
-            //
-            // },
 
-            idEdit: -1,
+            dataEditTopic: {
+                name_topic: "",
+                describe: "",
+                lecturer: "",
+                listLecturer: [], //hoi dong bao ve
+                status: "",
+                scores: -1,
+                student_name: "",
+                idTopic: ""
+            },
+
+            lecturers: [],
+            idEdit: 0,
             idDelete: -1
 
         };
@@ -14490,39 +14588,309 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _vm._m(0)
+  return _c("div", [
+    _vm._m(0),
+    _vm._v(" "),
+    _c("div", { staticClass: "modal fade", attrs: { id: "modalInfo" } }, [
+      _c("div", { staticClass: "modal-dialog modal-lg" }, [
+        _c("div", { staticClass: "modal-content" }, [
+          _vm._m(1),
+          _vm._v(" "),
+          _c("input", { attrs: { type: "text", hidden: "" } }),
+          _vm._v(" "),
+          _c(
+            "form",
+            {
+              staticClass: "form-horizontal",
+              attrs: { id: "", action: "#" },
+              on: {
+                submit: function($event) {
+                  $event.preventDefault()
+                  return _vm.submitEdit($event)
+                }
+              }
+            },
+            [
+              _c("div", { staticClass: "modal-body" }, [
+                _c("fieldset", { staticClass: "content-group" }, [
+                  _c("legend", { staticClass: "text-bold" }, [
+                    _vm._v(
+                      "Tên chủ đề: " + _vm._s(_vm.dataEditTopic.name_topic)
+                    )
+                  ]),
+                  _vm._v(" "),
+                  _c("legend", { staticClass: "text-bold" }, [
+                    _vm._v("Mô tả: ")
+                  ]),
+                  _vm._v(" "),
+                  _c("p", [_vm._v(_vm._s(_vm.dataEditTopic.describe))]),
+                  _vm._v(" "),
+                  _c("legend", { staticClass: "text-bold" }, [
+                    _vm._v(
+                      "Tên sinh viên: " + _vm._s(_vm.dataEditTopic.student_name)
+                    )
+                  ]),
+                  _c("span", [_vm._v(" dsadsa")]),
+                  _vm._v(" "),
+                  _c("legend", { staticClass: "text-bold" }, [
+                    _vm._v(
+                      "Giảng viên hướng dẫn: " +
+                        _vm._s(_vm.dataEditTopic.lecturer.name_lecturer_top_lec)
+                    )
+                  ]),
+                  _vm._v(" "),
+                  _c("input", {
+                    attrs: { type: "text", hidden: "" },
+                    domProps: { value: _vm.showIdEdit }
+                  }),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "form-group" }, [
+                    _c("label", { staticClass: "control-label col-lg-2" }, [
+                      _vm._v("Trạng thái")
+                    ]),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "col-lg-10" }, [
+                      _c(
+                        "select",
+                        {
+                          directives: [
+                            {
+                              name: "model",
+                              rawName: "v-model",
+                              value: _vm.dataEditTopic.status,
+                              expression: "dataEditTopic.status"
+                            }
+                          ],
+                          staticClass: "form-control",
+                          attrs: { type: "text" },
+                          on: {
+                            change: function($event) {
+                              var $$selectedVal = Array.prototype.filter
+                                .call($event.target.options, function(o) {
+                                  return o.selected
+                                })
+                                .map(function(o) {
+                                  var val = "_value" in o ? o._value : o.value
+                                  return val
+                                })
+                              _vm.$set(
+                                _vm.dataEditTopic,
+                                "status",
+                                $event.target.multiple
+                                  ? $$selectedVal
+                                  : $$selectedVal[0]
+                              )
+                            }
+                          }
+                        },
+                        [
+                          _c("option", { attrs: { value: "0" } }, [
+                            _vm._v(" Đang đợi duyệt")
+                          ]),
+                          _vm._v(" "),
+                          _c("option", { attrs: { value: "1" } }, [
+                            _vm._v(" Đã hoàn thành")
+                          ]),
+                          _vm._v(" "),
+                          _c("option", { attrs: { value: "2" } }, [
+                            _vm._v(" Đã hủy")
+                          ])
+                        ]
+                      )
+                    ])
+                  ]),
+                  _vm._v(" "),
+                  _vm.dataEditTopic.status == 1
+                    ? _c("div", { staticClass: "form-group" }, [
+                        _c("label", { staticClass: "control-label col-lg-2" }, [
+                          _vm._v("Điểm")
+                        ]),
+                        _vm._v(" "),
+                        _c("div", { staticClass: "col-lg-10" }, [
+                          _c("input", {
+                            directives: [
+                              {
+                                name: "model",
+                                rawName: "v-model",
+                                value: _vm.dataEditTopic.scores,
+                                expression: "dataEditTopic.scores"
+                              }
+                            ],
+                            staticClass: "form-control",
+                            attrs: { type: "text", max: "10", min: "0" },
+                            domProps: { value: _vm.dataEditTopic.scores },
+                            on: {
+                              input: function($event) {
+                                if ($event.target.composing) {
+                                  return
+                                }
+                                _vm.$set(
+                                  _vm.dataEditTopic,
+                                  "scores",
+                                  $event.target.value
+                                )
+                              }
+                            }
+                          })
+                        ])
+                      ])
+                    : _vm._e(),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "form-group" }, [
+                    _c("label", { staticClass: "control-label col-lg-2" }, [
+                      _vm._v("Danh sách giảng viên bảo vệ")
+                    ]),
+                    _vm._v(" "),
+                    _c("div", {
+                      staticClass: "col-lg-10",
+                      domProps: { innerHTML: _vm._s(_vm.listLecturer) }
+                    })
+                  ])
+                ])
+              ]),
+              _vm._v(" "),
+              _vm._m(2)
+            ]
+          )
+        ])
+      ])
+    ]),
+    _vm._v(" "),
+    _c("div", { staticClass: "modal fade", attrs: { id: "modalDelete" } }, [
+      _c("div", { staticClass: "modal-dialog" }, [
+        _c("div", { staticClass: "modal-content" }, [
+          _vm._m(3),
+          _vm._v(" "),
+          _vm._m(4),
+          _vm._v(" "),
+          _c("div", { staticClass: "modal-footer" }, [
+            _c(
+              "button",
+              {
+                staticClass: "btn btn-link",
+                attrs: { type: "button", "data-dismiss": "modal" }
+              },
+              [_vm._v("Close")]
+            ),
+            _vm._v(" "),
+            _c(
+              "button",
+              {
+                staticClass: "btn btn-danger",
+                attrs: { type: "button", id: "deleteButton" },
+                on: { click: _vm.successDelete }
+              },
+              [_vm._v("Xóa")]
+            )
+          ])
+        ])
+      ])
+    ])
+  ])
 }
 var staticRenderFns = [
   function() {
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", [
+    return _c(
+      "table",
+      {
+        staticClass: "table",
+        staticStyle: { "min-height": "100px" },
+        attrs: { id: "datatable-basic" }
+      },
+      [
+        _c("thead", [
+          _c("tr", [
+            _c("th", [_vm._v("Tên topic")]),
+            _vm._v(" "),
+            _c("th", [_vm._v("Sinh viên đăng ký")]),
+            _vm._v(" "),
+            _c("th", [_vm._v("Giảng viên hướng dẫn")]),
+            _vm._v(" "),
+            _c("th", [_vm._v("Tình trạng")]),
+            _vm._v(" "),
+            _c("th", [_vm._v("Qua môn")]),
+            _vm._v(" "),
+            _c("th", [_vm._v("Action")])
+          ])
+        ]),
+        _vm._v(" "),
+        _c("tbody")
+      ]
+    )
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "modal-header" }, [
       _c(
-        "table",
+        "button",
         {
-          staticClass: "table",
-          staticStyle: { "min-height": "100px" },
-          attrs: { id: "datatable-basic" }
+          staticClass: "close",
+          attrs: { type: "button", "data-dismiss": "modal" }
         },
-        [
-          _c("thead", [
-            _c("tr", [
-              _c("th", [_vm._v("Tên topic")]),
-              _vm._v(" "),
-              _c("th", [_vm._v("Sinh viên đăng ký")]),
-              _vm._v(" "),
-              _c("th", [_vm._v("Giảng viên hướng dẫn")]),
-              _vm._v(" "),
-              _c("th", [_vm._v("Tình trang")]),
-              _vm._v(" "),
-              _c("th", [_vm._v("Action")])
-            ])
-          ]),
-          _vm._v(" "),
-          _c("tbody")
-        ]
+        [_vm._v("×")]
+      ),
+      _vm._v(" "),
+      _c("h5", { staticClass: "modal-title" }, [
+        _c("i", { staticClass: "icon-menu7" }),
+        _vm._v("  Thông tin chủ đề")
+      ])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "modal-footer" }, [
+      _c(
+        "button",
+        { staticClass: "btn btn-link", attrs: { "data-dismiss": "modal" } },
+        [_c("i", { staticClass: "icon-cross" }), _vm._v(" Đóng")]
+      ),
+      _vm._v(" "),
+      _c(
+        "button",
+        {
+          staticClass: "btn btn-primary",
+          attrs: { id: "submit_edit", type: "submit" }
+        },
+        [_c("i", { staticClass: "icon-check" }), _vm._v(" Lưu")]
       )
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "modal-header bg-danger" }, [
+      _c(
+        "button",
+        {
+          staticClass: "close",
+          attrs: { type: "button", "data-dismiss": "modal" }
+        },
+        [_vm._v("×")]
+      ),
+      _vm._v(" "),
+      _c("h6", { staticClass: "modal-title" }, [_vm._v("Xóa lĩnh vực")])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "modal-body" }, [
+      _c("h6", { staticClass: "text-semibold" }, [_vm._v("Bạn chắc chắn chứ")]),
+      _vm._v(" "),
+      _c("p", [
+        _vm._v("Sau khi xóa, sẽ không thể phục hồi dữ liệu. Bạn chắc chắn chứ?")
+      ]),
+      _vm._v(" "),
+      _c("hr")
     ])
   }
 ]
@@ -14532,6 +14900,370 @@ if (false) {
   module.hot.accept()
   if (module.hot.data) {
     require("vue-hot-reload-api")      .rerender("data-v-317df4f2", module.exports)
+  }
+}
+
+/***/ }),
+/* 58 */,
+/* 59 */,
+/* 60 */,
+/* 61 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(31)
+/* script */
+var __vue_script__ = __webpack_require__(62)
+/* template */
+var __vue_template__ = __webpack_require__(63)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources\\assets\\js\\admin\\AdministratorController\\protectionManageId\\components\\dataEditTime.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-46ede603", Component.options)
+  } else {
+    hotAPI.reload("data-v-46ede603", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 62 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    mounted: function mounted() {
+        console.log(this.time_start);
+        this.dataEditTime.timeStart = this.time_start;
+        this.dataEditTime.timeEnd = this.time_end;
+    },
+    data: function data() {
+        return {
+            dataEditTime: {
+                timeStart: "",
+                timeEnd: ""
+
+            }
+        };
+    },
+
+    props: ["time_start", "time_end", "id_p"],
+    methods: {
+        submitEditTime: function submitEditTime() {
+            axios.put("/api/protection/" + this.id_p, this.dataEditTime).then(function (data) {
+                console.log(data);
+                swal({
+                    title: "Thành công!",
+                    text: "Update thông tin thành công!",
+                    confirmButtonColor: "#66BB6A",
+                    type: "success"
+                });
+            }).catch(function (err) {
+                console.log(err);
+            });
+        },
+        successDelete: function successDelete() {
+
+            axios.delete("/api/protection/" + this.id_p, {
+                params: {
+                    id: this.id_p
+                }
+            }).then(function (data) {
+
+                swal({
+                    title: "Thành công!",
+                    text: "Topic đã được xóa!!",
+                    confirmButtonColor: "#66BB6A",
+                    type: "success"
+                });
+                $("#modalDelete").modal("hide");
+                setTimeout(function () {
+                    window.location = "/quan-ly-dot-bao-ve";
+                }, 2000);
+            }).catch(function (err) {
+                console.log(err);
+                swal({
+                    title: "Oops...",
+                    text: "Đã có lỗi xảy ra!",
+                    confirmButtonColor: "#EF5350",
+                    type: "error"
+                });
+            });
+        },
+        showModel: function showModel() {
+
+            $("#modalDelete").modal("show");
+        }
+    }
+});
+
+/***/ }),
+/* 63 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "form",
+    {
+      staticClass: "form-horizontal",
+      on: {
+        submit: function($event) {
+          $event.preventDefault()
+          return _vm.submitEditTime($event)
+        }
+      }
+    },
+    [
+      _c("fieldset", { staticClass: "content-group" }, [
+        _c("legend", { staticClass: "text-bold" }, [
+          _vm._v("Thông tin về đợt bảo về")
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "form-group" }, [
+          _c("label", { staticClass: "control-label col-lg-2" }, [
+            _vm._v("Thời gian bắt đầu")
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "col-lg-10" }, [
+            _c("input", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.dataEditTime.timeStart,
+                  expression: "dataEditTime.timeStart"
+                }
+              ],
+              staticClass: "form-control",
+              attrs: { type: "date" },
+              domProps: { value: _vm.dataEditTime.timeStart },
+              on: {
+                input: function($event) {
+                  if ($event.target.composing) {
+                    return
+                  }
+                  _vm.$set(_vm.dataEditTime, "timeStart", $event.target.value)
+                }
+              }
+            })
+          ])
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "form-group" }, [
+          _c("label", { staticClass: "control-label col-lg-2" }, [
+            _vm._v("Thời gian kết thúc")
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "col-lg-10" }, [
+            _c("input", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.dataEditTime.timeEnd,
+                  expression: "dataEditTime.timeEnd"
+                }
+              ],
+              staticClass: "form-control",
+              attrs: { type: "date" },
+              domProps: { value: _vm.dataEditTime.timeEnd },
+              on: {
+                input: function($event) {
+                  if ($event.target.composing) {
+                    return
+                  }
+                  _vm.$set(_vm.dataEditTime, "timeEnd", $event.target.value)
+                }
+              }
+            })
+          ])
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "text-right" }, [
+          _vm._m(0),
+          _vm._v(" "),
+          _c(
+            "button",
+            {
+              staticClass: "btn btn-danger",
+              attrs: { type: "button" },
+              on: { click: _vm.showModel }
+            },
+            [
+              _vm._v("Xóa đợt bảo vệ"),
+              _c("i", { staticClass: "icon-arrow-right14 position-right" })
+            ]
+          )
+        ])
+      ]),
+      _vm._v(" "),
+      _c("div", { staticClass: "modal fade", attrs: { id: "modalDelete" } }, [
+        _c("div", { staticClass: "modal-dialog" }, [
+          _c("div", { staticClass: "modal-content" }, [
+            _vm._m(1),
+            _vm._v(" "),
+            _vm._m(2),
+            _vm._v(" "),
+            _c("div", { staticClass: "modal-footer" }, [
+              _c(
+                "button",
+                {
+                  staticClass: "btn btn-link",
+                  attrs: { type: "button", "data-dismiss": "modal" }
+                },
+                [_vm._v("Close")]
+              ),
+              _vm._v(" "),
+              _c(
+                "button",
+                {
+                  staticClass: "btn btn-danger",
+                  attrs: { type: "button", id: "deleteButton" },
+                  on: { click: _vm.successDelete }
+                },
+                [_vm._v("Xóa")]
+              )
+            ])
+          ])
+        ])
+      ])
+    ]
+  )
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "button",
+      { staticClass: "btn btn-primary", attrs: { type: "submit" } },
+      [
+        _vm._v("Lưu chỉnh sửa "),
+        _c("i", { staticClass: "icon-arrow-right14 position-right" })
+      ]
+    )
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "modal-header bg-danger" }, [
+      _c(
+        "button",
+        {
+          staticClass: "close",
+          attrs: { type: "button", "data-dismiss": "modal" }
+        },
+        [_vm._v("×")]
+      ),
+      _vm._v(" "),
+      _c("h6", { staticClass: "modal-title" }, [_vm._v("Xóa lĩnh vực")])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "modal-body" }, [
+      _c("h6", { staticClass: "text-semibold" }, [_vm._v("Bạn chắc chắn chứ")]),
+      _vm._v(" "),
+      _c("p", [
+        _vm._v("Sau khi xóa, sẽ không thể phục hồi dữ liệu. Bạn chắc chắn chứ?")
+      ]),
+      _vm._v(" "),
+      _c("hr")
+    ])
+  }
+]
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-46ede603", module.exports)
   }
 }
 

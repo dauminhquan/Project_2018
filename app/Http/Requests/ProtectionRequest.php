@@ -14,10 +14,7 @@ class ProtectionRequest extends FormRequest
      */
     public function authorize()
     {
-        if(Protection::where("time_start",$this->input("time_start"))->where("time_end",$this->input("time_end"))->count() > 0 )
-        {
-            return false;
-        }
+
         return true;
     }
 
@@ -48,8 +45,7 @@ class ProtectionRequest extends FormRequest
             case 'PATCH':
                 {
                     return [
-                        "timeStart" => "required| date",
-                        "timeEnd" => "required|date"
+
                     ];
                 }
             default:break;

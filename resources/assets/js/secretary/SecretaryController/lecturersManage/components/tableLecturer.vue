@@ -341,10 +341,7 @@ console.log(response.data)
 
             },
             filData(data_lec){
-                // name_lecturer
-                //id
-                //department_name - khoa
-                // chu de field_name
+
                 var td = data_lec.map(function (value,index) {
                     var htmlAction = ''
                     return [

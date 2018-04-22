@@ -16,6 +16,7 @@ use App\Models\Protection;
 use App\Models\Secretary;
 use App\Models\Student;
 use App\Models\Topic;
+use App\Models\TopicProtection;
 use App\Models\Users;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -504,7 +505,9 @@ class ProfileService
                 "topics.name_topic",// ten topic
                 "topics.describe", // mo ta topic,
             "students.student_name",
-            "topic_protection.id_topic",//id_topic
+            "topic_protection.id_topic",//id_topic,
+            "topic_protection.scores",
+                "topic_protection.pass",
                 DB::raw("topic_lec.id as id_top_lec"),// id_giang vien huong dan topic
                 DB::raw("topic_lec.name_lecturer as name_lecturer_top_lec") // ten giang vien huong dan
             )
@@ -518,6 +521,7 @@ class ProfileService
         {
 
                 $topic = [];
+                $topic["scores"] = $item->scores;
                 $topic["name_topic"] = $item->name_topic;
                 $topic["describe"] = $item->describe;
                 $topic["id"] = $item->id_topic;// id topic
@@ -526,6 +530,7 @@ class ProfileService
                     "id" => $item->id_top_lec,
                     "name_lecturer_top_lec" => $item->name_lecturer_top_lec
                 ];
+                $topic["pass"] = $item->pass;
                 $topic["student_name"] = $item->student_name;
                 $topic["status"] = $item->acceptance;
                 if($this->isIn($topic,"id",$listTopic) === false)
@@ -555,10 +560,17 @@ class ProfileService
         $protection->$column = $data;
         $protection->update();
     }
-
     public function updateProtection($id,ProtectionRequest $request)
     {
+        if($request->has("timeStart") && $request->has("timeEnd"))
+        {
+            if(Protection::where("time_start",$request->input("timeStart"))->where("time_end",$request->input("timeEnd"))->count() > 0 )
+            {
+                return ["sc"=> false];
+            }
+        }
         $protection = Protection::findOrFail($id);
+
         if($request->has("timeStart"))
         {
             $protection->time_start = $request->input("timeStart");
@@ -567,9 +579,33 @@ class ProfileService
         {
             $protection->time_end = $request->input("timeEnd");
         }
+       if($request->has("idTopic"))
+       {
 
+           if($request->has("scores"))
+           {
+
+                if((float)$request->input("scores") > 5)
+                {
+                    TopicProtection::where("id_topic",$request->input("idTopic"))->update(["scores" => $request->input("scores"),"pass" =>1]);
+                }
+                else{
+                    TopicProtection::where("id_topic",$request->input("idTopic"))->update(["scores" => $request->input("scores"),"pass" =>0]);
+                }
+               TopicProtection::where("id_topic",$request->input("idTopic"))->update(["acceptance" => 1]);
+           }
+           if($request->has("status"))
+           {
+                if($request->input("status") == 2 || $request->input("status") == 0)
+                {
+                    TopicProtection::where("id_topic",$request->input("idTopic"))->update(["acceptance" => $request->input("status"),"pass" =>0]);
+                }
+
+           }
+       }
 
         $protection->update();
+        return $protection;
     }
     //
 
@@ -593,10 +629,21 @@ class ProfileService
         }
     }
 
-    public function deleteProtection($id)
+    public function deleteProtection($id,ProtectionRequest $request)
     {
-        $protections = Protection::FindorFail($id);
-        $protections->delete();
+        if($request->has("idTopic"))
+        {
+            $tp = TopicProtection::findOrFail($request->input("idTopic"));
+            $tp->delete();
+        }
+        if($request->has("id"))
+        {
+            $protections = Protection::findOrFail($id);
+            $protections->delete();
+        }
+        return ["sc" => "123"];
+//        $protections = Protection::FindorFail($id);
+//        $protections->delete();
     }
 
     // de tai -topic

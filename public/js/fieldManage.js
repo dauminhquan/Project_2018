@@ -14555,6 +14555,7 @@ window.store = new Vuex.Store({
 
             axios.get("/api/field").then(function (data) {
                 _this7.infoData = _this7.filData(data.data);
+                console.log(_this7.infoData);
                 _this7.drawTable(_this7.infoData);
             }).catch(function (err) {
                 console.log(err);

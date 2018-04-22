@@ -74,7 +74,8 @@ class ProtectionController extends Controller
      */
     public function update(ProtectionRequest $request, $id)
     {
-        //
+        $pro = new ProfileService();
+        return $pro->updateProtection($id,$request);
     }
 
     /**
@@ -83,8 +84,9 @@ class ProtectionController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(ProtectionRequest $request,$id)
     {
-        //
+        $pro = new ProfileService();
+        return $pro->deleteProtection($id,$request);
     }
 }

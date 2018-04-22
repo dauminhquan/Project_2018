@@ -17,7 +17,7 @@
             ID Đợt bảo vệ,
             Thời gian bắt đầu, thời gian kết thúc
         </div>
-
+        <data-table ></data-table>
 
 
     </div>
