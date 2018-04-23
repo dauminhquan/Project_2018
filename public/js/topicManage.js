@@ -14387,10 +14387,10 @@ window.store = new Vuex.Store({
                         }
                     },
                     buttons: [{
-                        text: 'Thêm lĩnh vực',
+                        text: 'Tải xuống Excel',
                         className: 'btn bg-teal-400',
                         action: function action(e, dt, node, config) {
-                            $("#modalAdd").modal("show");
+                            window.open('/excel/topics', '_blank');
                         }
                     }]
                 }

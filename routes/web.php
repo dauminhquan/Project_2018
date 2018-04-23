@@ -28,8 +28,15 @@ Route::group(["prefix" => "api","name" =>"api.","namespace" => "Api"],function()
     Route::resource("field","FieldController");
     Route::resource("protection","ProtectionController");
     Route::resource("topic","TopicController");
+    Route::post("login","AuthController@login");
+    Route::get("logout","AuthController@logout");
+    Route::group(["prefix" => "extent","name" =>"extent.","namespace" => "Extent"],function(){
+            Route::get("student/topics",["name" => "student.topic","uses" => "ExtentController@studentGetTopics"]);
+            Route::get("student/topics/{id}",["name" => "student.topic.id","uses" => "ExtentController@studentGetTopic"]);
+            Route::post("student/topics/{id}",["name" => "student.topic.id","uses" => "ExtentController@studentPostTopic"]);
+    });
 });
-// CSV
+// Excel
 Route::group(["prefix" => "excel"],function (){
    Route::get("lecturer",["uses" => "ExcelController@lecturer"]);
     Route::get("student",["uses" => "ExcelController@student"]);
@@ -50,6 +57,9 @@ Route::get("quan-ly-dot-bao-ve/{id}",["as" => "admin.quanlydotbaove.id","uses" =
 
 
 // student
-Route::get("student/dang-ky-top-pic",["as" => "student.dangkytopic","uses" => "StudentController@topics"]);
+Route::get("student/dang-ky-topic",["as" => "student.dangkytopic","uses" => "StudentController@topics"]);
+Route::get("student/topic-cua-toi",["as" => "student.topiccuatoi","uses" => "StudentController@mytopic"]);
+//auth
 
+Route::get("login",["as" => "auth.login", "uses" => "AuthController@login"]);
 

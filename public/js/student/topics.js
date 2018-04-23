@@ -14305,6 +14305,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
 
 window.Vuex = __webpack_require__(32);
 Vue.use(Vuex);
@@ -14333,7 +14338,7 @@ window.store = new Vuex.Store({
             if (this.$store.state.idData != this.idEdit) {
                 console.log(this.$store.state.idData);
                 this.idEdit = this.$store.state.idData;
-                axios.get('/api/topic/' + this.$store.state.idData).then(function (response) {
+                axios.get('/api/extent/student/topics/' + this.$store.state.idData).then(function (response) {
                     console.log(response);
                     _this.dataEdit = response.data;
                     _this.dataEdit.listLecturer = _this.dataEdit.lecturers.map(function (value) {
@@ -14398,20 +14403,18 @@ window.store = new Vuex.Store({
         // them moi 1 data
 
         submitEdit: function submitEdit() {
-            var _this2 = this;
+            this.reg.id = this.$store.state.idData, axios.post("/api/extent/student/topics/" + this.$store.state.idData, this.reg).then(function (data) {
 
-            axios.post("/api/topic/" + this.$store.state.idData, {
-                id: this.$store.state.idData
-            }).then(function (data) {
-
-                _this2.resetData();
                 swal({
                     title: "Thành công!",
-                    text: "Sửa lĩnh vực thành công!",
+                    text: "Đăng ký đề tài thành công!",
                     confirmButtonColor: "#66BB6A",
                     type: "success"
                 });
                 $("#modalInfo").modal("hide");
+                setTimeout(function () {
+                    window.location = "/student/de-tai-cua-ban";
+                }, 3000);
             }).catch(function (err) {
                 console.log(err);
             });
@@ -14429,29 +14432,18 @@ window.store = new Vuex.Store({
         },
 
         //reset lại dữ liệu bảng
-        resetData: function resetData() {
-            var _this3 = this;
 
-            axios.get("/api/topic").then(function (data) {
-                $('#datatable-basic').dataTable().fnClearTable();
-                $('#datatable-basic').dataTable().fnAddData(_this3.filData(data.data));
-            }).catch(function (err) {
-                console.log(err);
-            });
-        },
-
-        // xác định delete người dùng
 
         // Thêm excel
 
 
         getData: function getData() {
-            var _this4 = this;
+            var _this2 = this;
 
-            axios.get("/api/topic").then(function (data) {
-                _this4.infoData = _this4.filData(data.data);
-                console.log(_this4.infoData);
-                _this4.drawTable(_this4.infoData);
+            axios.get("/api/extent/student/topics").then(function (data) {
+                _this2.infoData = _this2.filData(data.data);
+                console.log(_this2.infoData);
+                _this2.drawTable(_this2.infoData);
             }).catch(function (err) {
                 console.log(err);
             });
@@ -14460,19 +14452,13 @@ window.store = new Vuex.Store({
     data: function data() {
         return {
 
+            reg: {
+                id: "",
+                check: false
+            },
             //Thông tin data
             infoData: [],
-            dataAdd: {
-                field_name: ""
-
-            },
-            dataEdit: {
-                name_lecturer: "",
-                name_topic: "",
-                describe: "",
-                accept: ""
-
-            },
+            dataEdit: {},
 
             idEdit: -1,
             idDelete: -1
@@ -14542,6 +14528,55 @@ var render = function() {
                     _c("p", [
                       _vm._v("Mô tả: "),
                       _c("b", [_vm._v(_vm._s(_vm.dataEdit.describe))])
+                    ])
+                  ]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "checkbox" }, [
+                    _c("label", [
+                      _c("input", {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: _vm.reg.check,
+                            expression: "reg.check"
+                          }
+                        ],
+                        staticClass: "styled",
+                        attrs: { type: "checkbox", required: "" },
+                        domProps: {
+                          checked: Array.isArray(_vm.reg.check)
+                            ? _vm._i(_vm.reg.check, null) > -1
+                            : _vm.reg.check
+                        },
+                        on: {
+                          change: function($event) {
+                            var $$a = _vm.reg.check,
+                              $$el = $event.target,
+                              $$c = $$el.checked ? true : false
+                            if (Array.isArray($$a)) {
+                              var $$v = null,
+                                $$i = _vm._i($$a, $$v)
+                              if ($$el.checked) {
+                                $$i < 0 &&
+                                  _vm.$set(_vm.reg, "check", $$a.concat([$$v]))
+                              } else {
+                                $$i > -1 &&
+                                  _vm.$set(
+                                    _vm.reg,
+                                    "check",
+                                    $$a.slice(0, $$i).concat($$a.slice($$i + 1))
+                                  )
+                              }
+                            } else {
+                              _vm.$set(_vm.reg, "check", $$c)
+                            }
+                          }
+                        }
+                      }),
+                      _vm._v(
+                        "\n                                    Đăng ký đề tài\n                                "
+                      )
                     ])
                   ])
                 ])

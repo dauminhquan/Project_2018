@@ -45,6 +45,14 @@ return [
             'driver' => 'token',
             'provider' => 'users',
         ],
+        'employ' => [
+            'driver' => 'session',
+            'provider' => 'employees',
+        ],
+        'student' => [
+            'driver' => 'session',
+            'provider' => 'students',
+        ]
     ],
 
     /*
@@ -69,7 +77,14 @@ return [
             'driver' => 'eloquent',
             'model' => App\User::class,
         ],
-
+        'employees' => [
+            'driver' => 'eloquent',
+            'model' => App\Auth\Employ::class,
+        ],
+        'students' => [
+            'driver' => 'eloquent',
+            'model' => App\Auth\Student::class,
+        ],
         // 'users' => [
         //     'driver' => 'database',
         //     'table' => 'users',

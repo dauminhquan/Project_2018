@@ -40,6 +40,13 @@
                                 <div class="form-group">
                                     <p>Mô tả: <b>{{dataEdit.describe}}</b></p>
                                 </div>
+
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" required class="styled" v-model="reg.check">
+                                        Đăng ký đề tài
+                                    </label>
+                                </div>
                             </fieldset>
 
 
@@ -53,8 +60,6 @@
                 </div>
             </div>
         </div>
-
-
 
 
 
@@ -90,7 +95,7 @@
                 {
                     console.log(this.$store.state.idData)
                     this.idEdit = this.$store.state.idData
-                    axios.get('/api/topic/'+this.$store.state.idData)
+                    axios.get('/api/extent/student/topics/'+this.$store.state.idData)
                         .then( (response) => {
                             console.log(response)
                             this.dataEdit = response.data;
@@ -164,19 +169,21 @@
             // them moi 1 data
 
             submitEdit(){
+                this.reg.id = this.$store.state.idData,
 
-                axios.post("/api/topic/"+this.$store.state.idData,{
-                    id: this.$store.state.idData
-                }).then((data) => {
+                axios.post("/api/extent/student/topics/"+this.$store.state.idData,this.reg).then((data) => {
 
-                    this.resetData()
                     swal({
                         title: "Thành công!",
-                        text: "Sửa lĩnh vực thành công!",
+                        text: "Đăng ký đề tài thành công!",
                         confirmButtonColor: "#66BB6A",
                         type: "success"
                     });
                     $("#modalInfo").modal("hide")
+                    setTimeout(function () {
+                        window.location= "/student/de-tai-cua-ban"
+                    }, 3000);
+
                 }).catch((err) => {
                     console.log(err)
                 })
@@ -213,22 +220,15 @@
 
             },
             //reset lại dữ liệu bảng
-            resetData(){
-                axios.get("/api/topic").then((data) => {
-                    $('#datatable-basic').dataTable().fnClearTable();
-                    $('#datatable-basic').dataTable().fnAddData(this.filData(data.data));
-                }).catch((err) => {
-                    console.log(err)
-                })
-            },
-            // xác định delete người dùng
+
+
 
 // Thêm excel
 
 
 
             getData(){
-                axios.get("/api/topic").then((data) => {
+                axios.get("/api/extent/student/topics").then((data) => {
                     this.infoData = this.filData(data.data)
                     console.log(this.infoData)
                     this.drawTable(this.infoData)
@@ -243,22 +243,15 @@
         data(){
             return {
 
-
+                reg: {
+                    id:"",
+                    check: false
+                },
                 //Thông tin data
                 infoData: [
 
                 ],
-                dataAdd: {
-                    field_name: "",
-
-                },
-                dataEdit: {
-                    name_lecturer: "",
-                    name_topic: "",
-                    describe: "",
-                    accept: "",
-
-                },
+                dataEdit: {},
 
                 idEdit: -1,
                 idDelete: -1

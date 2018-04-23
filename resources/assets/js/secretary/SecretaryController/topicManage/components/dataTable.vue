@@ -169,10 +169,10 @@
                         },
                         buttons: [
                             {
-                                text: 'Thêm lĩnh vực',
+                                text: 'Tải xuống Excel',
                                 className: 'btn bg-teal-400',
                                 action: function(e, dt, node, config) {
-                                    $("#modalAdd").modal("show")
+                                    window.open('/excel/topics', '_blank');
                                 }
                             }
 
@@ -181,7 +181,6 @@
                 });
 
                 $('.dataTables_filter input[type=search]').attr('placeholder','Nhập từ khóa...');
-
 
                 $('.dataTables_length select').select2({
                     minimumResultsForSearch: Infinity,
