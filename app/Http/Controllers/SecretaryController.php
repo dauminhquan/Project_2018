@@ -18,4 +18,8 @@ class SecretaryController extends Controller
     public function fieldsManage(){
         return view("secretary.fieldManage");
     }
+    public function topicManage()
+    {
+        return view("secretary.topicManage");
+    }
 }

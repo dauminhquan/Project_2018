@@ -342,11 +342,13 @@
                             }
                         },
                         buttons: [
-                            {extend: 'copy'},
-                            {extend: 'csv'},
-                            {extend: 'excel'},
-                            {extend: 'pdf'},
-                            {extend: 'print'},
+                            {
+                                text: 'Tải xuống Excel',
+                                className: 'btn bg-success',
+                                action: function(e, dt, node, config) {
+                                    window.open('/excel/student', '_blank');
+                                }
+                            },
                             {
                                 text: 'Thêm sinh viên',
                                 className: 'btn bg-teal-400',

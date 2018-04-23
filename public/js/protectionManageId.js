@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "/";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 43);
+/******/ 	return __webpack_require__(__webpack_require__.s = 58);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -71,7 +71,7 @@
 
 
 var bind = __webpack_require__(4);
-var isBuffer = __webpack_require__(14);
+var isBuffer = __webpack_require__(15);
 
 /*global toString:true*/
 
@@ -408,7 +408,7 @@ module.exports = g;
 /* WEBPACK VAR INJECTION */(function(process) {
 
 var utils = __webpack_require__(0);
-var normalizeHeaderName = __webpack_require__(16);
+var normalizeHeaderName = __webpack_require__(17);
 
 var DEFAULT_CONTENT_TYPE = {
   'Content-Type': 'application/x-www-form-urlencoded'
@@ -720,12 +720,12 @@ module.exports = function bind(fn, thisArg) {
 
 
 var utils = __webpack_require__(0);
-var settle = __webpack_require__(17);
-var buildURL = __webpack_require__(19);
-var parseHeaders = __webpack_require__(20);
-var isURLSameOrigin = __webpack_require__(21);
+var settle = __webpack_require__(18);
+var buildURL = __webpack_require__(20);
+var parseHeaders = __webpack_require__(21);
+var isURLSameOrigin = __webpack_require__(22);
 var createError = __webpack_require__(6);
-var btoa = (typeof window !== 'undefined' && window.btoa && window.btoa.bind(window)) || __webpack_require__(22);
+var btoa = (typeof window !== 'undefined' && window.btoa && window.btoa.bind(window)) || __webpack_require__(23);
 
 module.exports = function xhrAdapter(config) {
   return new Promise(function dispatchXhrRequest(resolve, reject) {
@@ -822,7 +822,7 @@ module.exports = function xhrAdapter(config) {
     // This is only done if running in a standard browser environment.
     // Specifically not if we're in a web worker, or react-native.
     if (utils.isStandardBrowserEnv()) {
-      var cookies = __webpack_require__(23);
+      var cookies = __webpack_require__(24);
 
       // Add xsrf header
       var xsrfValue = (config.withCredentials || isURLSameOrigin(config.url)) && config.xsrfCookieName ?
@@ -906,7 +906,7 @@ module.exports = function xhrAdapter(config) {
 "use strict";
 
 
-var enhanceError = __webpack_require__(18);
+var enhanceError = __webpack_require__(19);
 
 /**
  * Create an Error with the specified message, config, error code, request and response.
@@ -964,6 +964,115 @@ module.exports = Cancel;
 
 /***/ }),
 /* 9 */
+/***/ (function(module, exports) {
+
+/* globals __VUE_SSR_CONTEXT__ */
+
+// IMPORTANT: Do NOT use ES2015 features in this file.
+// This module is a runtime utility for cleaner component module output and will
+// be included in the final webpack user bundle.
+
+module.exports = function normalizeComponent (
+  rawScriptExports,
+  compiledTemplate,
+  functionalTemplate,
+  injectStyles,
+  scopeId,
+  moduleIdentifier /* server only */
+) {
+  var esModule
+  var scriptExports = rawScriptExports = rawScriptExports || {}
+
+  // ES6 modules interop
+  var type = typeof rawScriptExports.default
+  if (type === 'object' || type === 'function') {
+    esModule = rawScriptExports
+    scriptExports = rawScriptExports.default
+  }
+
+  // Vue.extend constructor export interop
+  var options = typeof scriptExports === 'function'
+    ? scriptExports.options
+    : scriptExports
+
+  // render functions
+  if (compiledTemplate) {
+    options.render = compiledTemplate.render
+    options.staticRenderFns = compiledTemplate.staticRenderFns
+    options._compiled = true
+  }
+
+  // functional template
+  if (functionalTemplate) {
+    options.functional = true
+  }
+
+  // scopedId
+  if (scopeId) {
+    options._scopeId = scopeId
+  }
+
+  var hook
+  if (moduleIdentifier) { // server build
+    hook = function (context) {
+      // 2.3 injection
+      context =
+        context || // cached call
+        (this.$vnode && this.$vnode.ssrContext) || // stateful
+        (this.parent && this.parent.$vnode && this.parent.$vnode.ssrContext) // functional
+      // 2.2 with runInNewContext: true
+      if (!context && typeof __VUE_SSR_CONTEXT__ !== 'undefined') {
+        context = __VUE_SSR_CONTEXT__
+      }
+      // inject component styles
+      if (injectStyles) {
+        injectStyles.call(this, context)
+      }
+      // register component module identifier for async chunk inferrence
+      if (context && context._registeredComponents) {
+        context._registeredComponents.add(moduleIdentifier)
+      }
+    }
+    // used by ssr in case component is cached and beforeCreate
+    // never gets called
+    options._ssrRegister = hook
+  } else if (injectStyles) {
+    hook = injectStyles
+  }
+
+  if (hook) {
+    var functional = options.functional
+    var existing = functional
+      ? options.render
+      : options.beforeCreate
+
+    if (!functional) {
+      // inject component registration as beforeCreate hook
+      options.beforeCreate = existing
+        ? [].concat(existing, hook)
+        : [hook]
+    } else {
+      // for template-only hot-reload because in that case the render fn doesn't
+      // go through the normalizer
+      options._injectStyles = hook
+      // register for functioal component in vue file
+      options.render = function renderWithStyleInjection (h, context) {
+        hook.call(context)
+        return existing(h, context)
+      }
+    }
+  }
+
+  return {
+    esModule: esModule,
+    exports: scriptExports,
+    options: options
+  }
+}
+
+
+/***/ }),
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -11926,10 +12035,10 @@ Vue.compile = compileToFunctions;
 
 module.exports = Vue;
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1), __webpack_require__(10).setImmediate))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1), __webpack_require__(11).setImmediate))
 
 /***/ }),
-/* 10 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global) {var scope = this;
@@ -11983,7 +12092,7 @@ exports._unrefActive = exports.active = function(item) {
 };
 
 // setimmediate attaches itself to the global object
-__webpack_require__(11);
+__webpack_require__(12);
 // On some exotic environments, it's not clear which object `setimmeidate` was
 // able to install onto.  Search each possibility in the same order as the
 // `setimmediate` library.
@@ -11997,7 +12106,7 @@ exports.clearImmediate = (typeof self !== "undefined" && self.clearImmediate) ||
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
-/* 11 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global, process) {(function (global, undefined) {
@@ -12190,13 +12299,13 @@ exports.clearImmediate = (typeof self !== "undefined" && self.clearImmediate) ||
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1), __webpack_require__(3)))
 
 /***/ }),
-/* 12 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(13);
+module.exports = __webpack_require__(14);
 
 /***/ }),
-/* 13 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12204,7 +12313,7 @@ module.exports = __webpack_require__(13);
 
 var utils = __webpack_require__(0);
 var bind = __webpack_require__(4);
-var Axios = __webpack_require__(15);
+var Axios = __webpack_require__(16);
 var defaults = __webpack_require__(2);
 
 /**
@@ -12239,14 +12348,14 @@ axios.create = function create(instanceConfig) {
 
 // Expose Cancel & CancelToken
 axios.Cancel = __webpack_require__(8);
-axios.CancelToken = __webpack_require__(29);
+axios.CancelToken = __webpack_require__(30);
 axios.isCancel = __webpack_require__(7);
 
 // Expose all/spread
 axios.all = function all(promises) {
   return Promise.all(promises);
 };
-axios.spread = __webpack_require__(30);
+axios.spread = __webpack_require__(31);
 
 module.exports = axios;
 
@@ -12255,7 +12364,7 @@ module.exports.default = axios;
 
 
 /***/ }),
-/* 14 */
+/* 15 */
 /***/ (function(module, exports) {
 
 /*!
@@ -12282,7 +12391,7 @@ function isSlowBuffer (obj) {
 
 
 /***/ }),
-/* 15 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12290,8 +12399,8 @@ function isSlowBuffer (obj) {
 
 var defaults = __webpack_require__(2);
 var utils = __webpack_require__(0);
-var InterceptorManager = __webpack_require__(24);
-var dispatchRequest = __webpack_require__(25);
+var InterceptorManager = __webpack_require__(25);
+var dispatchRequest = __webpack_require__(26);
 
 /**
  * Create a new instance of Axios
@@ -12368,7 +12477,7 @@ module.exports = Axios;
 
 
 /***/ }),
-/* 16 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12387,7 +12496,7 @@ module.exports = function normalizeHeaderName(headers, normalizedName) {
 
 
 /***/ }),
-/* 17 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12420,7 +12529,7 @@ module.exports = function settle(resolve, reject, response) {
 
 
 /***/ }),
-/* 18 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12448,7 +12557,7 @@ module.exports = function enhanceError(error, config, code, request, response) {
 
 
 /***/ }),
-/* 19 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12521,7 +12630,7 @@ module.exports = function buildURL(url, params, paramsSerializer) {
 
 
 /***/ }),
-/* 20 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12581,7 +12690,7 @@ module.exports = function parseHeaders(headers) {
 
 
 /***/ }),
-/* 21 */
+/* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12656,7 +12765,7 @@ module.exports = (
 
 
 /***/ }),
-/* 22 */
+/* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12699,7 +12808,7 @@ module.exports = btoa;
 
 
 /***/ }),
-/* 23 */
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12759,7 +12868,7 @@ module.exports = (
 
 
 /***/ }),
-/* 24 */
+/* 25 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12818,18 +12927,18 @@ module.exports = InterceptorManager;
 
 
 /***/ }),
-/* 25 */
+/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var utils = __webpack_require__(0);
-var transformData = __webpack_require__(26);
+var transformData = __webpack_require__(27);
 var isCancel = __webpack_require__(7);
 var defaults = __webpack_require__(2);
-var isAbsoluteURL = __webpack_require__(27);
-var combineURLs = __webpack_require__(28);
+var isAbsoluteURL = __webpack_require__(28);
+var combineURLs = __webpack_require__(29);
 
 /**
  * Throws a `Cancel` if cancellation has been requested.
@@ -12911,7 +13020,7 @@ module.exports = function dispatchRequest(config) {
 
 
 /***/ }),
-/* 26 */
+/* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12938,7 +13047,7 @@ module.exports = function transformData(data, headers, fns) {
 
 
 /***/ }),
-/* 27 */
+/* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12959,7 +13068,7 @@ module.exports = function isAbsoluteURL(url) {
 
 
 /***/ }),
-/* 28 */
+/* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12980,7 +13089,7 @@ module.exports = function combineURLs(baseURL, relativeURL) {
 
 
 /***/ }),
-/* 29 */
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -13044,7 +13153,7 @@ module.exports = CancelToken;
 
 
 /***/ }),
-/* 30 */
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -13075,115 +13184,6 @@ module.exports = function spread(callback) {
     return callback.apply(null, arr);
   };
 };
-
-
-/***/ }),
-/* 31 */
-/***/ (function(module, exports) {
-
-/* globals __VUE_SSR_CONTEXT__ */
-
-// IMPORTANT: Do NOT use ES2015 features in this file.
-// This module is a runtime utility for cleaner component module output and will
-// be included in the final webpack user bundle.
-
-module.exports = function normalizeComponent (
-  rawScriptExports,
-  compiledTemplate,
-  functionalTemplate,
-  injectStyles,
-  scopeId,
-  moduleIdentifier /* server only */
-) {
-  var esModule
-  var scriptExports = rawScriptExports = rawScriptExports || {}
-
-  // ES6 modules interop
-  var type = typeof rawScriptExports.default
-  if (type === 'object' || type === 'function') {
-    esModule = rawScriptExports
-    scriptExports = rawScriptExports.default
-  }
-
-  // Vue.extend constructor export interop
-  var options = typeof scriptExports === 'function'
-    ? scriptExports.options
-    : scriptExports
-
-  // render functions
-  if (compiledTemplate) {
-    options.render = compiledTemplate.render
-    options.staticRenderFns = compiledTemplate.staticRenderFns
-    options._compiled = true
-  }
-
-  // functional template
-  if (functionalTemplate) {
-    options.functional = true
-  }
-
-  // scopedId
-  if (scopeId) {
-    options._scopeId = scopeId
-  }
-
-  var hook
-  if (moduleIdentifier) { // server build
-    hook = function (context) {
-      // 2.3 injection
-      context =
-        context || // cached call
-        (this.$vnode && this.$vnode.ssrContext) || // stateful
-        (this.parent && this.parent.$vnode && this.parent.$vnode.ssrContext) // functional
-      // 2.2 with runInNewContext: true
-      if (!context && typeof __VUE_SSR_CONTEXT__ !== 'undefined') {
-        context = __VUE_SSR_CONTEXT__
-      }
-      // inject component styles
-      if (injectStyles) {
-        injectStyles.call(this, context)
-      }
-      // register component module identifier for async chunk inferrence
-      if (context && context._registeredComponents) {
-        context._registeredComponents.add(moduleIdentifier)
-      }
-    }
-    // used by ssr in case component is cached and beforeCreate
-    // never gets called
-    options._ssrRegister = hook
-  } else if (injectStyles) {
-    hook = injectStyles
-  }
-
-  if (hook) {
-    var functional = options.functional
-    var existing = functional
-      ? options.render
-      : options.beforeCreate
-
-    if (!functional) {
-      // inject component registration as beforeCreate hook
-      options.beforeCreate = existing
-        ? [].concat(existing, hook)
-        : [hook]
-    } else {
-      // for template-only hot-reload because in that case the render fn doesn't
-      // go through the normalizer
-      options._injectStyles = hook
-      // register for functioal component in vue file
-      options.render = function renderWithStyleInjection (h, context) {
-        hook.call(context)
-        return existing(h, context)
-      }
-    }
-  }
-
-  return {
-    esModule: esModule,
-    exports: scriptExports,
-    options: options
-  }
-}
 
 
 /***/ }),
@@ -14143,38 +14143,53 @@ var index_esm = {
 /* 40 */,
 /* 41 */,
 /* 42 */,
-/* 43 */
+/* 43 */,
+/* 44 */,
+/* 45 */,
+/* 46 */,
+/* 47 */,
+/* 48 */,
+/* 49 */,
+/* 50 */,
+/* 51 */,
+/* 52 */,
+/* 53 */,
+/* 54 */,
+/* 55 */,
+/* 56 */,
+/* 57 */,
+/* 58 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(44);
+module.exports = __webpack_require__(59);
 
 
 /***/ }),
-/* 44 */
+/* 59 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
 
-window.Vue = __webpack_require__(9);
-window.axios = __webpack_require__(12);
+window.Vue = __webpack_require__(10);
+window.axios = __webpack_require__(13);
 
-Vue.component('data-table', __webpack_require__(45));
-
+Vue.component('data-table', __webpack_require__(60));
+Vue.component("data-edit-time", __webpack_require__(63));
 var table = new Vue({
     el: '#data-table'
 
 });
 
 /***/ }),
-/* 45 */
+/* 60 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
-var normalizeComponent = __webpack_require__(31)
+var normalizeComponent = __webpack_require__(9)
 /* script */
-var __vue_script__ = __webpack_require__(46)
+var __vue_script__ = __webpack_require__(61)
 /* template */
-var __vue_template__ = __webpack_require__(47)
+var __vue_template__ = __webpack_require__(62)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -14191,7 +14206,7 @@ var Component = normalizeComponent(
   __vue_scopeId__,
   __vue_module_identifier__
 )
-Component.options.__file = "resources\\assets\\js\\secretary\\SecretaryController\\fieldManage\\components\\dataTable.vue"
+Component.options.__file = "resources\\assets\\js\\admin\\AdministratorController\\protectionManageId\\components\\dataTable.vue"
 
 /* hot reload */
 if (false) {(function () {
@@ -14200,9 +14215,9 @@ if (false) {(function () {
   if (!hotAPI.compatible) return
   module.hot.accept()
   if (!module.hot.data) {
-    hotAPI.createRecord("data-v-379fc5a6", Component.options)
+    hotAPI.createRecord("data-v-317df4f2", Component.options)
   } else {
-    hotAPI.reload("data-v-379fc5a6", Component.options)
+    hotAPI.reload("data-v-317df4f2", Component.options)
   }
   module.hot.dispose(function (data) {
     disposed = true
@@ -14213,28 +14228,11 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 46 */
+/* 61 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 //
 //
 //
@@ -14364,22 +14362,41 @@ window.store = new Vuex.Store({
     store: store,
     computed: {
         showIdEdit: function showIdEdit() {
-            var _this = this;
+            //thong tin topic co id
 
             if (this.$store.state.idData != this.idEdit) {
-                this.idEdit = this.$store.state.idData;
-                axios.get('/api/field/' + this.$store.state.idData).then(function (response) {
+                var idEdit_cr = this.$store.state.idData;
+                for (var i = 0; i < this.infoDataJson.length; i++) {
+                    if (this.infoDataJson[i].id = idEdit_cr) {
 
-                    _this.dataEdit = response.data;
-                    _this.dataEdit.listLecturer = _this.dataEdit.lecturers.map(function (value) {
-                        return value.id;
-                    });
-                    console.log(_this.dataEdit);
-                }).catch(function (err) {
-                    console.log(err);
-                });
+                        var rt = {
+                            listLecturer: [], //hoi dong bao ve
+                            status: "",
+                            scores: -1
+                        };
+                        rt.name_topic = this.infoDataJson[i].name_topic;
+                        rt.lecturer = this.infoDataJson[i].lecturer;
+                        rt.status = this.infoDataJson[i].status;
+                        rt.scores = this.infoDataJson[i].scores;
+                        rt.student_name = this.infoDataJson[i].student_name;
+                        rt.describe = this.infoDataJson[i].describe;
+                        rt.listLecturer = this.infoDataJson[i].listLecturer;
+                        rt.idTopic = this.infoDataJson[i].id;
+                        console.log(rt);
+                        this.dataEditTopic = rt;
+                    }
+                }
+
                 return this.$store.state.idData;
             }
+        },
+        listLecturer: function listLecturer() {
+            var html = "<b>";
+            for (var i = 0; i < this.dataEditTopic.listLecturer.length; i++) {
+                html += this.dataEditTopic.listLecturer[i].name_lecturer + ";";
+            }
+            html += "</b>";
+            return html;
         }
     },
     mounted: function mounted() {
@@ -14389,15 +14406,6 @@ window.store = new Vuex.Store({
     },
 
     methods: {
-        getLecturers: function getLecturers() {
-            var _this2 = this;
-
-            axios.get("/api/lecturer").then(function (data) {
-                _this2.lecturers = data.data;
-            }).catch(function (err) {
-                console.log(err);
-            });
-        },
         drawTable: function drawTable(data) {
             $.extend($.fn.dataTable.defaults, {
                 autoWidth: false,
@@ -14414,12 +14422,13 @@ window.store = new Vuex.Store({
                 columnDefs: [],
                 buttons: {
                     dom: {
+                        data: this.infoData,
                         button: {
                             className: 'btn btn-default'
                         }
                     },
                     buttons: [{
-                        text: 'Thêm lĩnh vực',
+                        text: 'Thêm đợt',
                         className: 'btn bg-teal-400',
                         action: function action(e, dt, node, config) {
                             $("#modalAdd").modal("show");
@@ -14434,59 +14443,14 @@ window.store = new Vuex.Store({
                 minimumResultsForSearch: Infinity,
                 width: 'auto'
             });
-            // $('#selectLecturer').select2({
-            //     minimumResultsForSearch: Infinity,
-            //
-            // });
-        },
-
-        // them moi 1 data
-        submitAdd: function submitAdd() {
-            var _this3 = this;
-
-            axios.post("/api/field", this.dataAdd).then(function (data) {
-                _this3.resetData();
-                swal({
-                    title: "Thành công!",
-                    text: "Thêm mới thành công!",
-                    confirmButtonColor: "#66BB6A",
-                    type: "success"
-                });
-                $("#modalAdd").modal("hide");
-            }).catch(function (err) {
-                console.log(err);
-            });
         },
         submitEdit: function submitEdit() {
-            var _this4 = this;
+            var _this = this;
 
-            var dataOld = this.dataEdit.lecturers.map(function (value) {
-                return value.id;
-            });
+            console.log(this.dataEditTopic);
+            axios.put("/api/protection/" + this.id, this.dataEditTopic).then(function (data) {
 
-            var dataNew = this.dataEdit.listLecturer;
-            console.log(dataNew);
-            var dataDelete = dataOld.filter(function (value) {
-                if (dataNew.find(function (item) {
-                    return item == value;
-                }, value) == undefined) {
-                    return value;
-                }
-            }, dataNew);
-
-            var dataNewAdd = dataNew.filter(function (value) {
-                if (dataOld.find(function (item) {
-                    return item == value;
-                }, value) == undefined) {
-                    return value;
-                }
-            }, dataOld);
-
-            this.dataEdit.dataDelete = dataDelete;
-            this.dataEdit.dataNewAdd = dataNewAdd;
-            axios.put("/api/field/" + this.$store.state.idData, this.dataEdit).then(function (data) {
-
-                _this4.resetData();
+                _this.resetData();
                 swal({
                     title: "Thành công!",
                     text: "Sửa lĩnh vực thành công!",
@@ -14498,24 +14462,50 @@ window.store = new Vuex.Store({
                 console.log(err);
             });
         },
+        getLecturers: function getLecturers() {
+            var _this2 = this;
 
-        //loc du lieu
-        // edit
+            axios.get("/api/lecturer").then(function (data) {
+                _this2.lecturers = data.data;
+            }).catch(function (err) {
+                console.log(err);
+            });
+        },
         filData: function filData(data) {
-
+            if (data[0][0] == null) {
+                return [];
+            }
             return data.map(function (value, index) {
-                return [value.id, value.field_name, '<ul style="text-align: center;" class="icons-list">' + '   <li class="dropdown">' + '       <a href="#" class="dropdown-toggle" data-toggle="dropdown">' + '           <i class="icon-menu9"></i>' + '       </a>' + '<ul class="dropdown-menu dropdown-menu-right">' + '<li>' + '   <a href="#" onclick="editInfo(' + value.id + ')">' + '       <i class=" icon-user"></i> Thông tin chi tiết' + '   </a>' + '</li>' + '<li>' + '   <a href="#"  onclick="deleteInfo(' + value.id + ')">' + '<i class="icon-user-cancel"></i> Xóa' + '</a>' + '</li>' + '</ul>' + '</li>' + '</ul>'];
+                var t = "";
+                if (value.status == 0) {
+                    t += '<span class="label label-info">Đang đợi điểm</span>';
+                }
+                if (value.status == 1) {
+                    t += '<span class="label label-success">Đã hoàn thành</span>';
+                }
+                if (value.status == 2) {
+                    t += '<span class="label label-danger">Đã hủy</span>';
+                }
+                var p = "";
+                if (value.pass == 1) {
+                    p += '<span class="label label-info">Vượt qua</span>';
+                }
+                if (value.pass == 0) {
+                    p += '<span class="label label-danger">Không qua</span>';
+                }
+
+                return [value.name_topic, value.student_name, value.lecturer.name_lecturer_top_lec, t, p, '<ul style="text-align: center;" class="icons-list">' + '   <li class="dropdown">' + '       <a href="#" class="dropdown-toggle" data-toggle="dropdown">' + '           <i class="icon-menu9"></i>' + '       </a>' + '<ul class="dropdown-menu dropdown-menu-right">' + '<li>' + '   <a href="#" onclick="editInfo(' + value.id + ')">' + '       <i class=" icon-user"></i> Thông tin chi tiết' + '   </a>' + '</li>' + '<li>' + '   <a href="#"  onclick="deleteInfo(' + value.id + ')">' + '<i class="icon-user-cancel"></i> Xóa' + '</a>' + '</li>' + '</ul>' + '</li>' + '</ul>'];
             });
             // showInfor('+value.id+')
         },
 
         //reset lại dữ liệu bảng
         resetData: function resetData() {
-            var _this5 = this;
+            var _this3 = this;
 
-            axios.get("/api/field").then(function (data) {
+            axios.get("/api/protection/" + this.id).then(function (data) {
                 $('#datatable-basic').dataTable().fnClearTable();
-                $('#datatable-basic').dataTable().fnAddData(_this5.filData(data.data));
+                $('#datatable-basic').dataTable().fnAddData(_this3.filData(data.data.topics));
             }).catch(function (err) {
                 console.log(err);
             });
@@ -14523,18 +14513,22 @@ window.store = new Vuex.Store({
 
         // xác định delete người dùng
         successDelete: function successDelete() {
-            var _this6 = this;
+            var _this4 = this;
 
             var id = $("#deleteButton").attr("data");
-            axios.delete("/api/field/" + id).then(function (data) {
+            axios.delete("/api/protection/" + this.id, {
+                params: {
+                    idTopic: id
+                }
+            }).then(function (data) {
 
                 swal({
                     title: "Thành công!",
-                    text: "Lĩnh vực đã được xóa!!",
+                    text: "Topic đã được xóa!!",
                     confirmButtonColor: "#66BB6A",
                     type: "success"
                 });
-                _this6.resetData();
+                _this4.resetData();
                 $("#modalDelete").modal("hide");
             }).catch(function (err) {
                 console.log(err);
@@ -14546,43 +14540,40 @@ window.store = new Vuex.Store({
                 });
             });
         },
-
-        // Thêm excel
-
-
         getData: function getData() {
-            var _this7 = this;
+            var _this5 = this;
 
-            axios.get("/api/field").then(function (data) {
-                _this7.infoData = _this7.filData(data.data);
-                console.log(_this7.infoData);
-                _this7.drawTable(_this7.infoData);
+            axios.get("/api/protection/" + this.id).then(function (data) {
+
+                _this5.infoData = _this5.filData(data.data.topics);
+                _this5.infoDataJson = data.data.topics;
+                console.log(_this5.infoDataJson);
+                _this5.drawTable(_this5.infoData);
             }).catch(function (err) {
                 console.log(err);
             });
         }
     },
+    props: ["id"],
     data: function data() {
         return {
-
-            //Thông tin data
+            infoDataJson: [],
             infoData: [],
-            dataAdd: {
-                field_name: ""
+            //Thông tin data
 
+            dataEditTopic: {
+                name_topic: "",
+                describe: "",
+                lecturer: "",
+                listLecturer: [], //hoi dong bao ve
+                status: "",
+                scores: -1,
+                student_name: "",
+                idTopic: ""
             },
-            dataEdit: {
-                field_name: "",
-                lecturers: "",
-                listLecturer: [],
-                dataDelete: [],
-                dataNewAdd: []
 
-            },
             lecturers: [],
-            // chuyen nganh
-
-            idEdit: -1,
+            idEdit: 0,
             idDelete: -1
 
         };
@@ -14595,7 +14586,7 @@ window.store = new Vuex.Store({
 });
 
 /***/ }),
-/* 47 */
+/* 62 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -14610,7 +14601,7 @@ var render = function() {
         _c("div", { staticClass: "modal-content" }, [
           _vm._m(1),
           _vm._v(" "),
-          _c("input", { attrs: { type: "text", id: "id_lec", hidden: "" } }),
+          _c("input", { attrs: { type: "text", hidden: "" } }),
           _vm._v(" "),
           _c(
             "form",
@@ -14628,7 +14619,29 @@ var render = function() {
               _c("div", { staticClass: "modal-body" }, [
                 _c("fieldset", { staticClass: "content-group" }, [
                   _c("legend", { staticClass: "text-bold" }, [
-                    _vm._v("Điền đầy đủ thông tin")
+                    _vm._v(
+                      "Tên chủ đề: " + _vm._s(_vm.dataEditTopic.name_topic)
+                    )
+                  ]),
+                  _vm._v(" "),
+                  _c("legend", { staticClass: "text-bold" }, [
+                    _vm._v("Mô tả: ")
+                  ]),
+                  _vm._v(" "),
+                  _c("p", [_vm._v(_vm._s(_vm.dataEditTopic.describe))]),
+                  _vm._v(" "),
+                  _c("legend", { staticClass: "text-bold" }, [
+                    _vm._v(
+                      "Tên sinh viên: " + _vm._s(_vm.dataEditTopic.student_name)
+                    )
+                  ]),
+                  _c("span", [_vm._v(" dsadsa")]),
+                  _vm._v(" "),
+                  _c("legend", { staticClass: "text-bold" }, [
+                    _vm._v(
+                      "Giảng viên hướng dẫn: " +
+                        _vm._s(_vm.dataEditTopic.lecturer.name_lecturer_top_lec)
+                    )
                   ]),
                   _vm._v(" "),
                   _c("input", {
@@ -14638,41 +14651,7 @@ var render = function() {
                   _vm._v(" "),
                   _c("div", { staticClass: "form-group" }, [
                     _c("label", { staticClass: "control-label col-lg-2" }, [
-                      _vm._v("Tên lĩnh vực")
-                    ]),
-                    _vm._v(" "),
-                    _c("div", { staticClass: "col-lg-10" }, [
-                      _c("input", {
-                        directives: [
-                          {
-                            name: "model",
-                            rawName: "v-model",
-                            value: _vm.dataEdit.field_name,
-                            expression: "dataEdit.field_name"
-                          }
-                        ],
-                        staticClass: "form-control",
-                        attrs: { type: "text", name: "name_lecturer" },
-                        domProps: { value: _vm.dataEdit.field_name },
-                        on: {
-                          input: function($event) {
-                            if ($event.target.composing) {
-                              return
-                            }
-                            _vm.$set(
-                              _vm.dataEdit,
-                              "field_name",
-                              $event.target.value
-                            )
-                          }
-                        }
-                      })
-                    ])
-                  ]),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "form-group" }, [
-                    _c("label", { staticClass: "control-label col-lg-2" }, [
-                      _vm._v("Các giảng viên đăng ký")
+                      _vm._v("Trạng thái")
                     ]),
                     _vm._v(" "),
                     _c("div", { staticClass: "col-lg-10" }, [
@@ -14683,16 +14662,12 @@ var render = function() {
                             {
                               name: "model",
                               rawName: "v-model",
-                              value: _vm.dataEdit.listLecturer,
-                              expression: "dataEdit.listLecturer"
+                              value: _vm.dataEditTopic.status,
+                              expression: "dataEditTopic.status"
                             }
                           ],
                           staticClass: "form-control",
-                          attrs: {
-                            type: "text",
-                            multiple: "",
-                            id: "selectLecturer"
-                          },
+                          attrs: { type: "text" },
                           on: {
                             change: function($event) {
                               var $$selectedVal = Array.prototype.filter
@@ -14704,8 +14679,8 @@ var render = function() {
                                   return val
                                 })
                               _vm.$set(
-                                _vm.dataEdit,
-                                "listLecturer",
+                                _vm.dataEditTopic,
+                                "status",
                                 $event.target.multiple
                                   ? $$selectedVal
                                   : $$selectedVal[0]
@@ -14713,15 +14688,68 @@ var render = function() {
                             }
                           }
                         },
-                        _vm._l(_vm.lecturers, function(lecturer) {
-                          return _c(
-                            "option",
-                            { domProps: { value: lecturer.id } },
-                            [_vm._v(_vm._s(lecturer.name_lecturer))]
-                          )
-                        })
+                        [
+                          _c("option", { attrs: { value: "0" } }, [
+                            _vm._v(" Đang đợi duyệt")
+                          ]),
+                          _vm._v(" "),
+                          _c("option", { attrs: { value: "1" } }, [
+                            _vm._v(" Đã hoàn thành")
+                          ]),
+                          _vm._v(" "),
+                          _c("option", { attrs: { value: "2" } }, [
+                            _vm._v(" Đã hủy")
+                          ])
+                        ]
                       )
                     ])
+                  ]),
+                  _vm._v(" "),
+                  _vm.dataEditTopic.status == 1
+                    ? _c("div", { staticClass: "form-group" }, [
+                        _c("label", { staticClass: "control-label col-lg-2" }, [
+                          _vm._v("Điểm")
+                        ]),
+                        _vm._v(" "),
+                        _c("div", { staticClass: "col-lg-10" }, [
+                          _c("input", {
+                            directives: [
+                              {
+                                name: "model",
+                                rawName: "v-model",
+                                value: _vm.dataEditTopic.scores,
+                                expression: "dataEditTopic.scores"
+                              }
+                            ],
+                            staticClass: "form-control",
+                            attrs: { type: "text", max: "10", min: "0" },
+                            domProps: { value: _vm.dataEditTopic.scores },
+                            on: {
+                              input: function($event) {
+                                if ($event.target.composing) {
+                                  return
+                                }
+                                _vm.$set(
+                                  _vm.dataEditTopic,
+                                  "scores",
+                                  $event.target.value
+                                )
+                              }
+                            }
+                          })
+                        ])
+                      ])
+                    : _vm._e(),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "form-group" }, [
+                    _c("label", { staticClass: "control-label col-lg-2" }, [
+                      _vm._v("Danh sách giảng viên bảo vệ")
+                    ]),
+                    _vm._v(" "),
+                    _c("div", {
+                      staticClass: "col-lg-10",
+                      domProps: { innerHTML: _vm._s(_vm.listLecturer) }
+                    })
                   ])
                 ])
               ]),
@@ -14762,73 +14790,6 @@ var render = function() {
           ])
         ])
       ])
-    ]),
-    _vm._v(" "),
-    _c("div", { staticClass: "modal fade", attrs: { id: "modalAdd" } }, [
-      _c("div", { staticClass: "modal-dialog modal-lg" }, [
-        _c("div", { staticClass: "modal-content" }, [
-          _vm._m(5),
-          _vm._v(" "),
-          _c(
-            "form",
-            {
-              staticClass: "form-horizontal",
-              attrs: { id: "form_add", action: "#" },
-              on: {
-                submit: function($event) {
-                  $event.preventDefault()
-                  return _vm.submitAdd($event)
-                }
-              }
-            },
-            [
-              _c("div", { staticClass: "modal-body" }, [
-                _c("fieldset", { staticClass: "content-group" }, [
-                  _c("legend", { staticClass: "text-bold" }, [
-                    _vm._v("Điền đầy đủ thông tin")
-                  ]),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "form-group" }, [
-                    _c("label", { staticClass: "control-label col-lg-2" }, [
-                      _vm._v("Tên lĩnh vực")
-                    ]),
-                    _vm._v(" "),
-                    _c("div", { staticClass: "col-lg-10" }, [
-                      _c("input", {
-                        directives: [
-                          {
-                            name: "model",
-                            rawName: "v-model",
-                            value: _vm.dataAdd.field_name,
-                            expression: "dataAdd.field_name"
-                          }
-                        ],
-                        staticClass: "form-control",
-                        attrs: { type: "text", name: "name_lecturer" },
-                        domProps: { value: _vm.dataAdd.field_name },
-                        on: {
-                          input: function($event) {
-                            if ($event.target.composing) {
-                              return
-                            }
-                            _vm.$set(
-                              _vm.dataAdd,
-                              "field_name",
-                              $event.target.value
-                            )
-                          }
-                        }
-                      })
-                    ])
-                  ])
-                ])
-              ]),
-              _vm._v(" "),
-              _vm._m(6)
-            ]
-          )
-        ])
-      ])
     ])
   ])
 }
@@ -14847,9 +14808,15 @@ var staticRenderFns = [
       [
         _c("thead", [
           _c("tr", [
-            _c("th", [_vm._v("Id lĩnh vực")]),
+            _c("th", [_vm._v("Tên topic")]),
             _vm._v(" "),
-            _c("th", [_vm._v("Tên Lĩnh vực")]),
+            _c("th", [_vm._v("Sinh viên đăng ký")]),
+            _vm._v(" "),
+            _c("th", [_vm._v("Giảng viên hướng dẫn")]),
+            _vm._v(" "),
+            _c("th", [_vm._v("Tình trạng")]),
+            _vm._v(" "),
+            _c("th", [_vm._v("Qua môn")]),
             _vm._v(" "),
             _c("th", [_vm._v("Action")])
           ])
@@ -14875,7 +14842,7 @@ var staticRenderFns = [
       _vm._v(" "),
       _c("h5", { staticClass: "modal-title" }, [
         _c("i", { staticClass: "icon-menu7" }),
-        _vm._v("  Thông tin sinh viên")
+        _vm._v("  Thông tin chủ đề")
       ])
     ])
   },
@@ -14930,12 +14897,446 @@ var staticRenderFns = [
       _vm._v(" "),
       _c("hr")
     ])
+  }
+]
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-317df4f2", module.exports)
+  }
+}
+
+/***/ }),
+/* 63 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(9)
+/* script */
+var __vue_script__ = __webpack_require__(64)
+/* template */
+var __vue_template__ = __webpack_require__(65)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources\\assets\\js\\admin\\AdministratorController\\protectionManageId\\components\\dataEditTime.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-46ede603", Component.options)
+  } else {
+    hotAPI.reload("data-v-46ede603", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 64 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    mounted: function mounted() {
+        this.getLecturers();
+
+        this.dataEditTime.timeStart = this.time_start;
+        this.dataEditTime.timeEnd = this.time_end;
+        this.dataEditTime.detail = this.detail;
+        this.dataEditTime.listLecturer = this.listlecturer.split(",");
+    },
+    data: function data() {
+        return {
+            dataEditTime: {
+                timeStart: "",
+                timeEnd: "",
+                detail: "",
+                listLecturer: []
+            },
+            lecturers: []
+        };
+    },
+
+    props: ["time_start", "time_end", "id_p", "detail", "listlecturer"],
+    methods: {
+        getLecturers: function getLecturers() {
+            var _this = this;
+
+            axios.get("/api/lecturer").then(function (data) {
+                console.log(data);
+                _this.lecturers = data.data;
+            }).catch(function (err) {
+                console.log(err);
+            });
+        },
+        submitEditTime: function submitEditTime() {
+            axios.put("/api/protection/" + this.id_p, this.dataEditTime).then(function (data) {
+
+                swal({
+                    title: "Thành công!",
+                    text: "Update thông tin thành công!",
+                    confirmButtonColor: "#66BB6A",
+                    type: "success"
+                });
+            }).catch(function (err) {
+                console.log(err);
+            });
+        },
+        successDelete: function successDelete() {
+
+            axios.delete("/api/protection/" + this.id_p, {
+                params: {
+                    id: this.id_p
+                }
+            }).then(function (data) {
+
+                swal({
+                    title: "Thành công!",
+                    text: "Topic đã được xóa!!",
+                    confirmButtonColor: "#66BB6A",
+                    type: "success"
+                });
+                $("#modalDelete").modal("hide");
+                setTimeout(function () {
+                    window.location = "/quan-ly-dot-bao-ve";
+                }, 2000);
+            }).catch(function (err) {
+                console.log(err);
+                swal({
+                    title: "Oops...",
+                    text: "Đã có lỗi xảy ra!",
+                    confirmButtonColor: "#EF5350",
+                    type: "error"
+                });
+            });
+        },
+        showModel: function showModel() {
+
+            $("#modalDelete").modal("show");
+        }
+    }
+});
+
+/***/ }),
+/* 65 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "form",
+    {
+      staticClass: "form-horizontal",
+      on: {
+        submit: function($event) {
+          $event.preventDefault()
+          return _vm.submitEditTime($event)
+        }
+      }
+    },
+    [
+      _c("fieldset", { staticClass: "content-group" }, [
+        _c("legend", { staticClass: "text-bold" }, [
+          _vm._v("Thông tin về đợt bảo về")
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "form-group" }, [
+          _c("label", { staticClass: "control-label col-lg-2" }, [
+            _vm._v("Thời gian bắt đầu")
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "col-lg-10" }, [
+            _c("input", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.dataEditTime.timeStart,
+                  expression: "dataEditTime.timeStart"
+                }
+              ],
+              staticClass: "form-control",
+              attrs: { type: "date" },
+              domProps: { value: _vm.dataEditTime.timeStart },
+              on: {
+                input: function($event) {
+                  if ($event.target.composing) {
+                    return
+                  }
+                  _vm.$set(_vm.dataEditTime, "timeStart", $event.target.value)
+                }
+              }
+            })
+          ])
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "form-group" }, [
+          _c("label", { staticClass: "control-label col-lg-2" }, [
+            _vm._v("Thời gian kết thúc")
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "col-lg-10" }, [
+            _c("input", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.dataEditTime.timeEnd,
+                  expression: "dataEditTime.timeEnd"
+                }
+              ],
+              staticClass: "form-control",
+              attrs: { type: "date" },
+              domProps: { value: _vm.dataEditTime.timeEnd },
+              on: {
+                input: function($event) {
+                  if ($event.target.composing) {
+                    return
+                  }
+                  _vm.$set(_vm.dataEditTime, "timeEnd", $event.target.value)
+                }
+              }
+            })
+          ])
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "form-group" }, [
+          _c("label", { staticClass: "control-label col-lg-2" }, [
+            _vm._v("Danh sách giáo viên phản biện")
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "col-lg-10" }, [
+            _c(
+              "select",
+              {
+                directives: [
+                  {
+                    name: "model",
+                    rawName: "v-model",
+                    value: _vm.dataEditTime.listLecturer,
+                    expression: "dataEditTime.listLecturer"
+                  }
+                ],
+                staticClass: "form-control",
+                attrs: { name: "", multiple: "" },
+                on: {
+                  change: function($event) {
+                    var $$selectedVal = Array.prototype.filter
+                      .call($event.target.options, function(o) {
+                        return o.selected
+                      })
+                      .map(function(o) {
+                        var val = "_value" in o ? o._value : o.value
+                        return val
+                      })
+                    _vm.$set(
+                      _vm.dataEditTime,
+                      "listLecturer",
+                      $event.target.multiple ? $$selectedVal : $$selectedVal[0]
+                    )
+                  }
+                }
+              },
+              _vm._l(_vm.lecturers, function(lecturer) {
+                return _c("option", { domProps: { value: lecturer.id } }, [
+                  _vm._v(_vm._s(lecturer.name_lecturer))
+                ])
+              })
+            )
+          ])
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "form-group" }, [
+          _c("label", { staticClass: "control-label col-lg-2" }, [
+            _vm._v("Mô tả")
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "col-lg-10" }, [
+            _c("textarea", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.dataEditTime.detail,
+                  expression: "dataEditTime.detail"
+                }
+              ],
+              staticClass: "form-control",
+              domProps: { value: _vm.dataEditTime.detail },
+              on: {
+                input: function($event) {
+                  if ($event.target.composing) {
+                    return
+                  }
+                  _vm.$set(_vm.dataEditTime, "detail", $event.target.value)
+                }
+              }
+            })
+          ])
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "text-right" }, [
+          _vm._m(0),
+          _vm._v(" "),
+          _c(
+            "button",
+            {
+              staticClass: "btn btn-danger",
+              attrs: { type: "button" },
+              on: { click: _vm.showModel }
+            },
+            [
+              _vm._v("Xóa đợt bảo vệ"),
+              _c("i", { staticClass: "icon-arrow-right14 position-right" })
+            ]
+          )
+        ])
+      ]),
+      _vm._v(" "),
+      _c("div", { staticClass: "modal fade", attrs: { id: "modalDelete" } }, [
+        _c("div", { staticClass: "modal-dialog" }, [
+          _c("div", { staticClass: "modal-content" }, [
+            _vm._m(1),
+            _vm._v(" "),
+            _vm._m(2),
+            _vm._v(" "),
+            _c("div", { staticClass: "modal-footer" }, [
+              _c(
+                "button",
+                {
+                  staticClass: "btn btn-link",
+                  attrs: { type: "button", "data-dismiss": "modal" }
+                },
+                [_vm._v("Close")]
+              ),
+              _vm._v(" "),
+              _c(
+                "button",
+                {
+                  staticClass: "btn btn-danger",
+                  attrs: { type: "button", id: "deleteButton" },
+                  on: { click: _vm.successDelete }
+                },
+                [_vm._v("Xóa")]
+              )
+            ])
+          ])
+        ])
+      ])
+    ]
+  )
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "button",
+      { staticClass: "btn btn-primary", attrs: { type: "submit" } },
+      [
+        _vm._v("Lưu chỉnh sửa "),
+        _c("i", { staticClass: "icon-arrow-right14 position-right" })
+      ]
+    )
   },
   function() {
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "modal-header" }, [
+    return _c("div", { staticClass: "modal-header bg-danger" }, [
       _c(
         "button",
         {
@@ -14945,31 +15346,21 @@ var staticRenderFns = [
         [_vm._v("×")]
       ),
       _vm._v(" "),
-      _c("h5", { staticClass: "modal-title" }, [
-        _c("i", { staticClass: "icon-menu7" }),
-        _vm._v("  Điền thông tin lĩnh vực")
-      ])
+      _c("h6", { staticClass: "modal-title" }, [_vm._v("Xóa lĩnh vực")])
     ])
   },
   function() {
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "modal-footer" }, [
-      _c(
-        "button",
-        { staticClass: "btn btn-link", attrs: { "data-dismiss": "modal" } },
-        [_c("i", { staticClass: "icon-cross" }), _vm._v(" Đóng")]
-      ),
+    return _c("div", { staticClass: "modal-body" }, [
+      _c("h6", { staticClass: "text-semibold" }, [_vm._v("Bạn chắc chắn chứ")]),
       _vm._v(" "),
-      _c(
-        "button",
-        {
-          staticClass: "btn btn-primary",
-          attrs: { id: "submit_add", type: "submit" }
-        },
-        [_c("i", { staticClass: "icon-check" }), _vm._v(" Lưu")]
-      )
+      _c("p", [
+        _vm._v("Sau khi xóa, sẽ không thể phục hồi dữ liệu. Bạn chắc chắn chứ?")
+      ]),
+      _vm._v(" "),
+      _c("hr")
     ])
   }
 ]
@@ -14978,7 +15369,7 @@ module.exports = { render: render, staticRenderFns: staticRenderFns }
 if (false) {
   module.hot.accept()
   if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-379fc5a6", module.exports)
+    require("vue-hot-reload-api")      .rerender("data-v-46ede603", module.exports)
   }
 }
 

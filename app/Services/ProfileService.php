@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Http\Requests\FieldRequest;
 use App\Http\Requests\LecturerRequest;
+use App\Http\Requests\ProtectionRequest;
 use App\Http\Requests\StudentRequest;
 use App\Models\Branch;
 use App\Models\Course;
@@ -15,6 +16,7 @@ use App\Models\Protection;
 use App\Models\Secretary;
 use App\Models\Student;
 use App\Models\Topic;
+use App\Models\TopicProtection;
 use App\Models\Users;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -135,40 +137,31 @@ class ProfileService
     public function getLecturersInfo()
     {
         $lecturer = Lecturer::leftjoin("lecturer_protection","lecturer_protection.id_lecturer","lecturers.id")
-            ->leftjoin("departments","departments.id","lecturers.id_department")
+            ->join("departments","departments.id","lecturers.id_department")
             ->leftjoin("fields","fields.id","lecturers.id_field")
-            ->leftjoin("protections","protections.id","lecturer_protection.id_protection")
-            ->leftjoin("topics","topics.id_lecturer","lecturers.id")
             ->leftjoin("users","users.id","lecturers.id_user")
             ->select("lecturers.*",
-                "protections.time_start", "protections.time_end",
-                "topics.name_topic",
                 "fields.field_name",
                 "departments.department_name",
                 "users.email"
                 )
-
-            ->get();
+            ->distinct()->get();
         return $lecturer;
     }
 
     public function getLecturerInfo($id)
     {
         $lecturer = Lecturer::where("lecturers.id",$id)->leftjoin("lecturer_protection","lecturer_protection.id_lecturer","lecturers.id")
-        ->leftjoin("departments","departments.id","lecturers.id_department")
-        ->leftjoin("fields","fields.id","lecturers.id_field")
-        ->leftjoin("protections","protections.id","lecturer_protection.id_protection")
-        ->leftjoin("topics","topics.id_lecturer","lecturers.id")
-        ->leftjoin("users","users.id","lecturers.id_user")
-        ->select("lecturers.*",
-            "protections.time_start", "protections.time_end",
-            "topics.name_topic",
-            "fields.field_name",
-            "departments.department_name",
-            "users.email"
-        )
-
-        ->first();
+            ->join("departments","departments.id","lecturers.id_department")
+            ->leftjoin("fields","fields.id","lecturers.id_field")
+            ->leftjoin("users","users.id","lecturers.id_user")
+            ->select("lecturers.*",
+                "fields.field_name",
+                "departments.department_name",
+                "users.email"
+            )
+            ->distinct()
+                ->first();
         return $lecturer;
     }
 
@@ -214,6 +207,7 @@ class ProfileService
             $user->password = Hash::make($request->input("password"));
         }
         $lecturer->update();
+        return $lecturer;
     }
     //
 
@@ -391,7 +385,7 @@ class ProfileService
     public function getFieldInfo($id)
     {
 
-        $fields = Field::where("fields.id",$id)->join("lecturers","lecturers.id_field","fields.id")->select("fields.*","lecturers.name_lecturer",DB::raw("lecturers.id as id_lecturer"))->get();
+        $fields = Field::where("fields.id",$id)->leftjoin("lecturers","lecturers.id_field","fields.id")->select("fields.*","lecturers.name_lecturer",DB::raw("lecturers.id as id_lecturer"))->get();
         // 1 arr
 
         $field = new \stdClass();
@@ -435,6 +429,19 @@ class ProfileService
         {
             $field->field_name = $request->input("field_name");
         }
+        if($request->has("dataDelete"))
+        {
+            foreach ($request->input("dataDelete") as $item) {
+                Lecturer::where("id",$item)->update(["id_field" => null]);
+            }
+        }
+        if($request->has("dataNewAdd"))
+        {
+            foreach ($request->input("dataNewAdd") as $item) {
+                Lecturer::where("id",$item)->update(["id_field" => $id]);
+            }
+        }
+
 
         $field->update();
     }
@@ -468,16 +475,7 @@ class ProfileService
     // dot bao ve
     public function getProtections()
     {
-        $protection = Protection::
-            join("lecturer_protection","protections.id","lecturer_protection.id_protection")
-        ->join("lecturers","lecturers.id","lecturer_protection.id_lecturer")
-
-            ->select("lecturers.name_lecturer",
-                "protections.time_start",
-                "protections.time_end",
-            "lecturer_protection.*"
-            )
-            ->get();
+        $protection = Protection::get();
         return $protection;
     }
 
@@ -485,16 +483,65 @@ class ProfileService
     {
 
         $protection = Protection::where("protections.id",$id)->
-        join("lecturer_protection","protections.id","lecturer_protection.id_protection")
-            ->join("lecturers","lecturers.id","lecturer_protection.id_lecturer")
-
-            ->select("lecturers.name_lecturer",
-                "protections.time_start",
-                "protections.time_end",
-                "lecturer_protection.*"
+        leftjoin("lecturer_protection","protections.id","lecturer_protection.id_protection")
+            ->leftjoin("lecturers","lecturers.id","lecturer_protection.id_lecturer")// danh sach hoi dong bv
+            ->leftjoin("topic_protection","topic_protection.id_protection","protections.id")// lay danh sach top pic
+            ->leftjoin("topics","topics.id","topic_protection.id_topic")
+            ->leftjoin("students","students.id","topic_protection.id_student")
+            ->leftjoin(DB::raw("lecturers as topic_lec"), "topic_lec.id", "topics.id_lecturer")
+            ->select("lecturers.name_lecturer", // ten giang vien
+                "protections.*",//thong tin dot bao ve
+                "lecturer_protection.id_lecturer", // id_giang vien
+            "topic_protection.acceptance", // Tình trạng topic
+                "topics.name_topic",// ten topic
+                "topics.describe", // mo ta topic,
+            "students.student_name",
+            "topic_protection.id_topic",//id_topic,
+            "topic_protection.scores",
+                "topic_protection.pass",
+                DB::raw("topic_lec.id as id_top_lec"),// id_giang vien huong dan topic
+                DB::raw("topic_lec.name_lecturer as name_lecturer_top_lec") // ten giang vien huong dan
             )
-            ->first();
-        return $protection;
+            ->get();
+        $timeStart = $protection[0]->time_start;
+        $timeEnd = $protection[0]->time_end;
+        $detail = $protection[0]->detail;
+
+        $listTopic = [];
+        foreach ($protection as $item)
+        {
+
+                $topic = [];
+                $topic["scores"] = $item->scores;
+                $topic["name_topic"] = $item->name_topic;
+                $topic["describe"] = $item->describe;
+                $topic["id"] = $item->id_topic;// id topic
+                $topic["listLecturer"] = []; // danh sach nguoi nguoi phan bien
+                $topic["lecturer"] = [
+                    "id" => $item->id_top_lec,
+                    "name_lecturer_top_lec" => $item->name_lecturer_top_lec
+                ];
+                $topic["pass"] = $item->pass;
+                $topic["student_name"] = $item->student_name;
+                $topic["status"] = $item->acceptance;
+                if($this->isIn($topic,"id",$listTopic) === false)
+                {
+                    $listTopic[] = $topic;
+                }
+
+        }
+        foreach ($protection as $item)
+        {
+
+            $index = $this->isInObject($item,"id",$listTopic);
+
+            if($index !==false)
+            {
+                $listTopic[$index]["listLecturer"][] = ["name_lecturer" => $item->name_lecturer,"id_lecturer" => $item->id_lecturer];
+            }
+
+        }
+        return ["timeStart" => $timeStart,"timeEnd" => $timeEnd,"topics" => $listTopic,"id"=> $id,"detail" =>$detail];
     }
 
     public function updateProtectionAsColumn($id,$data,$column)
@@ -504,30 +551,84 @@ class ProfileService
         $protection->$column = $data;
         $protection->update();
     }
-
-    public function updateProtection($id,Request $request)
+    public function updateProtection($id,ProtectionRequest $request)
     {
-        $protection = Protection::findOrFail($id);
-        if($request->has("time_start"))
-        {
-            $protection->time_start = $request->input("time_start");
-        }
-        if($request->has("time_end"))
-        {
-            $protection->time_end = $request->input("time_end");
-        }
 
+        $protection = Protection::findOrFail($id);
+
+        if($request->has("timeStart"))
+        {
+            $protection->time_start = $request->input("timeStart");
+        }
+        if($request->has("timeEnd"))
+        {
+            $protection->time_end = $request->input("timeEnd");
+        }
+        if($request->has("detail"))
+        {
+            $protection->detail = $request->input("detail");
+        }
+       if($request->has("idTopic"))
+       {
+
+           if($request->has("scores"))
+           {
+
+                if((float)$request->input("scores") > 5)
+                {
+                    TopicProtection::where("id_topic",$request->input("idTopic"))->update(["scores" => $request->input("scores"),"pass" =>1]);
+                }
+                else{
+                    TopicProtection::where("id_topic",$request->input("idTopic"))->update(["scores" => $request->input("scores"),"pass" =>0]);
+                }
+               TopicProtection::where("id_topic",$request->input("idTopic"))->update(["acceptance" => 1]);
+           }
+           if($request->has("status"))
+           {
+                if($request->input("status") == 2 || $request->input("status") == 0)
+                {
+                    TopicProtection::where("id_topic",$request->input("idTopic"))->update(["acceptance" => $request->input("status"),"pass" =>0]);
+                }
+
+           }
+
+
+       }
+        if($request->has("listLecturer"))
+        {
+            LecturerProtection::where("id_protection",$id)->delete();
+            foreach ($request->listLecturer as $item)
+            {
+                $l = new LecturerProtection();
+                $l->id_protection = $id;
+                $l->id_lecturer = $item;
+                $l->save();
+            }
+        }
 
         $protection->update();
+        return $protection;
     }
     //
 
-    public function addProtection(Request $request)
+    public function addProtection(ProtectionRequest $request)
     {
         $protection = new Protection();
-        $protection->time_start = $request->input("time_start");
-        $protection->time_end = $request->input("time_end");
+        $protection->time_start = $request->input("timeStart");
+        $protection->time_end = $request->input("timeEnd");
+        $protection->detail = $request->detail;
+
+
         $protection->save();
+        $id = $protection->id;
+        foreach ($request->listLecturer as $item)
+        {
+            $l = new LecturerProtection();
+            $l->id_protection = $id;
+            $l->id_lecturer = $item;
+
+            $l->save();
+        }
 
     }
 
@@ -538,14 +639,26 @@ class ProfileService
             $protection = new Protection();
             $protection->field_name = $item->time_start;
             $protection->field_name = $item->time_end;
+
             $protection->save();
         }
     }
 
-    public function deleteProtection($id)
+    public function deleteProtection($id,ProtectionRequest $request)
     {
-        $protections = Protection::FindorFail($id);
-        $protections->delete();
+        if($request->has("idTopic"))
+        {
+            $tp = TopicProtection::findOrFail($request->input("idTopic"));
+            $tp->delete();
+        }
+        if($request->has("id"))
+        {
+            $protections = Protection::findOrFail($id);
+            $protections->delete();
+        }
+        return ["sc" => "123"];
+//        $protections = Protection::FindorFail($id);
+//        $protections->delete();
     }
 
     // de tai -topic
@@ -584,7 +697,7 @@ class ProfileService
         $topic->update();
     }
 
-    public function updateTopic($id,Request $request)
+    public function updateTopic(Request $request,$id)
     {
         $topic = Topic::findOrFail($id);
         if($request->has("id_lecturer"))
@@ -599,7 +712,6 @@ class ProfileService
         {
             $topic->accept = $request->input("accept");
         }
-
 
         $topic->update();
     }
@@ -702,4 +814,43 @@ class ProfileService
     {
         return Branch::findOrFail($id);
     }
+
+
+    /// su dung
+    private function isIn($value,$key,array $arr)
+    {
+        if(count($arr) < 1)
+        {
+            return false;
+        }
+        foreach ($arr as $index=>$item)
+        {
+
+            if($value[$key] == $item[$key])
+            {
+
+                return $index;
+            }
+        }
+        return false;
+    }
+    private function isInObject($value,$key,array $arr)
+    {
+        if(count($arr) < 1)
+        {
+            return false;
+        }
+        foreach ($arr as $index=>$item)
+        {
+
+            if($value->$key == $item[$key])
+            {
+
+                return $index;
+            }
+        }
+        return false;
+    }
+
+
 }

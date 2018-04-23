@@ -13547,7 +13547,13 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                             className: 'btn btn-default'
                         }
                     },
-                    buttons: [, {
+                    buttons: [{
+                        text: 'Tải xuống Excel',
+                        className: 'btn bg-success-400',
+                        action: function action(e, dt, node, config) {
+                            window.open('/excel/lecturer', '_blank');
+                        }
+                    }, {
                         text: 'Thêm giảng viên',
                         className: 'btn bg-teal-400',
                         action: function action(e, dt, node, config) {
@@ -13559,12 +13565,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                         className: 'btn bg-info-400',
                         action: function action(e, dt, node, config) {
                             $("#modal_form_inline").modal("show");
-                        }
-                    }, {
-                        text: 'Tải File Excel',
-                        className: 'btn bg-success-400',
-                        action: function action(e, dt, node, config) {
-                            window.open('/excel/lecturer', '_blank');
                         }
                     }]
                 }
@@ -13604,10 +13604,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             });
         },
         filData: function filData(data_lec) {
-            // name_lecturer
-            //id
-            //department_name - khoa
-            // chu de field_name
+
             var td = data_lec.map(function (value, index) {
                 var htmlAction = '';
                 return [value.name_lecturer, value.department_name, value.email, value.email_address_lecturer, '<ul style="text-align: center;" class="icons-list">' + '   <li class="dropdown">' + '       <a href="#" class="dropdown-toggle" data-toggle="dropdown">' + '           <i class="icon-menu9"></i>' + '       </a>' + '<ul class="dropdown-menu dropdown-menu-right">' + '<li>' + '   <a href="#" onclick="showModalLec(' + value.id + ')">' + '       <i class=" icon-user"></i> Thông tin chi tiết' + '   </a>' + '</li>' + '<li>' + '   <a href="#" onclick="delete_lec(' + value.id + ')">' + '<i class="icon-user-cancel"></i> Xóa' + '</a>' + '</li>' + '</ul>' + '</li>' + '</ul>'];

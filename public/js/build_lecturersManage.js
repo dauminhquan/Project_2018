@@ -20,23 +20,25 @@ function showModalLec(i) {
                 }
 
             }
-            console.log(html)
+
             $("#form_infor select[name='id_department']").html(html)
 
         }).catch((err) => {
             console.log(err)
         })
+
         axios.get("/api/field").then((data2) => {
 
             var html =''
             for (var z = 0;z < data2.data.length;z++)
             {
-                if(data2.data[z].id_field == data.data.id_field)
+
+                if(data2.data[z].id == data.data.id_field)
                 {
-                    html+="<option value='"+data2.data[z].id_field+"' selected>"+data2.data[z].field_name+"</option>"
+                    html+="<option value='"+data2.data[z].id+"' selected>"+data2.data[z].field_name+"</option>"
                 }
                 else {
-                    html+="<option value='"+data2.data[z].id_field+"'>"+data2.data[z].field_name+"</option>"
+                    html+="<option value='"+data2.data[z].id+"'>"+data2.data[z].field_name+"</option>"
                 }
 
             }
@@ -49,7 +51,7 @@ function showModalLec(i) {
     }).catch((err) => {
         console.log(err)
     })
-    console.log(i)
+
     // lay thong
 
 }
@@ -57,6 +59,7 @@ $(document).ready(function () {
     $("#submit_edit").click(function () {
 
         var id = $("#id_lec").val()
+
         axios.put("/api/lecturer/"+id,{
             name_lecturer : $("#form_infor input[name='name_lecturer']").val(),
             address_lecturer: $("#form_infor input[name='address_lecturer']").val(),
@@ -65,6 +68,7 @@ $(document).ready(function () {
             id_department: $("#form_infor select[name='id_department']").val(),
             id_field :$("#form_infor select[name='id_field']").val()
         }).then((data)=> {
+
             axios.get("/api/lecturer").then((data) => {
                 var data1 = filData(data.data)
 
@@ -120,11 +124,11 @@ function filData(data_lec){
         ]
     })
 
-    console.log(td)
+
     return td;
 }
 function delete_lec(id) {
-    console.log(id)
+
     $("#delete_button").attr("data",id)
     $("#modal_theme_danger").modal("show")
 

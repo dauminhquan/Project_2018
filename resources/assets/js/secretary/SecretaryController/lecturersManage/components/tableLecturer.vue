@@ -285,6 +285,13 @@ console.log(response.data)
                             }
                         },
                         buttons: [
+                            {
+                                text: 'Tải xuống Excel',
+                                className: 'btn bg-success-400',
+                                action: function (e, dt, node, config) {
+                                    window.open('/excel/lecturer', '_blank');
+                                }
+                            }
                             ,
                             {
                                 text: 'Thêm giảng viên',
@@ -299,12 +306,6 @@ console.log(response.data)
                                 className: 'btn bg-info-400',
                                 action: function(e, dt, node, config) {
                                      $("#modal_form_inline").modal("show")
-                                }
-                            }, {
-                                text: 'Tải File Excel',
-                                className: 'btn bg-success-400',
-                                action: function (e, dt, node, config) {
-                                    window.open('/excel/lecturer', '_blank');
                                 }
                             }
                         ]
@@ -344,10 +345,7 @@ console.log(response.data)
 
             },
             filData(data_lec){
-                // name_lecturer
-                //id
-                //department_name - khoa
-                // chu de field_name
+
                 var td = data_lec.map(function (value,index) {
                     var htmlAction = ''
                     return [

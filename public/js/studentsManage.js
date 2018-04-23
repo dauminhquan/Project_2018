@@ -14548,7 +14548,13 @@ window.store = new Vuex.Store({
                             className: 'btn btn-default'
                         }
                     },
-                    buttons: [{ extend: 'copy' }, { extend: 'csv' }, { extend: 'excel' }, { extend: 'pdf' }, { extend: 'print' }, {
+                    buttons: [{
+                        text: 'Tải xuống Excel',
+                        className: 'btn bg-success',
+                        action: function action(e, dt, node, config) {
+                            window.open('/excel/student', '_blank');
+                        }
+                    }, {
                         text: 'Thêm sinh viên',
                         className: 'btn bg-teal-400',
                         action: function action(e, dt, node, config) {
