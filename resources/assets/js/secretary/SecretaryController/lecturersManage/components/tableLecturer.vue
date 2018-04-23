@@ -285,15 +285,12 @@ console.log(response.data)
                             }
                         },
                         buttons: [
-                            {extend: 'copy'},
-                            {extend: 'csv'},
-                            {extend: 'excel'},
-                            {extend: 'pdf'},
-                            {extend: 'print'},
+                            ,
                             {
                                 text: 'Thêm giảng viên',
                                 className: 'btn bg-teal-400',
                                 action: function(e, dt, node, config) {
+
                                     $("#modal_add").modal("show")
                                 }
                             },
@@ -302,6 +299,12 @@ console.log(response.data)
                                 className: 'btn bg-info-400',
                                 action: function(e, dt, node, config) {
                                      $("#modal_form_inline").modal("show")
+                                }
+                            }, {
+                                text: 'Tải File Excel',
+                                className: 'btn bg-success-400',
+                                action: function (e, dt, node, config) {
+                                    window.open('/excel/lecturer', '_blank');
                                 }
                             }
                         ]

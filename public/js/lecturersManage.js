@@ -13547,10 +13547,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                             className: 'btn btn-default'
                         }
                     },
-                    buttons: [{ extend: 'copy' }, { extend: 'csv' }, { extend: 'excel' }, { extend: 'pdf' }, { extend: 'print' }, {
+                    buttons: [, {
                         text: 'Thêm giảng viên',
                         className: 'btn bg-teal-400',
                         action: function action(e, dt, node, config) {
+
                             $("#modal_add").modal("show");
                         }
                     }, {
@@ -13558,6 +13559,12 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                         className: 'btn bg-info-400',
                         action: function action(e, dt, node, config) {
                             $("#modal_form_inline").modal("show");
+                        }
+                    }, {
+                        text: 'Tải File Excel',
+                        className: 'btn bg-success-400',
+                        action: function action(e, dt, node, config) {
+                            window.open('/excel/lecturer', '_blank');
                         }
                     }]
                 }

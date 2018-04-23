@@ -141,7 +141,6 @@
     })
     export default {
 
-
         store: store,
         computed:{
             showIdEdit () {
@@ -158,8 +157,6 @@
                     })
                     return this.$store.state.idData
                 }
-
-
             }
         },
         mounted(){

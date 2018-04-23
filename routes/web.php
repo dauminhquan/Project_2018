@@ -11,6 +11,8 @@
 |
 */
 
+use Maatwebsite\Excel\Facades\Excel;
+
 Route::get('/', function () {
     return view('layout');
 });
@@ -25,7 +27,10 @@ Route::group(["prefix" => "api","name" =>"api.","namespace" => "Api"],function()
     Route::resource("branch","BranchController");
     Route::resource("field","FieldController");
 });
-
+// CSV
+Route::group(["prefix" => "excel"],function (){
+   Route::get("lecturer",["uses" => "ExcelController@lecturer"]);
+});
 
 
 
@@ -33,3 +38,4 @@ Route::group(["prefix" => "api","name" =>"api.","namespace" => "Api"],function()
 Route::get("quan-ly-giang-vien",["as" => "thuky.quanlygiangvien","uses" => "SecretaryController@lecturersManage"]);
 Route::get("quan-ly-sinh-vien",["as" => "thuky.quanlysinhvien","uses" => "SecretaryController@studentsManage"]);
 Route::get("quan-ly-linh-vuc",["as" => "thuky.quanlysinhvien","uses" => "SecretaryController@fieldsManage"]);
+
