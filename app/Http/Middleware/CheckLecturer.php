@@ -5,7 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Support\Facades\Auth;
 
-class CheckStudent
+class CheckLecturer
 {
     /**
      * Handle an incoming request.
@@ -16,10 +16,13 @@ class CheckStudent
      */
     public function handle($request, Closure $next)
     {
-        if(Auth::guard("student")->check())
+        if(Auth::guard("employ")->check())
         {
-            return $next($request);
+            if(Auth::guard("employ")->user()->auth == 2)
+            {
+                return $next($request);
+            }
         }
-       return  redirect()->route("auth.login");
+        return  redirect()->route("auth.login");
     }
 }

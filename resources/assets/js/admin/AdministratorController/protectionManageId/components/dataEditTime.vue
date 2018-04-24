@@ -7,13 +7,13 @@
             <div class="form-group">
                 <label class="control-label col-lg-2">Thời gian bắt đầu</label>
                 <div class="col-lg-10">
-                    <input type="date" v-model="dataEditTime.timeStart"  class="form-control">
+                    <input type="date" required v-model="dataEditTime.timeStart"  class="form-control">
                 </div>
             </div>
             <div class="form-group">
                 <label class="control-label col-lg-2">Thời gian kết thúc</label>
                 <div class="col-lg-10">
-                    <input type="date" v-model="dataEditTime.timeEnd" class="form-control">
+                    <input type="date" required v-model="dataEditTime.timeEnd" class="form-control">
                 </div>
             </div>
             <div class="form-group">
@@ -27,7 +27,7 @@
             <div class="form-group">
                 <label class="control-label col-lg-2">Mô tả</label>
                 <div class="col-lg-10">
-                    <textarea class="form-control" v-model="dataEditTime.detail"></textarea>
+                    <textarea class="form-control" required v-model="dataEditTime.detail"></textarea>
                 </div>
             </div>
             <div class="text-right">

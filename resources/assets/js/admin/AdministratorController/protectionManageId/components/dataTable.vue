@@ -45,15 +45,27 @@
                                         </select>
                                     </div>
                                 </div>
+                                <div class="form-group" v-if="dataEditTopic.status == 0">
+                                    <label class="control-label col-lg-2">Thời gian bắt đầu bảo vệ</label>
+                                    <div class="col-lg-10">
+                                        <input v-model="dataEditTopic.time_run" type="datetime-local" class="form-control" />
+                                    </div>
+                                </div>
+                                <div class="form-group" v-if="dataEditTopic.status == 0">
+                                    <label class="control-label col-lg-2">Địa điểm bảo vệ</label>
+                                    <div class="col-lg-10">
+                                        <input v-model="dataEditTopic.place" class="form-control"></input>
+                                    </div>
+                                </div>
                                 <div class="form-group" v-if="dataEditTopic.status == 1">
                                     <label class="control-label col-lg-2">Điểm</label>
                                     <div class="col-lg-10">
-                                        <input type="text" v-model="dataEditTopic.scores" max="10" min="0"   class="form-control" />
+                                        <input type="number" step="0.01" v-model="dataEditTopic.scores" max="10" min="0"   class="form-control" />
 
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label class="control-label col-lg-2">Danh sách giảng viên bảo vệ</label>
+                                    <label class="control-label col-lg-2">Danh sách giảng viên phản biện</label>
                                     <div class="col-lg-10" v-html="listLecturer">
 
                                     </div>
@@ -129,37 +141,37 @@
         computed:{
             showIdEdit () {
                 //thong tin topic co id
-
-                if(this.$store.state.idData != this.idEdit)
+                var idEdit_cr = this.$store.state.idData
+                for (var i = 0;i<this.infoDataJson.length;i++)
                 {
-                    var idEdit_cr = this.$store.state.idData
-                    for (var i = 0;i<this.infoDataJson.length;i++)
+                    if(this.infoDataJson[i].id = idEdit_cr)
                     {
-                        if(this.infoDataJson[i].id = idEdit_cr)
-                        {
 
-                            var rt = {
-                                listLecturer: [],//hoi dong bao ve
-                                status: "",
-                                scores: -1
-                            }
-                            rt.name_topic = this.infoDataJson[i].name_topic
-                            rt.lecturer = this.infoDataJson[i].lecturer
-                            rt.status = this.infoDataJson[i].status
-                            rt.scores = this.infoDataJson[i].scores
-                            rt.student_name = this.infoDataJson[i].student_name
-                            rt.describe = this.infoDataJson[i].describe
-                            rt.listLecturer = this.infoDataJson[i].listLecturer
-                            rt.idTopic = this.infoDataJson[i].id
-                            console.log(rt)
-                            this.dataEditTopic = rt
-
+                        var rt = {
+                            listLecturer: [],//hoi dong bao ve
+                            status: "",
+                            scores: -1
                         }
+                        rt.name_topic = this.infoDataJson[i].name_topic
+                        rt.lecturer = this.infoDataJson[i].lecturer
+                        rt.status = this.infoDataJson[i].status
+                        rt.scores = this.infoDataJson[i].scores
+                        rt.student_name = this.infoDataJson[i].student_name
+                        rt.describe = this.infoDataJson[i].describe
+                        rt.listLecturer = this.infoDataJson[i].listLecturer
+                        rt.idTopic = this.infoDataJson[i].id
+                        rt.time_run = this.infoDataJson[i].time_run.replace(" ","T")
+                        rt.place = this.infoDataJson[i].place
+
+                        this.dataEditTopic = rt
+                        console.log(this.dataEditTopic)
 
                     }
 
-                    return this.$store.state.idData
                 }
+
+                return this.$store.state.idData
+
 
 
             },
@@ -229,20 +241,45 @@
 
 
             submitEdit(){
-                console.log(this.dataEditTopic)
-                axios.put("/api/protection/"+this.id,this.dataEditTopic).then((data) => {
+                if(this.dataEditTopic.status == 0 && this.dataEditTopic.time_run != "" && this.dataEditTopic.place != "")
+                {
+                    axios.put("/api/protection/"+this.id,{
+                        idTopic: this.dataEditTopic.idTopic,
+                        time_run: this.dataEditTopic.time_run,
+                        place: this.dataEditTopic.place
+                    }).then((data) => {
 
-                    this.resetData()
-                    swal({
-                        title: "Thành công!",
-                        text: "Sửa lĩnh vực thành công!",
-                        confirmButtonColor: "#66BB6A",
-                        type: "success"
-                    });
-                    $("#modalInfo").modal("hide")
-                }).catch((err) => {
-                    console.log(err)
-                })
+                        this.resetData()
+                        swal({
+                            title: "Thành công!",
+                            text: "Hẹn thời gian thành công!",
+                            confirmButtonColor: "#66BB6A",
+                            type: "success"
+                        });
+                        $("#modalInfo").modal("hide")
+                    }).catch((err) => {
+                        console.log(err)
+                    })
+                }
+                else{
+                    axios.put("/api/protection/"+this.id,{
+                        idTopic: this.dataEditTopic.idTopic,
+                        scores: this.dataEditTopic.scores,
+                        status: this.dataEditTopic.status
+                    }).then((data) => {
+
+                        this.resetData()
+                        swal({
+                            title: "Thành công!",
+                            text: "Update thông tin thành công!",
+                            confirmButtonColor: "#66BB6A",
+                            type: "success"
+                        });
+                        $("#modalInfo").modal("hide")
+                    }).catch((err) => {
+                        console.log(err)
+                    })
+                }
             },
 
             getLecturers(){
@@ -255,10 +292,7 @@
 
             },
             filData(data){
-                if(data[0][0] == null)
-                {
-                    return []
-                }
+
                 return data.map(function (value,index) {
                     var t = ""
                     if(value.status == 0)
@@ -359,7 +393,7 @@
 
                     this.infoData = this.filData(data.data.topics)
                     this.infoDataJson = data.data.topics
-                    console.log(this.infoDataJson)
+
                     this.drawTable(this.infoData)
                 }).catch((err) =>
                 {
@@ -384,7 +418,9 @@
                     status: "",
                     scores: -1,
                     student_name: "",
-                    idTopic: ""
+                    idTopic: "",
+                    time_run: "",
+                    place: ""
                 },
 
                 lecturers: [],

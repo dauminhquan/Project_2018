@@ -75,6 +75,7 @@ class ProtectionController extends Controller
     public function update(ProtectionRequest $request, $id)
     {
         $pro = new ProfileService();
+
         return $pro->updateProtection($id,$request);
     }
 

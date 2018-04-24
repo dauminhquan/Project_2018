@@ -498,6 +498,8 @@ class ProfileService
             "students.student_name",
             "topic_protection.id_topic",//id_topic,
             "topic_protection.scores",
+                "topic_protection.time_run",
+                "topic_protection.place",
                 "topic_protection.pass",
                 DB::raw("topic_lec.id as id_top_lec"),// id_giang vien huong dan topic
                 DB::raw("topic_lec.name_lecturer as name_lecturer_top_lec") // ten giang vien huong dan
@@ -524,6 +526,8 @@ class ProfileService
                 $topic["pass"] = $item->pass;
                 $topic["student_name"] = $item->student_name;
                 $topic["status"] = $item->acceptance;
+                $topic["time_run"] = $item->time_run;
+                $topic["place"] = $item->place;
                 if($this->isIn($topic,"id",$listTopic) === false)
                 {
                     $listTopic[] = $topic;
@@ -591,7 +595,10 @@ class ProfileService
                 }
 
            }
-
+           if($request->has("time_run") && $request->has("place"))
+           {
+               TopicProtection::where("id_topic",$request->input("idTopic"))->update(["time_run" => $request->input("time_run"),"place" => $request->input("place")]);
+           }
 
        }
         if($request->has("listLecturer"))

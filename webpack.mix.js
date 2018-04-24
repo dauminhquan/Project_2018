@@ -24,6 +24,9 @@ mix.js('resources/assets/js/admin/AdministratorController/protectionManageId/pro
 
 // student
 mix.js('resources/assets/js/student/StudentController/topics/topics.js', 'public/js/student');
-
+mix.js('resources/assets/js/student/StudentController/topic/topic.js', 'public/js/student');
 //login
 mix.js('resources/assets/js/auth/login/login.js', 'public/js/auth');
+
+//lecturer
+mix.js('resources/assets/js/lecturer/LecturerController/topics/topics.js', 'public/js/lecturer');

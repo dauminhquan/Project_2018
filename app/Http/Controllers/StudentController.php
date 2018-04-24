@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Protection;
 use App\Models\TopicProtection;
+use App\Services\ProfileService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Response;
@@ -41,6 +43,7 @@ class StudentController extends Controller
                 'message'   =>  "Bạn chưa đăng ký chủ đề"
             ), 403);
         }
+
         $data = [
           // ten topic
             //ten giang vien
@@ -59,9 +62,29 @@ class StudentController extends Controller
             "acceptance" => $arrdata[0]->acceptance, // dang bao ve
             "ok" => $arrdata[0]->ok, // Được chấp nhân hương dẫn
             "pass" => $arrdata[0]->pass,
+            "time_run" => $arrdata[0]->time_run,
+            "place" => $arrdata[0]->place,
             "listLec" => $listL,
             "describe" => $arrdata[0]->describe
         ];
         return view("student.topic",["data" => (object)$data]);
+    }
+    private function hasKey($arr,$check,$key)
+    {
+
+        if(count($arr) == 0)
+        {
+            return false;
+        }
+
+        foreach ($arr as $index => $item)
+        {
+            if($check->$key == $item->$key)
+            {
+                return $index;
+            }
+
+        }
+        return false;
     }
 }
