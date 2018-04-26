@@ -10,4 +10,8 @@ class LecturerController extends Controller
     {
         return view("lecturer.topics");
     }
+    public function topicId($id)
+    {
+        return view("lecturer.topic",["id"=>$id]);
+    }
 }

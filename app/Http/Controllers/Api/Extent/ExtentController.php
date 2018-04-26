@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\Extent;
 
 use App\Http\Requests\TopicRequest;
+use App\Models\Lecturer;
 use App\Models\Protection;
 use App\Models\Topic;
 use App\Models\TopicProtection;
@@ -126,27 +127,74 @@ class ExtentController extends Controller
     public function lecturerGetTopics()
     {
         $id_lecturer = Auth::guard("employ")->user()->id;
+        $id_lecturer = Lecturer::where("id_user",$id_lecturer)->first()->id;
         return Topic::where("id_lecturer",$id_lecturer)->get();
     }
     public function lecturerGetTopic($id)
     {
         $id_lecturer = Auth::guard("employ")->user()->id;
+        $id_lecturer = Lecturer::where("id_user",$id_lecturer)->first()->id;
         return Topic::where("id_lecturer",$id_lecturer)->where("id",$id)->first();
+    }
+    public function lecturerGetTopicAsStudent($id)
+    {
+        $id_lecturer = Auth::guard("employ")->user()->id;
+        $id_lecturer = Lecturer::where("id_user",$id_lecturer)->first()->id;
+        return Topic::where("topics.id_lecturer",$id_lecturer)->where("topics.id",$id)->leftjoin("topic_protection","topic_protection.id_topic","topics.id")->join("students","students.id","topic_protection.id_student")
+            ->leftjoin("protections","protections.id","topic_protection.id_protection")
+            ->select("protections.time_start","protections.time_end","topic_protection.acceptance","topic_protection.scores","topic_protection.ok","topic_protection.time_run",
+                "topic_protection.place","students.student_name","topic_protection.id_student")->get();
+
+    }
+    public function lecturerPutTopicAsStudent(Request $request,$id)
+    {
+        if($request->has("id_student") && $request->has("ok"))
+        {
+            TopicProtection::where("id_student",$request->id_student)->where("id_topic",$id)->update(["ok" => $request->ok]);
+        }
+
     }
 
     public function lecturerPutTopic(TopicRequest $request,$id)
     {
         $id_lecturer = Auth::guard("employ")->user()->id;
+        $id_lecturer = Lecturer::where("id_user",$id_lecturer)->first()->id;
+        if(Topic::where("id_lecturer",$id_lecturer)->where("id","!=",$id)->where("name_topic",$request->name_topic)->count() > 0)
+        {
+            return Response::json(array(
+                'code'      =>  403,
+                'message'   =>  "Trùng tên topic"
+            ), 403);
+        }
         Topic::where("id_lecturer",$id_lecturer)->where("id",$id)->update(["name_topic" => $request->name_topic,"describe" => $request->describe]);
     }
     public function lecturerPostTopic(TopicRequest $request)
     {
         $id_lecturer = Auth::guard("employ")->user()->id;
+        $id_lecturer = Lecturer::where("id_user",$id_lecturer)->first()->id;
         $topic = new Topic();
         $topic->id_lecturer = $id_lecturer;
         $topic->name_topic = $request->name_topic;
         $topic->describe = $request->describe;
         $topic->save();
+    }
+    public function lecturerDeleteTopic($id)
+    {
+        $id_lecturer = Auth::guard("employ")->user()->id;
+        $id_lecturer = Lecturer::where("id_user",$id_lecturer)->first()->id;
+        Topic::where("id_lecturer",$id_lecturer)->where("id",$id)->delete();
+    }
+    public function lecturerDeleteTopicAsStudent(Request$request,$id)
+    {
+        try{
+            TopicProtection::where("id_student",$request->idStudent)->where("id_topic",$id)->delete();
+        }catch (\Exception $e)
+        {
+            return Response::json(array(
+                'code'      =>  404,
+                'message'   =>  "Đã có lỗi"
+            ), 404);
+        }
     }
 
     private function hasKey($arr,$check,$key)

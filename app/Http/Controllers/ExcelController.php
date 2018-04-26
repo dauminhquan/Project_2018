@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\SendPassword;
 use App\Services\ProfileService;
+use Illuminate\Support\Facades\Mail;
 use Maatwebsite\Excel\Facades\Excel;
 
 class ExcelController extends Controller
@@ -28,4 +30,10 @@ class ExcelController extends Controller
         })->download('xls');
     }
 
+    public function testEmail()
+    {
+        $em = new SendPassword("admin","admin");
+//        return $em->build();
+        Mail::to( "dauminhquantlu@gmail.com")->send( new SendPassword("admin","admin"));
+    }
 }

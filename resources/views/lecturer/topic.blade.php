@@ -17,13 +17,13 @@
             <p class="content-group-lg">Lưu ý. Chỉ được chỉnh sửa đợt bảo vệ khi đợt bảo vệ chưa kết thúc</p>
 
 
-                <data-edit-time time_start="{{$data->timeStart}}" time_end = "{{$data->timeEnd}}"  id_p="{{$data->id}}" detail="{{$data->detail}}" listlecturer="{{$listLecturer}}"></data-edit-time>
+            <data-topic id_p="{{$id}}"></data-topic>
 
-                <fieldset class="content-group" >
-                    <legend class="text-bold">Danh sách topic bảo vệ trong đợt</legend>
-                    <data-table id="{{$data->id}} " timeStart="{{$data->timeStart}}"  timeEnd="{{$data->timeEnd}}" ></data-table>
+            <fieldset class="content-group" >
+                <legend class="text-bold">Danh sách sinh viên đăng ký topic</legend>
+                <data-table id="{{$id}} " ></data-table>
 
-                </fieldset>
+            </fieldset>
 
 
 
@@ -41,7 +41,6 @@
     <script src="{{asset("assets/js/plugins/notifications/sweet_alert.min.js")}}"></script>
     <script type="text/javascript" src="{{asset("assets/js/plugins/forms/selects/select2.min.js")}}"></script>
     <script type="text/javascript" src="{{asset("assets/js/core/app.js")}}"></script>
-    <script src="{{asset("js/protectionManageId.js")}}"></script>
+    <script src="{{asset("js/lecturer/topic.js")}}"></script>
     <script src="{{asset("js/buildstudentManage.js")}}"></script>
-    {{--<script src="{{asset("js/build_lecturersManage.js")}}"></script>--}}
 @endsection

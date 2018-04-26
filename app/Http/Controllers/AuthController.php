@@ -14,4 +14,18 @@ class AuthController extends Controller
         }
         return view("login");
     }
+    public function logout()
+    {
+        if(Auth::guard("student")->check())
+        {
+
+            Auth::guard("student")->logout();
+        }
+        if(Auth::guard("employ")->check())
+        {
+
+            Auth::guard("employ")->logout();
+        }
+        return  redirect()->route("auth.login");
+    }
 }

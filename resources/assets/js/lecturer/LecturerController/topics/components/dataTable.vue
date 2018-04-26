@@ -249,7 +249,7 @@
                         html+= '<span class="label label-info">Đang đợt duyệt</span>'
                     }
                     return [
-                        '<a href="/lecturer/topic-cua-toi/'+value.id+'">'+value.name_topic+'</a>',
+                        '<a href="/lecturer/de-tai-cua-toi/'+value.id+'">'+value.name_topic+'</a>',
 
                         value.describe,
                         html,

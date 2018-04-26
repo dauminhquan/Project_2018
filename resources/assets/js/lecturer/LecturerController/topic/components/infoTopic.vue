@@ -1,38 +1,25 @@
 <template>
-    <form v-on:submit.prevent="submitEditTime" class="form-horizontal">
+    <form v-on:submit.prevent="submitEdit" class="form-horizontal">
         <fieldset class="content-group">
 
-            <legend class="text-bold">Thông tin về đợt bảo về</legend>
+            <legend class="text-bold">Thông tin về topic</legend>
 
             <div class="form-group">
-                <label class="control-label col-lg-2">Thời gian bắt đầu</label>
+                <label class="control-label col-lg-2">Tên topic</label>
                 <div class="col-lg-10">
-                    <input type="date" required v-model="dataEditTime.timeStart"  class="form-control">
-                </div>
-            </div>
-            <div class="form-group">
-                <label class="control-label col-lg-2">Thời gian kết thúc</label>
-                <div class="col-lg-10">
-                    <input type="date" required v-model="dataEditTime.timeEnd" class="form-control">
-                </div>
-            </div>
-            <div class="form-group">
-                <label class="control-label col-lg-2">Danh sách giáo viên phản biện</label>
-                <div class="col-lg-10">
-                    <select name="" multiple v-model="dataEditTime.listLecturer" class="form-control">
-                        <option v-for="lecturer in lecturers" :value="lecturer.id">{{lecturer.name_lecturer}}</option>
-                    </select>
+                    <input type="text" required v-model="dataEdit.name_topic"  class="form-control">
+                    <p v-if="error.name_topic == 1" class="text text-danger left">Trùng tên topic</p>
                 </div>
             </div>
             <div class="form-group">
                 <label class="control-label col-lg-2">Mô tả</label>
                 <div class="col-lg-10">
-                    <textarea class="form-control" required v-model="dataEditTime.detail"></textarea>
+                    <textarea class="form-control" required v-model="dataEdit.describe"></textarea>
                 </div>
             </div>
             <div class="text-right">
                 <button type="submit" class="btn btn-primary">Lưu chỉnh sửa <i class="icon-arrow-right14 position-right"></i></button>
-                <button type="button" @click="showModel" class="btn btn-danger">Xóa đợt bảo vệ<i class="icon-arrow-right14 position-right"></i></button>
+                <button type="button" @click="showModel" class="btn btn-danger">Xóa topic<i class="icon-arrow-right14 position-right"></i></button>
             </div>
 
         </fieldset>
@@ -41,7 +28,7 @@
                 <div class="modal-content">
                     <div class="modal-header bg-danger">
                         <button type="button" class="close" data-dismiss="modal">&times;</button>
-                        <h6 class="modal-title">Xóa lĩnh vực</h6>
+                        <h6 class="modal-title">Xóa topic</h6>
                     </div>
 
                     <div class="modal-body">
@@ -65,42 +52,36 @@
 <script>
     export default {
         mounted(){
-            this.getLecturers()
-
-            this.dataEditTime.timeStart = this.time_start
-            this.dataEditTime.timeEnd = this.time_end
-            this.dataEditTime.detail = this.detail
-
-            this.dataEditTime.listLecturer = this.listlecturer.split(",")
-            console.log(this.dataEditTime.listLecturer)
+                this.getData()
         },
         data(){
             return {
-                dataEditTime: {
-                    timeStart: "",
-                    timeEnd: "",
-                    detail: "",
-                    listLecturer:[]
+                dataEdit: {
+                    describe: "",
+                    name_topic: "",
                 },
-                lecturers : []
+                error: {
+                    name_topic: -1,
+
+                }
             }
         },
-        props: ["time_start","time_end","id_p","detail","listlecturer"],
+        props: ["id_p"],
         methods:{
-            getLecturers(){
+            getData(){
 
-                axios.get("/api/lecturer").then((data) => {
-                    console.log(data)
-                    this.lecturers = data.data
+                axios.get("/api/extent/lecturer/topic/"+this.id_p).then((data) => {
+
+                    this.dataEdit = data.data
 
                 }).catch((err) => {
                     console.log(err)
                 })
 
             },
-            submitEditTime(){
-                axios.put("/api/protection/"+this.id_p,this.dataEditTime).then((data) => {
-
+            submitEdit(){
+                axios.put("/api/extent/lecturer/topic/"+this.id_p,this.dataEdit).then((data) => {
+                    this.error.name_topic = -1
                     swal({
                         title: "Thành công!",
                         text: "Update thông tin thành công!",
@@ -108,14 +89,18 @@
                         type: "success"
                     });
                 }).catch((err) =>{
-                    console.log(err)
+                    console.dir(err)
+                    if(err.response.data.code == 403)
+                    {
+                        this.error.name_topic = 1
+                    }
+                    else {
+                        this.error.name_topic = -1
+                    }
                 })
             },
             successDelete(){
-
-
-
-                axios.delete("/api/protection/"+this.id_p,{
+                axios.delete("/api/extent/lecturer/topic/"+this.id_p,{
                     params: {
                         id: this.id_p
                     }
@@ -129,7 +114,7 @@
                     });
                     $("#modalDelete").modal("hide")
                     setTimeout(function () {
-                        window.location= "/quan-ly-dot-bao-ve"
+                        window.location= "/lecturer/de-tai-cua-toi  "
                     },2000)
                 }).catch((err) => {
                     console.log(err)

@@ -28,7 +28,7 @@
                         @endif </p>
                 @else
                     <p>Điểm số: <b>{{$data->scores}}</b> </p>
-                    <p>Tình trạng: <b>@if($data->pass == 0) Không qua @else Quan môn @endif </b> </p>
+                    <p>Tình trạng: <b>@if($data->pass == 0) Không qua @else Qua môn @endif </b> </p>
                     <p>Danh sách giảng viên phản biện: @if(count($data->listLec) > 0)
                             @foreach($data->listLec as $item)
                                 <b>{{$item}}</b>,

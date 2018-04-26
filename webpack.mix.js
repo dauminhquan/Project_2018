@@ -30,3 +30,4 @@ mix.js('resources/assets/js/auth/login/login.js', 'public/js/auth');
 
 //lecturer
 mix.js('resources/assets/js/lecturer/LecturerController/topics/topics.js', 'public/js/lecturer');
+mix.js('resources/assets/js/lecturer/LecturerController/topic/topic.js', 'public/js/lecturer');

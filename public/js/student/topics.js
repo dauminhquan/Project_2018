@@ -14378,13 +14378,7 @@ window.store = new Vuex.Store({
                             className: 'btn btn-default'
                         }
                     },
-                    buttons: [{
-                        text: 'Thêm lĩnh vực',
-                        className: 'btn bg-teal-400',
-                        action: function action(e, dt, node, config) {
-                            $("#modalAdd").modal("show");
-                        }
-                    }]
+                    buttons: []
                 }
             });
 
@@ -14413,7 +14407,7 @@ window.store = new Vuex.Store({
                 });
                 $("#modalInfo").modal("hide");
                 setTimeout(function () {
-                    window.location = "/student/de-tai-cua-ban";
+                    window.location = "/student/de-tai-cua-toi";
                 }, 3000);
             }).catch(function (err) {
                 console.log(err);

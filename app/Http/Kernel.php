@@ -2,9 +2,16 @@
 
 namespace App\Http;
 
+use App\Http\Middleware\Api\CheckAdminOrSecretary;
+use App\Http\Middleware\CheckAdmin;
 use App\Http\Middleware\CheckEmploy;
 use App\Http\Middleware\CheckLecturer;
+use App\Http\Middleware\CheckSecretary;
 use App\Http\Middleware\CheckStudent;
+use App\Http\Middleware\Api\CheckStudent as ApiCheckStudent;
+use App\Http\Middleware\Api\CheckLecturer as ApiCheckLecturer;
+use App\Http\Middleware\Api\CheckAdmin as ApiCheckAdmin;
+use App\Http\Middleware\Api\CheckSecretary as ApiCheckSecretary;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
 class Kernel extends HttpKernel
@@ -63,7 +70,15 @@ class Kernel extends HttpKernel
         'signed' => \Illuminate\Routing\Middleware\ValidateSignature::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         "student" => CheckStudent::class,
+        "api.student" => ApiCheckStudent::class,
         "employ" => CheckEmploy::class,
-        "lecturer" => CheckLecturer::class
+        "lecturer" => CheckLecturer::class,
+        "api.lecturer" => ApiCheckLecturer::class,
+        "secretary" => CheckSecretary::class,
+        "api.secretary" => ApiCheckSecretary::class,
+        "admin" => CheckAdmin::class,
+        "api.admin" => ApiCheckAdmin::class,
+        "api.admin.secretary" => CheckAdminOrSecretary::class
+
     ];
 }

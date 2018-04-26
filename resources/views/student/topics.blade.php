@@ -3,7 +3,7 @@
     <!-- Basic datatable -->
     <div class="panel panel-flat" id="data-table">
         <div class="panel-heading">
-            <h5 class="panel-title">Quản lý lĩnh vực</h5>
+            <h5 class="panel-title">Đăng ký đề tài</h5>
             <div class="heading-elements">
                 <ul class="icons-list">
                     <li><a data-action="collapse"></a></li>

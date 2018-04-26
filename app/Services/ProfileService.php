@@ -6,6 +6,7 @@ use App\Http\Requests\FieldRequest;
 use App\Http\Requests\LecturerRequest;
 use App\Http\Requests\ProtectionRequest;
 use App\Http\Requests\StudentRequest;
+use App\Mail\SendPassword;
 use App\Models\Branch;
 use App\Models\Course;
 use App\Models\Department;
@@ -21,6 +22,7 @@ use App\Models\Users;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 
 
 class ProfileService
@@ -79,6 +81,10 @@ class ProfileService
         if($request->has("id_branch"))
         {
             $student->id_branch = $request->input("id_branch");
+        }
+        if($request->has("password"))
+        {
+            $student->password = Hash::make($request->password);
         }
         $student->update();
         return $student;
@@ -220,15 +226,15 @@ class ProfileService
         $lecturer->phone_number = $request->input("phone_number");
         $lecturer->id_department = $request->input("id_department");
         $lecturer->id_field = $request->input("id_field");
-
+        Mail::to( $request->email_address_lecturer)->send(new SendPassword($request->email_address_lecturer,$request->password));
         $user = new Users();
         $user->email =  $request->input("email_address_lecturer");
         $user->password = Hash::make( $request->input("password"));
         $user->auth =  2;
         $user->save();
         $lecturer->id_user = $user->id;
-
         $lecturer->save();
+
 
     }
 
@@ -537,13 +543,17 @@ class ProfileService
         foreach ($protection as $item)
         {
 
+
             $index = $this->isInObject($item,"id",$listTopic);
 
-            if($index !==false)
+            if($index ===false)
             {
                 $listTopic[$index]["listLecturer"][] = ["name_lecturer" => $item->name_lecturer,"id_lecturer" => $item->id_lecturer];
-            }
 
+            }
+            else{
+                $listTopic[]["listLecturer"][] = ["name_lecturer" => $item->name_lecturer,"id_lecturer" => $item->id_lecturer];
+            }
         }
         return ["timeStart" => $timeStart,"timeEnd" => $timeEnd,"topics" => $listTopic,"id"=> $id,"detail" =>$detail];
     }
@@ -578,7 +588,7 @@ class ProfileService
            if($request->has("scores"))
            {
 
-                if((float)$request->input("scores") > 5)
+                if((float)$request->input("scores") >= 4)
                 {
                     TopicProtection::where("id_topic",$request->input("idTopic"))->update(["scores" => $request->input("scores"),"pass" =>1]);
                 }

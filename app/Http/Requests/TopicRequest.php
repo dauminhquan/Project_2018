@@ -43,7 +43,7 @@ class TopicRequest extends FormRequest
                 {
                     return [
                         "describe" => "required",
-                        "name_topic" => "required| unique:topics,name_topic",
+                        "name_topic" => "required",
                     ];
                 }
             default:break;

@@ -142,32 +142,40 @@
             showIdEdit () {
                 //thong tin topic co id
                 var idEdit_cr = this.$store.state.idData
-                for (var i = 0;i<this.infoDataJson.length;i++)
+                if(idEdit_cr != this.idEdit)
                 {
-                    if(this.infoDataJson[i].id = idEdit_cr)
+                    for (var i = 0;i<this.infoDataJson.length;i++)
                     {
+                        if(this.infoDataJson[i].id = idEdit_cr)
+                        {
 
-                        var rt = {
-                            listLecturer: [],//hoi dong bao ve
-                            status: "",
-                            scores: -1
+                            var rt = {
+                                listLecturer: [],//hoi dong bao ve
+                                status: "",
+                                scores: -1
+                            }
+                            rt.name_topic = this.infoDataJson[i].name_topic
+                            rt.lecturer = this.infoDataJson[i].lecturer
+                            rt.status = this.infoDataJson[i].status
+                            rt.scores = this.infoDataJson[i].scores
+                            rt.student_name = this.infoDataJson[i].student_name
+                            rt.describe = this.infoDataJson[i].describe
+                            rt.listLecturer = this.infoDataJson[i].listLecturer
+                            rt.idTopic = this.infoDataJson[i].id
+                            if(this.infoDataJson[i].time_run!= null)
+                            {
+                                rt.time_run = this.infoDataJson[i].time_run.replace(" ","T")
+                            }
+
+                            rt.place = this.infoDataJson[i].place
+
+                            this.dataEditTopic = rt
+                            console.log(this.dataEditTopic)
+
                         }
-                        rt.name_topic = this.infoDataJson[i].name_topic
-                        rt.lecturer = this.infoDataJson[i].lecturer
-                        rt.status = this.infoDataJson[i].status
-                        rt.scores = this.infoDataJson[i].scores
-                        rt.student_name = this.infoDataJson[i].student_name
-                        rt.describe = this.infoDataJson[i].describe
-                        rt.listLecturer = this.infoDataJson[i].listLecturer
-                        rt.idTopic = this.infoDataJson[i].id
-                        rt.time_run = this.infoDataJson[i].time_run.replace(" ","T")
-                        rt.place = this.infoDataJson[i].place
-
-                        this.dataEditTopic = rt
-                        console.log(this.dataEditTopic)
 
                     }
-
+                    this.idEdit = idEdit_cr
                 }
 
                 return this.$store.state.idData

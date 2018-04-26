@@ -142,13 +142,7 @@
                             }
                         },
                         buttons: [
-                            {
-                                text: 'Thêm lĩnh vực',
-                                className: 'btn bg-teal-400',
-                                action: function(e, dt, node, config) {
-                                    $("#modalAdd").modal("show")
-                                }
-                            }
+
 
                         ]
                     }
@@ -181,7 +175,7 @@
                     });
                     $("#modalInfo").modal("hide")
                     setTimeout(function () {
-                        window.location= "/student/de-tai-cua-ban"
+                        window.location= "/student/de-tai-cua-toi"
                     }, 3000);
 
                 }).catch((err) => {
