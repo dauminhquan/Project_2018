@@ -31,12 +31,12 @@
             <ul class="nav navbar-nav navbar-right">
                 <li class="dropdown language-switch">
                     <a class="dropdown-toggle" data-toggle="dropdown">
-                        <img src="{{asset("assets/images/flags/gb.png")}}" class="position-left" alt="">
-                        English
+                        <img src="{{asset("assets/images/flags/vn.png")}}" class="position-left" alt="">
+                        Tiếng việt
                         <span class="caret"></span>
                     </a>
                     <ul class="dropdown-menu">
-                        <li><a class="deutsch"><img src="{{asset("assets/images/flags/de.png")}}" alt=""> Tiếng việt</a></li>
+                       
                         <li><a class="ukrainian"><img src="{{asset("assets/images/flags/ua.png")}}" alt=""> Українська</a></li>
                         <li><a class="english"><img src="{{asset("assets/images/flags/gb.png")}}" alt=""> English</a></li>
                         <li><a class="espana"><img src="{{asset("assets/images/flags/es.png")}}" alt=""> España</a></li>
