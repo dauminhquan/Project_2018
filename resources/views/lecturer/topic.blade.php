@@ -14,9 +14,6 @@
         </div>
 
         <div class="panel-body" id="data-table" >
-            <p class="content-group-lg">Lưu ý. Chỉ được chỉnh sửa đợt bảo vệ khi đợt bảo vệ chưa kết thúc</p>
-
-
             <data-topic id_p="{{$id}}"></data-topic>
 
             <fieldset class="content-group" >

@@ -8,6 +8,7 @@
     "/js/lecturer/topics.js": "/js/lecturer/topics.js",
     "/js/protectionManage.js": "/js/protectionManage.js",
     "/js/student/topic.js": "/js/student/topic.js",
+    "/js/statistical.js": "/js/statistical.js",
     "/js/lecturersManage.js": "/js/lecturersManage.js",
     "/js/auth/login.js": "/js/auth/login.js"
 }

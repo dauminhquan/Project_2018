@@ -3,12 +3,14 @@
 
 
 Route::get('/', function () {
-    return view("layout");
+    return view("index");
 })->name("home");
+Route::get("/statistical",["uses" => "ExcelController@statistical"])->name("statistical");
 Route::get("/test-mail","ExcelController@testEmail");
 Route::get("/token",function (){
    return view("tocken");
 });
+Route::get("/testdata",["uses" => "StatisticalController@getData"]);
 Route::get("api-err-auth",function(){
     return Response::json(array(
         'code'      =>  403,

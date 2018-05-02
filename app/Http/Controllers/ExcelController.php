@@ -3,7 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Mail\SendPassword;
+use App\Models\Department;
+use App\Models\Protection;
+use App\Models\TopicProtection;
 use App\Services\ProfileService;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -36,4 +40,9 @@ class ExcelController extends Controller
 //        return $em->build();
         Mail::to( "dauminhquantlu@gmail.com")->send( new SendPassword("admin","admin"));
     }
+    public function statistical()
+    {
+        return view("statistical");
+    }
+
 }

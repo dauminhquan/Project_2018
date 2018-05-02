@@ -17,7 +17,7 @@
 <div class="navbar navbar-inverse">
     <div class="navbar-boxed">
         <div class="navbar-header">
-            <a class="navbar-brand" href="index.html"><img src="assets/images/logo_light.png" alt=""></a>
+            <a class="navbar-brand" href="index.html"><img src="{{asset("assets/images/logo_light.png")}}" alt=""></a>
             <ul class="nav navbar-nav visible-xs-block">
                 <li><a data-toggle="collapse" data-target="#navbar-mobile"><i class="icon-tree5"></i></a></li>
                 <li><a class="sidebar-mobile-main-toggle"><i class="icon-paragraph-justify3"></i></a></li>
@@ -31,22 +31,22 @@
             <ul class="nav navbar-nav navbar-right">
                 <li class="dropdown language-switch">
                     <a class="dropdown-toggle" data-toggle="dropdown">
-                        <img src="assets/images/flags/gb.png" class="position-left" alt="">
+                        <img src="{{asset("assets/images/flags/gb.png")}}" class="position-left" alt="">
                         English
                         <span class="caret"></span>
                     </a>
                     <ul class="dropdown-menu">
-                        <li><a class="deutsch"><img src="assets/images/flags/de.png" alt=""> Tiếng việt</a></li>
-                        <li><a class="ukrainian"><img src="assets/images/flags/ua.png" alt=""> Українська</a></li>
-                        <li><a class="english"><img src="assets/images/flags/gb.png" alt=""> English</a></li>
-                        <li><a class="espana"><img src="assets/images/flags/es.png" alt=""> España</a></li>
-                        <li><a class="russian"><img src="assets/images/flags/ru.png" alt=""> Русский</a></li>
+                        <li><a class="deutsch"><img src="{{asset("assets/images/flags/de.png")}}" alt=""> Tiếng việt</a></li>
+                        <li><a class="ukrainian"><img src="{{asset("assets/images/flags/ua.png")}}" alt=""> Українська</a></li>
+                        <li><a class="english"><img src="{{asset("assets/images/flags/gb.png")}}" alt=""> English</a></li>
+                        <li><a class="espana"><img src="{{asset("assets/images/flags/es.png")}}" alt=""> España</a></li>
+                        <li><a class="russian"><img src="{{asset("assets/images/flags/ru.png")}}" alt=""> Русский</a></li>
                     </ul>
                 </li>
 
                 <li class="dropdown dropdown-user">
                     <a class="dropdown-toggle" data-toggle="dropdown">
-                        <img src="assets/images/placeholder.jpg" alt="">
+                        <img src="{{asset("assets/images/placeholder.jpg")}}" alt="">
                         <span>Victoria</span>
                         <i class="caret"></i>
                     </a>
@@ -84,15 +84,29 @@
                         <ul class="navigation navigation-main navigation-accordion">
                             <li class="navigation-header"><span>Main</span> <i class="icon-menu" title="Main pages"></i></li>
                             <li><a href="/"><i class="icon-home4"></i> <span>Trang chủ</span></a></li>
-                            <li><a href="{{route("thuky.quanlysinhvien")}}"><i class="icon-home4"></i> <span>Quản lý sinh viên</span></a></li>
-                            <li><a href="{{route("thuky.quanlygiangvien")}}"><i class="icon-home4"></i> <span>Quản lý giảng viên</span></a></li>
-                            <li><a href="{{route("thuky.quanlylinhvuc")}}"><i class="icon-home4"></i> <span>Quản lý lĩnh vực</span></a></li>
-                            <li><a href="{{route("thuky.quanlytopic")}}"><i class="icon-home4"></i> <span>Quản lý topic</span></a></li>
-                            <li><a href="{{route("admin.quanlydotbaove")}}"><i class="icon-home4"></i> <span>Quản lý đợt bảo vệ</span></a></li>
-                            <li><a href="{{route("student.dangkytopic")}}"><i class="icon-home4"></i> <span>Đăng ký topic</span></a></li>
-                            <li><a href="{{route("lecturer.detaicuatoi")}}"><i class="icon-home4"></i> <span>Topic của bạn/ GV</span></a></li>
-                            <li><a href="{{route("student.detaicuatoi")}}"><i class="icon-home4"></i> <span>Topic của bạn/ SV</span></a></li>
-                            <li><a href="#"><i class="icon-home4"></i> <span>Quản lý thông tin cá nhân</span></a></li>
+                            @if(Auth::guard("employ")->check())
+                                @if(Auth::guard("employ")->user()->auth == 1 || Auth::guard("employ")->user()->auth == 0)
+                                    <li><a href="{{route("thuky.quanlysinhvien")}}"><i class=" icon-users4"></i> <span>Quản lý sinh viên</span></a></li>
+                                    <li><a href="{{route("thuky.quanlygiangvien")}}"><i class=" icon-user-tie"></i> <span>Quản lý giảng viên</span></a></li>
+                                    <li><a href="{{route("thuky.quanlylinhvuc")}}"><i class="icon-menu2"></i> <span>Quản lý lĩnh vực</span></a></li>
+                                    <li><a href="{{route("thuky.quanlytopic")}}"><i class=" icon-menu6"></i> <span>Quản lý topic</span></a></li>
+                                    @if(Auth::guard("employ")->user()->auth == 0)
+                                        <li><a href="{{route("admin.quanlydotbaove")}}"><i class="icon-history"></i> <span>Quản lý đợt bảo vệ</span></a></li>
+                                    @endif
+                                    <li><a href="{{route("statistical")}}"><i class=" icon-pie-chart"></i> <span>Thống kê</span></a></li>
+                                @endif
+                            @endif
+
+                            @if(Auth::guard("student")->check())
+                                <li><a href="{{route("student.dangkytopic")}}"><i class="icon-file-plus"></i> <span>Đăng ký topic</span></a></li>
+                                <li><a href="{{route("student.detaicuatoi")}}"><i class="icon-file-text"></i> <span>Topic của bạn</span></a></li>
+                            @endif
+                            @if(Auth::guard("employ")->check())
+                                @if(Auth::guard("employ")->user()->auth == 2)
+                                    <li><a href="{{route("lecturer.detaicuatoi")}}"><i class="icon-file-text"></i> <span>Topic của bạn</span></a></li>
+                                @endif
+                            @endif
+                            <li><a href="#"><i class="icon-profile"></i> <span>Quản lý thông tin cá nhân</span></a></li>
                         </ul>
                     </div>
                 </div>
@@ -112,7 +126,7 @@
 
         <div class="navbar-collapse collapse" id="footer">
             <div class="navbar-text">
-                &copy; 2015. <a href="#" class="navbar-link">Limitless Web App Kit</a> by <a href="http://themeforest.net/user/Kopyov" class="navbar-link" target="_blank">Eugene Kopyov</a>
+                &copy; 2015. <a href="#" class="navbar-link">ThangLong University</a> by <a href="#" class="navbar-link" target="_blank">Me&copy</a>
             </div>
 
             <div class="navbar-right">
