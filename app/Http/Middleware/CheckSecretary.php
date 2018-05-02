@@ -18,7 +18,7 @@ class CheckSecretary
     {
         if(Auth::guard("employ")->check())
         {
-            if(Auth::guard("employ")->user()->auth == 1)
+            if(Auth::guard("employ")->user()->auth == 1 || Auth::guard("employ")->user()->auth == 0)
             {
                 return $next($request);
             }

@@ -2,9 +2,8 @@
 
 
 
-Route::get('/', function () {
-    return view("index");
-})->name("home");
+Route::get('/', ["uses" => "IndexController@index"])->name("home");
+Route::post('/', ["uses" => "IndexController@postIndex"])->name("post_home");
 Route::get("/statistical",["uses" => "ExcelController@statistical"])->name("statistical");
 Route::get("/test-mail","ExcelController@testEmail");
 Route::get("/token",function (){

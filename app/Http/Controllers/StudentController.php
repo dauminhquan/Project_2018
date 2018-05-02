@@ -16,7 +16,7 @@ class StudentController extends Controller
         {
             return Response::json(array(
                 'code'      =>  403,
-                'message'   =>  "Bạn không thể có nhiều hơn 2 topic"
+                'message'   =>  "You cannot have more than one topic"
             ), 403);
         }
         return view("student.topics");

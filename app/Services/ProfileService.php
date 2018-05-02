@@ -234,8 +234,6 @@ class ProfileService
         $user->save();
         $lecturer->id_user = $user->id;
         $lecturer->save();
-
-
     }
 
     public function addLecturers($lecturers)

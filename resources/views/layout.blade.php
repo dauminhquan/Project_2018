@@ -17,7 +17,7 @@
 <div class="navbar navbar-inverse">
     <div class="navbar-boxed">
         <div class="navbar-header">
-            <a class="navbar-brand" href="index.html"><img src="{{asset("assets/images/logo_light.png")}}" alt=""></a>
+            <a class="navbar-brand" href="{{route("home")}}"><img src="{{asset("assets/images/logo_light.png")}}" alt=""></a>
             <ul class="nav navbar-nav visible-xs-block">
                 <li><a data-toggle="collapse" data-target="#navbar-mobile"><i class="icon-tree5"></i></a></li>
                 <li><a class="sidebar-mobile-main-toggle"><i class="icon-paragraph-justify3"></i></a></li>
@@ -47,7 +47,7 @@
                 <li class="dropdown dropdown-user">
                     <a class="dropdown-toggle" data-toggle="dropdown">
                         <img src="{{asset("assets/images/placeholder.jpg")}}" alt="">
-                        <span>Victoria</span>
+                        <span>@if(Auth::guard("student")->check()) {{Auth::guard("student")->user()->code}} @else {{Auth::guard("employ")->user()->email}} @endif </span>
                         <i class="caret"></i>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-right">
@@ -64,7 +64,7 @@
 <div class="page-header">
     <div class="page-header-content">
         <div class="page-title">
-            <h4><i class="icon-arrow-left52 position-left"></i> <span class="text-semibold">Home</span> <small>Hello, QD</small></h4>
+            <h4><i class="icon-arrow-left52 position-left"></i> <span class="text-semibold">Home</span> <small>Hello <b>@if(Auth::guard("student")->check()) {{Auth::guard("student")->user()->code}} @else {{Auth::guard("employ")->user()->email}} @endif</b></small></h4>
         </div>
     </div>
 </div>
@@ -106,7 +106,6 @@
                                     <li><a href="{{route("lecturer.detaicuatoi")}}"><i class="icon-file-text"></i> <span>Topic của bạn</span></a></li>
                                 @endif
                             @endif
-                            <li><a href="#"><i class="icon-profile"></i> <span>Quản lý thông tin cá nhân</span></a></li>
                         </ul>
                     </div>
                 </div>
