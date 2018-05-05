@@ -333,6 +333,12 @@ console.log(response.data)
                     $("#modal_add").modal("hide")
                 }).catch((err) => {
                     console.log(err)
+                    swal({
+                        title: "Oops...",
+                        text: "Đã có lỗi xảy ra!",
+                        confirmButtonColor: "#EF5350",
+                        type: "error"
+                    });
                 })
             },
             getLecturers(){
@@ -341,6 +347,12 @@ console.log(response.data)
                     this.drawTable(data.data)
                 }).catch((err) => {
                     console.log(err)
+                    swal({
+                        title: "Oops...",
+                        text: "Đã có lỗi xảy ra!",
+                        confirmButtonColor: "#EF5350",
+                        type: "error"
+                    });
                 })
 
             },
@@ -391,8 +403,8 @@ console.log(response.data)
                 axios.delete("/api/lecturer/"+id).then((data) =>{
                     console.log(data)
                     swal({
-                        title: "Good job!",
-                        text: "You clicked the button!",
+                        title: "Thành công!",
+                        text: "Xóa thành công!",
                         confirmButtonColor: "#66BB6A",
                         type: "success"
                     });
@@ -454,6 +466,12 @@ console.log(response.data)
                 })
                     .catch((err) => {
                         console.log(err)
+                        swal({
+                            title: "Oops...",
+                            text: "Đã có lỗi xảy ra!",
+                            confirmButtonColor: "#EF5350",
+                            type: "error"
+                        });
                     });
             }
 
