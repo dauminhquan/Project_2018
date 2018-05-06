@@ -115,7 +115,7 @@ class IndexController extends Controller
                     $sec->address_secretary = $request->address_secretary;
                     $sec->email_address_secretary = $request->email_address_secretary;
                     $sec->phone_number = $request->phone_number;
-                    $sec->save();
+                    $sec->update();
                 }
                 if($request->has("updateauth"))
                 {
@@ -129,7 +129,7 @@ class IndexController extends Controller
                     if(Hash::check($request->now_password,$user->password))
                     {
                         $user->password = Hash::make($request->password);
-                        $user->save();
+                        $user->update();
                     }
                 }
 
@@ -157,7 +157,47 @@ class IndexController extends Controller
                     $lec->address_lecturer = $request->address_lecturer;
                     $lec->email_address_lecturer = $request->email_address_lecturer;
                     $lec->phone_number = $request->phone_number;
-                    $lec->save();
+                    $lec->update();
+                }
+                if($request->has("updateauth"))
+                {
+
+
+                    $request->validate([
+                        "now_password" => "required",
+                        "password" => "required|confirmed|different:now_password",
+                    ]);
+                    $user = User::findOrFail($id_user);
+
+                    if(Hash::check($request->now_password,$user->password))
+                    {
+                        $user->password = Hash::make($request->password);
+                        $user->update();
+                    }
+                }
+
+
+                $user_data =  Lecturer::where("id_user",$id_user)->leftjoin("departments","departments.id","lecturers.id_department")->leftjoin("fields","fields.id","lecturers.id_field")->
+                select("lecturers.*","departments.department_name","fields.field_name")->first();
+                return view("lecturer.index",["user_data" => $user_data]);
+            }
+            if(Auth::guard("employ")->user()->auth == 0)
+            {
+
+                $id_user = Auth::guard("employ")->user()->id;
+
+
+                if($request->has("update_info"))
+                {
+
+                    $request->validate([
+                        "name_admin" => "required"
+                    ]);
+
+                    $admin = Administrator::where("administrators.id_user",$id_user)->first();
+                  
+                    $admin->name_admin = $request->name_admin;
+                    $admin->update();
                 }
                 if($request->has("updateauth"))
                 {
@@ -177,13 +217,6 @@ class IndexController extends Controller
                 }
 
 
-                $user_data =  Lecturer::where("id_user",$id_user)->leftjoin("departments","departments.id","lecturers.id_department")->leftjoin("fields","fields.id","lecturers.id_field")->
-                select("lecturers.*","departments.department_name","fields.field_name")->first();
-                return view("lecturer.index",["user_data" => $user_data]);
-            }
-            if(Auth::guard("employ")->user()->auth == 0)
-            {
-                $id_user = Auth::guard("employ")->user()->id;
                 $user_data =  Administrator::where("id_user",$id_user)->first();
                 return view("admin.index",["user_data" => $user_data]);
             }
