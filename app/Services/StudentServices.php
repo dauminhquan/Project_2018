@@ -10,12 +10,14 @@ namespace App\Services;
 
 
 use App\Models\Topic;
+use Illuminate\Support\Facades\Auth;
 
 class StudentServices
 {
     public function getTopics()
     {
-        return Topic::where("accept",1)->join("lecturers","lecturers.id","topics.id_lecturer")->select("topics.*","lecturers.name_lecturer")->get();
+        $student = Auth::guard('student')->user();
+        return Topic::where("accept",1)->join("lecturers","lecturers.id","topics.id_lecturer")->where("lecturers.id_department",$student->id_department)->select("topics.*","lecturers.name_lecturer")->get();
     }
     public function getTopic($id)
     {

@@ -88,7 +88,7 @@
         props: ["time_start","time_end","id_p","detail","listlecturer"],
         methods:{
             getLecturers(){
-
+            // có thể sẽ phải update lại
                 axios.get("/api/lecturer").then((data) => {
                     console.log(data)
                     this.lecturers = data.data

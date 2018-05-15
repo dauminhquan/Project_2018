@@ -61,7 +61,6 @@ class StudentController extends Controller
     // PUT/PATCH /api/student/{id}
     public function update(StudentRequest $request, $id)
     {
-
         $studentProfile = new ProfileService();
 
        return  $studentProfile->updateStudent($id,$request);

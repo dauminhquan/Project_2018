@@ -28,7 +28,10 @@ Route::group(["prefix" => "api","name" =>"api.","namespace" => "Api"],function()
        Route::resource("topic","TopicController");
 
    });
+
     Route::resource("protection","ProtectionController")->middleware("api.admin");
+
+
     Route::post("login","AuthController@login");
     Route::get("logout","AuthController@logout");
     Route::group(["prefix" => "extent","name" =>"extent.","namespace" => "Extent"],function(){

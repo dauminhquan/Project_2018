@@ -197,6 +197,14 @@ class ExtentController extends Controller
         }
     }
 
+    public function adminGeLecturersAsField(Request $request)
+    {
+        if($request->has('field'))
+        {
+            return Lecturer::where('id_field',$request->field)->get();
+        }
+        return Lecturer::get();
+    }
     private function hasKey($arr,$check,$key)
     {
 

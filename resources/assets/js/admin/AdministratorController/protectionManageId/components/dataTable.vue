@@ -57,17 +57,21 @@
                                         <input v-model="dataEditTopic.place" class="form-control"></input>
                                     </div>
                                 </div>
+                                <!--<data-lecturer v-for="lecturer in dataEditTopic.listLecturer" :key="lecturer.id" :lecturer="lecturer">-->
+                                <!--</data-lecturer>-->
+                                <div class="form-group" v-for="(lecturer,index) in dataEditTopic.listLecturer" :key="lecturer.id">
+                                    <label class="control-label col-lg-2">Điểm GV: <b>{{lecturer.name_lecturer}}</b>:</label>
+                                    <div class="col-lg-5">
+                                        <input type="number" step="0.01" max="10" min="0" v-model="all_score[index].score" placeholder="Điểm giảng viên"  class="form-control" />
+                                    </div>
+                                    <div class="col-lg-5">
+                                        <input type="number" step="0.01" max="1" placeholder="Hệ số" min="0"  v-model="all_score[index].factor"   class="form-control" />
+                                    </div>
+                                </div>
                                 <div class="form-group" v-if="dataEditTopic.status == 1">
                                     <label class="control-label col-lg-2">Điểm</label>
                                     <div class="col-lg-10">
-                                        <input type="number" step="0.01" v-model="dataEditTopic.scores" max="10" min="0"   class="form-control" />
-
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="control-label col-lg-2">Danh sách giảng viên phản biện</label>
-                                    <div class="col-lg-10" v-html="listLecturer">
-
+                                        <input type="number" step="0.01" readonly v-model="dataEditTopic.scores" max="10" min="0"   class="form-control" />
                                     </div>
                                 </div>
                             </fieldset>
@@ -134,10 +138,12 @@
             }
         }
     })
+    import dtlec from './dataLecturer.vue'
     export default {
-
-
         store: store,
+        components:{
+          'data-lecturer' : dtlec
+        },
         computed:{
             showIdEdit () {
                 //thong tin topic co id
@@ -177,7 +183,6 @@
                     }
                     this.idEdit = idEdit_cr
                 }
-
                 return this.$store.state.idData
 
 
@@ -197,6 +202,7 @@
 
             this.getData()
             this.getLecturers()
+
         },
         methods: {
 
@@ -273,6 +279,7 @@
                     axios.put("/api/protection/"+this.id,{
                         idTopic: this.dataEditTopic.idTopic,
                         scores: this.dataEditTopic.scores,
+                        length: this.all_score,
                         status: this.dataEditTopic.status
                     }).then((data) => {
 
@@ -434,15 +441,47 @@
                 lecturers: [],
                 idEdit: 0,
                 idDelete: -1,
+                all_score: [
+                    {
+                        id_lec: "",
+                        score:"",
+                        factor:""
+                    },
+                    {
+                        id_lec: "",
+                        score:"",
+                        factor:""
+                    },
+                    {
+                        id_lec: "",
+                        score:"",
+                        factor:""
+                    },
+                    {
+                        id_lec: "",
+                        score:"",
+                        factor:""
+                    },
 
-
+                ],
+                old_all_score: []
 
             }
         },
        watch: {
-            idEdit(value){
+           all_score: {
+               handler(newval){
+                  this.dataEditTopic.scores = 0
+                  for (let i = 0;i< this.all_score.length;i++)
+                  {
+                      let sc = !isNaN(parseFloat(this.all_score[i].score))?parseFloat(this.all_score[i].score):0
+                      let ft = !isNaN(parseFloat(this.all_score[i].factor))?parseFloat(this.all_score[i].factor):0
 
-            }
+                      this.dataEditTopic.scores+= sc*ft
+                  }
+               },
+               deep:true
+           }
        }
 
 
