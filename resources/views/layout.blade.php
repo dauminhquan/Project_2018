@@ -36,7 +36,7 @@
                         <span class="caret"></span>
                     </a>
                     <ul class="dropdown-menu">
-                       
+
                         <li><a class="ukrainian"><img src="{{asset("assets/images/flags/ua.png")}}" alt=""> Українська</a></li>
                         <li><a class="english"><img src="{{asset("assets/images/flags/gb.png")}}" alt=""> English</a></li>
                         <li><a class="espana"><img src="{{asset("assets/images/flags/es.png")}}" alt=""> España</a></li>
