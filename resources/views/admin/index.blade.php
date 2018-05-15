@@ -18,18 +18,18 @@
             </div>
 
             <div class="panel-body">
-                <form action="#">
+                <form method="post">
                     <div class="form-group">
                         <div class="row">
                             <div class="col-md-12">
                                 <label>Tên của bạn</label>
-                                <input type="text" value="{{$user_data->name_admin}}" class="form-control">
+                                <input type="text" name="name_admin" value="{{$user_data->name_admin}}" class="form-control">
                             </div>
                         </div>
                     </div>
                     <div class="text-right">
                         {!! csrf_field() !!}
-                        <button type="submit" class="btn btn-primary">Save <i class="icon-arrow-right14 position-right"></i></button>
+                        <button type="submit" name="update_info" class="btn btn-primary">Save <i class="icon-arrow-right14 position-right"></i></button>
                     </div>
                 </form>
             </div>

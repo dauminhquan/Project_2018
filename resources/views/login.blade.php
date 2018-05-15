@@ -24,7 +24,7 @@
 <!-- Main navbar -->
 <div class="navbar navbar-inverse">
     <div class="navbar-header">
-        <a class="navbar-brand" href="index.html"><img src="assets/images/logo_light.png" alt=""></a>
+        <a class="navbar-brand" href="index.html"><img src="assets/images/logo-update.png" alt=""></a>
 
         <ul class="nav navbar-nav pull-right visible-xs-block">
             <li><a data-toggle="collapse" data-target="#navbar-mobile"><i class="icon-tree5"></i></a></li>
@@ -86,7 +86,7 @@
 
     <div class="navbar-collapse collapse" id="footer">
         <div class="navbar-text">
-            &copy; 2015. <a href="#" class="navbar-link">Limitless Web App Kit</a> by <a href="http://themeforest.net/user/Kopyov" class="navbar-link" target="_blank">Eugene Kopyov</a>
+            &copy; 2018. <a href="#" class="navbar-link">ThangLong University</a> by <a href="#" class="navbar-link" target="_blank">Me&copy</a>
         </div>
 
         <div class="navbar-right">

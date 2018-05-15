@@ -190,15 +190,16 @@
 
 
             submitEdit(){
+            
                 axios.put("/api/extent/lecturer/topic-as-student/"+this.id,{
-                    id_student: this.dataEdit.id_student,
+                    id_student: this.$store.state.idData,
                     ok: this.dataEdit.ok,
                 }).then((data) => {
 
                     this.resetData()
                     swal({
                         title: "Thành công!",
-                        text: "Chấp nhận hương dẫn thành công!",
+                        text: "Chấp nhận hướng dẫn thành công!",
                         confirmButtonColor: "#66BB6A",
                         type: "success"
                     });

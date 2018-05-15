@@ -125,7 +125,7 @@
 
         <div class="navbar-collapse collapse" id="footer">
             <div class="navbar-text">
-                &copy; 2015. <a href="#" class="navbar-link">ThangLong University</a> by <a href="#" class="navbar-link" target="_blank">Me&copy</a>
+                &copy; 2018. <a href="#" class="navbar-link">ThangLong University</a> by <a href="#" class="navbar-link" target="_blank">Me&copy</a>
             </div>
 
             <div class="navbar-right">
