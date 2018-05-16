@@ -13,9 +13,10 @@ class AuthController extends Controller
 
     public function login(AuthRequest $request)
     {
-        if (Auth::guard("student")->attempt(['code' => $request->input("username"), 'password' => $request->input("password")], $request->input("remember")) ||
-            Auth::guard("employ")->attempt(['email' => $request->input("username"), 'password' => $request->input("password")], $request->input("remember"))
+        if (Auth::guard("student")->attempt(['code' => strtolower($request->input("username")), 'password' => $request->input("password")], $request->has("remember")) ||
+            Auth::guard("employ")->attempt(['email' => strtolower($request->input("username")), 'password' => $request->input("password")], $request->has("remember"))
         ) {
+
             if(Auth::guard("student")->check())
             {
                 return Auth::guard("student")->user();

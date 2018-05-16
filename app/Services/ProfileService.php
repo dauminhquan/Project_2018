@@ -106,12 +106,16 @@ class ProfileService
     // them nhieu sinh vien
     public function addStudents($students)
     {
+
         $catch = [];
         foreach ($students as $item)
         {
 
             $student = new Student();
-
+            if($item->code== null)
+            {
+                continue;
+            }
             if(Student::where("code",$item->code)->count() > 0)
             {
                 $catch[] = $item;
@@ -239,8 +243,13 @@ class ProfileService
     public function addLecturers($lecturers)
     {
         $catch = [];
+//        return $lecturers;
         foreach ($lecturers as $item)
         {
+            if($item->email_address_lecturer == null)
+            {
+                continue;
+            }
             if(Users::where("email",$item->email_address_lecturer)->count() > 0 || Lecturer::where("email_address_lecturer",$item->email_address_lecturer)->count() > 0)
             {
                 $catch[] = $item;

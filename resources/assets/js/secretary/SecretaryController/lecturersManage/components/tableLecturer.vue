@@ -436,7 +436,7 @@ console.log(response.data)
                 let formData = new FormData();
 
                 formData.append('excel', this.file_excel);
-                console.log(this.file_excel)
+
                 axios.post( '/api/lecturer',
                     formData,
                     {
@@ -445,24 +445,26 @@ console.log(response.data)
                         }
                     }
                 ).then((data) => {
+                    console.log(data)
+                    var email_err = ""
                     if(data.data.length > 0)
                     {
-                        var email_err = ""
-                        console.log(data.data)
+
                         for (var i = 0;i<data.data.length;i++)
                         {
                             email_err+=data.data[i].email_address_lecturer+";"
                         }
                         $("#modal_form_inline").modal("hide")
-                        swal({
-                            title: "Thêm thành công!",
-                            text: "Có "+data.data.length+" user không thể thêm. Tại vị trí "+email_err+"!",
-                            confirmButtonColor: "#66BB6A",
-                            type: "success"
-                        });
-                        this.resetData()
-                        $("#modal_form_inline").modal("hide")
+
                     }
+                    swal({
+                        title: "Thêm thành công!",
+                        text: "Có "+data.data.length+" user không thể thêm. Tại vị trí "+email_err+"!",
+                        confirmButtonColor: "#66BB6A",
+                        type: "success"
+                    });
+                    this.resetData()
+                    $("#modal_form_inline").modal("hide")
                 })
                     .catch((err) => {
                         console.log(err)

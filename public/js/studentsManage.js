@@ -14448,7 +14448,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-//
 
 window.Vuex = __webpack_require__(32);
 Vue.use(Vuex);
@@ -14673,7 +14672,7 @@ window.store = new Vuex.Store({
             var formData = new FormData();
 
             formData.append('excel', this.file_excel);
-            console.log(this.file_excel);
+
             axios.post('/api/student', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
@@ -14816,7 +14815,7 @@ var render = function() {
                           }
                         ],
                         staticClass: "form-control",
-                        attrs: { type: "text", name: "name_lecturer" },
+                        attrs: { type: "text" },
                         domProps: { value: _vm.dataEdit.student_name },
                         on: {
                           input: function($event) {
@@ -14850,11 +14849,7 @@ var render = function() {
                           }
                         ],
                         staticClass: "form-control",
-                        attrs: {
-                          type: "text",
-                          name: "email_address_lecturer",
-                          placeholder: "Điền Email của bạn"
-                        },
+                        attrs: { type: "text" },
                         domProps: { value: _vm.dataEdit.address },
                         on: {
                           input: function($event) {
@@ -14940,7 +14935,6 @@ var render = function() {
                             }
                           ],
                           staticClass: "form-control",
-                          attrs: { name: "id_field" },
                           on: {
                             change: function($event) {
                               var $$selectedVal = Array.prototype.filter
@@ -15037,11 +15031,7 @@ var render = function() {
                           }
                         ],
                         staticClass: "form-control",
-                        attrs: {
-                          type: "password",
-                          name: "password",
-                          placeholder: "Nhập mật khẩu"
-                        },
+                        attrs: { type: "password" },
                         domProps: { value: _vm.dataAdd.password },
                         on: {
                           input: function($event) {
@@ -15139,7 +15129,7 @@ var render = function() {
                           }
                         ],
                         staticClass: "form-control",
-                        attrs: { type: "text", name: "name_lecturer" },
+                        attrs: { type: "text" },
                         domProps: { value: _vm.dataAdd.code },
                         on: {
                           input: function($event) {
@@ -15169,7 +15159,7 @@ var render = function() {
                           }
                         ],
                         staticClass: "form-control",
-                        attrs: { type: "text ", name: "address_lecturer" },
+                        attrs: { type: "text " },
                         domProps: { value: _vm.dataAdd.student_name },
                         on: {
                           input: function($event) {
@@ -15203,11 +15193,7 @@ var render = function() {
                           }
                         ],
                         staticClass: "form-control",
-                        attrs: {
-                          type: "text",
-                          name: "email_address_lecturer",
-                          placeholder: ""
-                        },
+                        attrs: { type: "text", placeholder: "" },
                         domProps: { value: _vm.dataAdd.address },
                         on: {
                           input: function($event) {
@@ -15243,7 +15229,6 @@ var render = function() {
                             }
                           ],
                           staticClass: "form-control",
-                          attrs: { name: "id_department" },
                           on: {
                             change: function($event) {
                               var $$selectedVal = Array.prototype.filter
@@ -15293,7 +15278,6 @@ var render = function() {
                             }
                           ],
                           staticClass: "form-control",
-                          attrs: { name: "id_field" },
                           on: {
                             change: function($event) {
                               var $$selectedVal = Array.prototype.filter
@@ -15343,7 +15327,6 @@ var render = function() {
                             }
                           ],
                           staticClass: "form-control",
-                          attrs: { name: "id_field" },
                           on: {
                             change: function($event) {
                               var $$selectedVal = Array.prototype.filter
@@ -15391,11 +15374,7 @@ var render = function() {
                           }
                         ],
                         staticClass: "form-control",
-                        attrs: {
-                          type: "password",
-                          name: "password",
-                          placeholder: "Nhập mật khẩu"
-                        },
+                        attrs: { type: "password" },
                         domProps: { value: _vm.dataAdd.password },
                         on: {
                           input: function($event) {
@@ -15492,7 +15471,7 @@ var staticRenderFns = [
             _vm._v(" "),
             _c("th", [_vm._v("Khóa")]),
             _vm._v(" "),
-            _c("th", [_vm._v("Email")]),
+            _c("th", [_vm._v("Địa chỉ")]),
             _vm._v(" "),
             _c("th", [_vm._v("Action")])
           ])

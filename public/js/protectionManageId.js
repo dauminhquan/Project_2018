@@ -14174,7 +14174,7 @@ window.Vue = __webpack_require__(10);
 window.axios = __webpack_require__(13);
 
 Vue.component('data-table', __webpack_require__(60));
-Vue.component("data-edit-time", __webpack_require__(63));
+Vue.component("data-edit-time", __webpack_require__(66));
 var table = new Vue({
     el: '#data-table'
 
@@ -14189,7 +14189,7 @@ var normalizeComponent = __webpack_require__(9)
 /* script */
 var __vue_script__ = __webpack_require__(61)
 /* template */
-var __vue_template__ = __webpack_require__(62)
+var __vue_template__ = __webpack_require__(65)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -14233,7 +14233,7 @@ module.exports = Component.exports
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__dataLecturer_vue__ = __webpack_require__(94);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__dataLecturer_vue__ = __webpack_require__(62);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__dataLecturer_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__dataLecturer_vue__);
 //
 //
@@ -14650,12 +14650,23 @@ window.store = new Vuex.Store({
     watch: {
         all_score: {
             handler: function handler(newval) {
-                this.dataEditTopic.scores = 0;
+                var t = 0;
+                var sum_st = 0;
                 for (var i = 0; i < this.all_score.length; i++) {
                     var sc = !isNaN(parseFloat(this.all_score[i].score)) ? parseFloat(this.all_score[i].score) : 0;
                     var ft = !isNaN(parseFloat(this.all_score[i].factor)) ? parseFloat(this.all_score[i].factor) : 0;
-
-                    this.dataEditTopic.scores += sc * ft;
+                    sum_st += ft;
+                    t += sc * ft;
+                }
+                if (sum_st > 1) {
+                    swal({
+                        title: "Oops...",
+                        text: "Tổng hệ số phải nhỏ hơn 1!",
+                        confirmButtonColor: "#EF5350",
+                        type: "error"
+                    });
+                } else {
+                    this.dataEditTopic.scores = t;
                 }
             },
 
@@ -14667,6 +14678,178 @@ window.store = new Vuex.Store({
 
 /***/ }),
 /* 62 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(9)
+/* script */
+var __vue_script__ = __webpack_require__(63)
+/* template */
+var __vue_template__ = __webpack_require__(64)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources\\assets\\js\\admin\\AdministratorController\\protectionManageId\\components\\dataLecturer.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-e9b67b80", Component.options)
+  } else {
+    hotAPI.reload("data-v-e9b67b80", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 63 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    props: ["lecturer"],
+    data: function data() {
+        return {
+            score: 0,
+            factor: 0
+        };
+    },
+
+    watch: {
+        score: {
+            handler: function handler() {},
+
+            deep: true
+        },
+        factor: {
+            handler: function handler() {},
+
+            deep: true
+        }
+    }
+});
+
+/***/ }),
+/* 64 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", { staticClass: "form-group" }, [
+    _c("label", { staticClass: "control-label col-lg-2" }, [
+      _vm._v("Điểm giảng viên " + _vm._s(_vm.lecturer.name_lecturer) + ":")
+    ]),
+    _vm._v(" "),
+    _c("div", { staticClass: "col-lg-5" }, [
+      _c("input", {
+        directives: [
+          {
+            name: "model",
+            rawName: "v-model",
+            value: _vm.score,
+            expression: "score"
+          }
+        ],
+        staticClass: "form-control",
+        attrs: {
+          type: "number",
+          step: "0.01",
+          max: "1",
+          min: "0",
+          placeholder: "Điểm giảng viên"
+        },
+        domProps: { value: _vm.score },
+        on: {
+          input: function($event) {
+            if ($event.target.composing) {
+              return
+            }
+            _vm.score = $event.target.value
+          }
+        }
+      })
+    ]),
+    _vm._v(" "),
+    _c("div", { staticClass: "col-lg-5" }, [
+      _c("input", {
+        directives: [
+          {
+            name: "model",
+            rawName: "v-model",
+            value: _vm.factor,
+            expression: "factor"
+          }
+        ],
+        staticClass: "form-control",
+        attrs: {
+          type: "number",
+          step: "0.01",
+          max: "1",
+          placeholder: "Hệ số",
+          min: "0"
+        },
+        domProps: { value: _vm.factor },
+        on: {
+          input: function($event) {
+            if ($event.target.composing) {
+              return
+            }
+            _vm.factor = $event.target.value
+          }
+        }
+      })
+    ])
+  ])
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-e9b67b80", module.exports)
+  }
+}
+
+/***/ }),
+/* 65 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -14933,7 +15116,7 @@ var render = function() {
                                 type: "number",
                                 step: "0.01",
                                 max: "1",
-                                placeholder: "Hệ số",
+                                placeholder: "Hệ số 0.1/1",
                                 min: "0"
                               },
                               domProps: { value: _vm.all_score[index].factor },
@@ -15158,15 +15341,15 @@ if (false) {
 }
 
 /***/ }),
-/* 63 */
+/* 66 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 var normalizeComponent = __webpack_require__(9)
 /* script */
-var __vue_script__ = __webpack_require__(64)
+var __vue_script__ = __webpack_require__(67)
 /* template */
-var __vue_template__ = __webpack_require__(65)
+var __vue_template__ = __webpack_require__(68)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -15205,7 +15388,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 64 */
+/* 67 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -15276,6 +15459,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 
 /* harmony default export */ __webpack_exports__["default"] = ({
+    computed: {
+        listLect_bv: function listLect_bv() {
+            return this.dataEditTime.listLecturer;
+        }
+    },
     mounted: function mounted() {
         this.getLecturers();
 
@@ -15353,14 +15541,30 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             });
         },
         showModel: function showModel() {
-
             $("#modalDelete").modal("show");
+        }
+    },
+    watch: {
+        listLect_bv: {
+            handler: function handler(new_value, old_value) {
+                if (new_value.length > 4) {
+                    swal({
+                        title: "Oops...",
+                        text: "Hội đồng bảo vệ phải nhỏ hơn 4!",
+                        confirmButtonColor: "#EF5350",
+                        type: "error"
+                    });
+                    this.dataEditTime.listLecturer = old_value;
+                }
+            },
+
+            deep: true
         }
     }
 });
 
 /***/ }),
-/* 65 */
+/* 68 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -15446,7 +15650,7 @@ var render = function() {
         _vm._v(" "),
         _c("div", { staticClass: "form-group" }, [
           _c("label", { staticClass: "control-label col-lg-2" }, [
-            _vm._v("Danh sách giáo viên phản biện")
+            _vm._v("Hội đồng bảo vệ")
           ]),
           _vm._v(" "),
           _c("div", { staticClass: "col-lg-10" }, [
@@ -15623,206 +15827,6 @@ if (false) {
   module.hot.accept()
   if (module.hot.data) {
     require("vue-hot-reload-api")      .rerender("data-v-46ede603", module.exports)
-  }
-}
-
-/***/ }),
-/* 66 */,
-/* 67 */,
-/* 68 */,
-/* 69 */,
-/* 70 */,
-/* 71 */,
-/* 72 */,
-/* 73 */,
-/* 74 */,
-/* 75 */,
-/* 76 */,
-/* 77 */,
-/* 78 */,
-/* 79 */,
-/* 80 */,
-/* 81 */,
-/* 82 */,
-/* 83 */,
-/* 84 */,
-/* 85 */,
-/* 86 */,
-/* 87 */,
-/* 88 */,
-/* 89 */,
-/* 90 */,
-/* 91 */,
-/* 92 */,
-/* 93 */,
-/* 94 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var disposed = false
-var normalizeComponent = __webpack_require__(9)
-/* script */
-var __vue_script__ = __webpack_require__(95)
-/* template */
-var __vue_template__ = __webpack_require__(96)
-/* template functional */
-var __vue_template_functional__ = false
-/* styles */
-var __vue_styles__ = null
-/* scopeId */
-var __vue_scopeId__ = null
-/* moduleIdentifier (server only) */
-var __vue_module_identifier__ = null
-var Component = normalizeComponent(
-  __vue_script__,
-  __vue_template__,
-  __vue_template_functional__,
-  __vue_styles__,
-  __vue_scopeId__,
-  __vue_module_identifier__
-)
-Component.options.__file = "resources\\assets\\js\\admin\\AdministratorController\\protectionManageId\\components\\dataLecturer.vue"
-
-/* hot reload */
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-e9b67b80", Component.options)
-  } else {
-    hotAPI.reload("data-v-e9b67b80", Component.options)
-  }
-  module.hot.dispose(function (data) {
-    disposed = true
-  })
-})()}
-
-module.exports = Component.exports
-
-
-/***/ }),
-/* 95 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
-/* harmony default export */ __webpack_exports__["default"] = ({
-    props: ["lecturer"],
-    data: function data() {
-        return {
-            score: 0,
-            factor: 0
-        };
-    },
-
-    watch: {
-        score: {
-            handler: function handler() {},
-
-            deep: true
-        },
-        factor: {
-            handler: function handler() {},
-
-            deep: true
-        }
-    }
-});
-
-/***/ }),
-/* 96 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var render = function() {
-  var _vm = this
-  var _h = _vm.$createElement
-  var _c = _vm._self._c || _h
-  return _c("div", { staticClass: "form-group" }, [
-    _c("label", { staticClass: "control-label col-lg-2" }, [
-      _vm._v("Điểm giảng viên " + _vm._s(_vm.lecturer.name_lecturer) + ":")
-    ]),
-    _vm._v(" "),
-    _c("div", { staticClass: "col-lg-5" }, [
-      _c("input", {
-        directives: [
-          {
-            name: "model",
-            rawName: "v-model",
-            value: _vm.score,
-            expression: "score"
-          }
-        ],
-        staticClass: "form-control",
-        attrs: {
-          type: "number",
-          step: "0.01",
-          max: "1",
-          min: "0",
-          placeholder: "Điểm giảng viên"
-        },
-        domProps: { value: _vm.score },
-        on: {
-          input: function($event) {
-            if ($event.target.composing) {
-              return
-            }
-            _vm.score = $event.target.value
-          }
-        }
-      })
-    ]),
-    _vm._v(" "),
-    _c("div", { staticClass: "col-lg-5" }, [
-      _c("input", {
-        directives: [
-          {
-            name: "model",
-            rawName: "v-model",
-            value: _vm.factor,
-            expression: "factor"
-          }
-        ],
-        staticClass: "form-control",
-        attrs: {
-          type: "number",
-          step: "0.01",
-          max: "1",
-          placeholder: "Hệ số",
-          min: "0"
-        },
-        domProps: { value: _vm.factor },
-        on: {
-          input: function($event) {
-            if ($event.target.composing) {
-              return
-            }
-            _vm.factor = $event.target.value
-          }
-        }
-      })
-    ])
-  ])
-}
-var staticRenderFns = []
-render._withStripped = true
-module.exports = { render: render, staticRenderFns: staticRenderFns }
-if (false) {
-  module.hot.accept()
-  if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-e9b67b80", module.exports)
   }
 }
 

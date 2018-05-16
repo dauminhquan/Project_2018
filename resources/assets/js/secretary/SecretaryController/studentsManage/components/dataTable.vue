@@ -9,7 +9,7 @@
                 <th>Khoa</th>
                 <th>Ngành</th>
                 <th>Khóa</th>
-                <th>Email</th>
+                <th>Địa chỉ</th>
                 <th>Action</th>
             </tr>
             </thead>
@@ -28,20 +28,19 @@
                     <input type="text" id="id_lec" hidden />
                     <form v-on:submit.prevent="submitEdit"  class="form-horizontal" id="" action="#">
                         <div class="modal-body">
-
                             <fieldset class="content-group">
                                 <legend class="text-bold">Điền đầy đủ thông tin</legend>
                                 <input type="text" hidden :value="showIdEdit"/>
                                 <div class="form-group">
                                     <label class="control-label col-lg-2">Tên sinh viên</label>
                                     <div class="col-lg-10">
-                                        <input type="text" v-model="dataEdit.student_name"  name="name_lecturer" class="form-control">
+                                        <input type="text" v-model="dataEdit.student_name"   class="form-control">
                                     </div>
                                 </div>
                                 <div class="form-group">
                                     <label class="control-label col-lg-2">Địa chỉ</label>
                                     <div class="col-lg-10">
-                                        <input type="text"  v-model="dataEdit.address" name="email_address_lecturer" class="form-control" placeholder="Điền Email của bạn">
+                                        <input type="text"  v-model="dataEdit.address"  class="form-control">
                                     </div>
                                 </div>
 
@@ -56,7 +55,7 @@
                                 <div class="form-group">
                                     <label class="control-label col-lg-2">Chọn ngành</label>
                                     <div class="col-lg-10">
-                                        <select  v-model="dataEdit.id_branch" name="id_field" class="form-control">
+                                        <select  v-model="dataEdit.id_branch"  class="form-control">
                                             <option v-for="branch in branchs" v-bind:value="branch.id">{{branch.name_branch}}</option>
                                         </select>
                                     </div>
@@ -72,7 +71,7 @@
                                 <div class="form-group">
                                     <label class="control-label col-lg-2">Điền mật khẩu</label>
                                     <div class="col-lg-10">
-                                        <input type="password" v-model="dataAdd.password"  name="password" class="form-control" placeholder="Nhập mật khẩu">
+                                        <input type="password" v-model="dataAdd.password"  class="form-control"/>
                                     </div>
                                 </div>
 
@@ -136,21 +135,21 @@
                                 <div class="form-group">
                                     <label class="control-label col-lg-2">Mã sinh viên</label>
                                     <div class="col-lg-10">
-                                        <input type="text" v-model="dataAdd.code" name="name_lecturer" class="form-control">
+                                        <input type="text" v-model="dataAdd.code"  class="form-control">
                                     </div>
                                 </div>
 
                                 <div class="form-group">
                                     <label class="control-label col-lg-2">Tên sinh viên</label>
                                     <div class="col-lg-10">
-                                        <input type="text " v-model="dataAdd.student_name" name="address_lecturer" class="form-control">
+                                        <input type="text " v-model="dataAdd.student_name"  class="form-control">
                                     </div>
                                 </div>
 
                                 <div class="form-group">
                                     <label class="control-label col-lg-2">Địa chỉ</label>
                                     <div class="col-lg-10">
-                                        <input type="text" v-model="dataAdd.address"  name="email_address_lecturer" class="form-control" placeholder="">
+                                        <input type="text" v-model="dataAdd.address"   class="form-control" placeholder="">
                                     </div>
                                 </div>
 
@@ -158,7 +157,7 @@
                                 <div class="form-group">
                                     <label class="control-label col-lg-2">Chọn khoa</label>
                                     <div class="col-lg-10">
-                                        <select  v-model="dataAdd.id_department"  name="id_department" class="form-control">
+                                        <select  v-model="dataAdd.id_department"   class="form-control">
                                             <option v-for="department in departments" v-bind:value="department.id">{{department.department_name}}</option>
                                         </select>
                                     </div>
@@ -167,7 +166,7 @@
                                 <div class="form-group">
                                     <label class="control-label col-lg-2">Chọn ngành</label>
                                     <div class="col-lg-10">
-                                        <select  v-model="dataAdd.id_branch"  name="id_field" class="form-control">
+                                        <select  v-model="dataAdd.id_branch"   class="form-control">
                                             <option v-for="branch in branchs" v-bind:value="branch.id">{{branch.name_branch}}</option>
 
                                         </select>
@@ -176,7 +175,7 @@
                                 <div class="form-group">
                                     <label class="control-label col-lg-2">Chọn khóa</label>
                                     <div class="col-lg-10">
-                                        <select  v-model="dataAdd.id_course"  name="id_field" class="form-control">
+                                        <select  v-model="dataAdd.id_course"   class="form-control">
                                             <option v-for="course in courses" v-bind:value="course.id">{{course.name_course}}</option>
 
                                         </select>
@@ -185,7 +184,7 @@
                                 <div class="form-group">
                                     <label class="control-label col-lg-2">Điền mật khẩu</label>
                                     <div class="col-lg-10">
-                                        <input type="password" v-model="dataAdd.password"  name="password" class="form-control" placeholder="Nhập mật khẩu">
+                                        <input type="password" v-model="dataAdd.password"  class="form-control">
                                     </div>
                                 </div>
 
@@ -485,7 +484,7 @@
                 let formData = new FormData();
 
                 formData.append('excel', this.file_excel);
-                console.log(this.file_excel)
+
                 axios.post( '/api/student',
                     formData,
                     {

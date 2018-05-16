@@ -14,10 +14,11 @@ class StudentController extends Controller
     {
         if(TopicProtection::where("id_student",Auth::guard("student")->user()->id)->where("acceptance","!=",2)->count() > 0)
         {
-            return Response::json(array(
-                'code'      =>  403,
-                'message'   =>  "You cannot have more than one topic"
-            ), 403);
+//            return Response::json(array(
+//                'code'      =>  403,
+//                'message'   =>  "You cannot have more than one topic"
+//            ), 403);
+            return response()->redirectToRoute('student.detaicuatoi');
         }
         return view("student.topics");
     }
@@ -38,10 +39,11 @@ class StudentController extends Controller
             }
         }
         else{
-            return Response::json(array(
-                'code'      =>  403,
-                'message'   =>  "Bạn chưa đăng ký chủ đề"
-            ), 403);
+//            return Response::json(array(
+//                'code'      =>  403,
+//                'message'   =>  "Bạn chưa đăng ký chủ đề"
+//            ), 403);
+            return response()->redirectToRoute('student.dangkytopic');
         }
 
         $data = [

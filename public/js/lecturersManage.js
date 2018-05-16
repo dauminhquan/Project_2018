@@ -13673,28 +13673,29 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             var formData = new FormData();
 
             formData.append('excel', this.file_excel);
-            console.log(this.file_excel);
+
             axios.post('/api/lecturer', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }
             }).then(function (data) {
+                console.log(data);
+                var email_err = "";
                 if (data.data.length > 0) {
-                    var email_err = "";
-                    console.log(data.data);
+
                     for (var i = 0; i < data.data.length; i++) {
                         email_err += data.data[i].email_address_lecturer + ";";
                     }
                     $("#modal_form_inline").modal("hide");
-                    swal({
-                        title: "Thêm thành công!",
-                        text: "Có " + data.data.length + " user không thể thêm. Tại vị trí " + email_err + "!",
-                        confirmButtonColor: "#66BB6A",
-                        type: "success"
-                    });
-                    _this6.resetData();
-                    $("#modal_form_inline").modal("hide");
                 }
+                swal({
+                    title: "Thêm thành công!",
+                    text: "Có " + data.data.length + " user không thể thêm. Tại vị trí " + email_err + "!",
+                    confirmButtonColor: "#66BB6A",
+                    type: "success"
+                });
+                _this6.resetData();
+                $("#modal_form_inline").modal("hide");
             }).catch(function (err) {
                 console.log(err);
                 swal({

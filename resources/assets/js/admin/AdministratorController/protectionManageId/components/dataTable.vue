@@ -65,7 +65,7 @@
                                         <input type="number" step="0.01" max="10" min="0" v-model="all_score[index].score" placeholder="Điểm giảng viên"  class="form-control" />
                                     </div>
                                     <div class="col-lg-5">
-                                        <input type="number" step="0.01" max="1" placeholder="Hệ số" min="0"  v-model="all_score[index].factor"   class="form-control" />
+                                        <input type="number" step="0.01" max="1" placeholder="Hệ số 0.1/1" min="0"  v-model="all_score[index].factor"   class="form-control" />
                                     </div>
                                 </div>
                                 <div class="form-group" v-if="dataEditTopic.status == 1">
@@ -471,14 +471,27 @@
        watch: {
            all_score: {
                handler(newval){
-                  this.dataEditTopic.scores = 0
+                  let t = 0
+                   let sum_st = 0
                   for (let i = 0;i< this.all_score.length;i++)
                   {
                       let sc = !isNaN(parseFloat(this.all_score[i].score))?parseFloat(this.all_score[i].score):0
                       let ft = !isNaN(parseFloat(this.all_score[i].factor))?parseFloat(this.all_score[i].factor):0
-
-                      this.dataEditTopic.scores+= sc*ft
+                      sum_st+=ft
+                     t+= sc*ft
                   }
+                    if(sum_st > 1)
+                    {
+                        swal({
+                            title: "Oops...",
+                            text: "Tổng hệ số phải nhỏ hơn 1!",
+                            confirmButtonColor: "#EF5350",
+                            type: "error"
+                        });
+                    }
+                   else{
+                        this.dataEditTopic.scores = t
+                    }
                },
                deep:true
            }

@@ -17,7 +17,7 @@
                 </div>
             </div>
             <div class="form-group">
-                <label class="control-label col-lg-2">Danh sách giáo viên phản biện</label>
+                <label class="control-label col-lg-2">Hội đồng bảo vệ</label>
                 <div class="col-lg-10">
                     <select name="" multiple v-model="dataEditTime.listLecturer" class="form-control">
                         <option v-for="lecturer in lecturers" :value="lecturer.id">{{lecturer.name_lecturer}}</option>
@@ -64,6 +64,11 @@
 </template>
 <script>
     export default {
+        computed: {
+          listLect_bv(){
+              return this.dataEditTime.listLecturer
+          }
+        },
         mounted(){
             this.getLecturers()
 
@@ -143,9 +148,23 @@
 
             },
             showModel(){
-
                 $("#modalDelete").modal("show")
-
+            }
+        },
+        watch: {
+            listLect_bv: {
+                handler(new_value,old_value){
+                    if(new_value.length>4) {
+                        swal({
+                            title: "Oops...",
+                            text: "Hội đồng bảo vệ phải nhỏ hơn 4!",
+                            confirmButtonColor: "#EF5350",
+                            type: "error"
+                        });
+                        this.dataEditTime.listLecturer = old_value
+                    }
+                },
+                deep : true
             }
         }
     }
