@@ -14432,6 +14432,30 @@ window.store = new Vuex.Store({
     },
 
     methods: {
+        showHeso: function showHeso(i) {
+            switch (i) {
+                case 1:
+                    {
+                        return 'Hệ số của Trưởng hội đồng';
+                    }
+                case 2:
+                    {
+                        return 'Hệ số của Thư ký';
+                    }
+                case 3:
+                    {
+                        return 'Hệ số của Giảng viên phản biện 1';
+                    }
+                case 4:
+                    {
+                        return 'Hệ số của Giảng viên phản biện 2';
+                    }
+                default:
+                    {
+                        return "Không rõ chức vụ";
+                    }
+            }
+        },
         drawTable: function drawTable(data) {
             $.extend($.fn.dataTable.defaults, {
                 autoWidth: false,
@@ -14443,6 +14467,9 @@ window.store = new Vuex.Store({
                 }
             });
 
+            if (data[0][0] == null) {
+                data = [];
+            }
             $('#datatable-basic').dataTable({
                 data: data,
                 columnDefs: [],
@@ -14592,7 +14619,7 @@ window.store = new Vuex.Store({
             var _this5 = this;
 
             axios.get("/api/protection/" + this.id).then(function (data) {
-
+                console.log(data.data);
                 _this5.infoData = _this5.filData(data.data.topics);
                 _this5.infoDataJson = data.data.topics;
 
@@ -15053,89 +15080,102 @@ var render = function() {
                       lecturer,
                       index
                     ) {
-                      return _c(
-                        "div",
-                        { key: lecturer.id, staticClass: "form-group" },
-                        [
-                          _c(
-                            "label",
-                            { staticClass: "control-label col-lg-2" },
+                      return _vm.dataEditTopic.status == 1
+                        ? _c(
+                            "div",
+                            {
+                              key: lecturer.position,
+                              staticClass: "form-group"
+                            },
                             [
-                              _vm._v("Điểm GV: "),
-                              _c("b", [_vm._v(_vm._s(lecturer.name_lecturer))]),
-                              _vm._v(":")
+                              _c(
+                                "label",
+                                { staticClass: "control-label col-lg-2" },
+                                [
+                                  _vm._v("Điểm GV: "),
+                                  _c("b", [
+                                    _vm._v(_vm._s(lecturer.name_lecturer))
+                                  ]),
+                                  _vm._v(":")
+                                ]
+                              ),
+                              _vm._v(" "),
+                              _c("div", { staticClass: "col-lg-5" }, [
+                                _c("input", {
+                                  directives: [
+                                    {
+                                      name: "model",
+                                      rawName: "v-model",
+                                      value: _vm.all_score[index].score,
+                                      expression: "all_score[index].score"
+                                    }
+                                  ],
+                                  staticClass: "form-control",
+                                  attrs: {
+                                    type: "number",
+                                    step: "0.01",
+                                    max: "10",
+                                    min: "0",
+                                    placeholder: "Điểm giảng viên"
+                                  },
+                                  domProps: {
+                                    value: _vm.all_score[index].score
+                                  },
+                                  on: {
+                                    input: function($event) {
+                                      if ($event.target.composing) {
+                                        return
+                                      }
+                                      _vm.$set(
+                                        _vm.all_score[index],
+                                        "score",
+                                        $event.target.value
+                                      )
+                                    }
+                                  }
+                                })
+                              ]),
+                              _vm._v(" "),
+                              _c("div", { staticClass: "col-lg-5" }, [
+                                _c("input", {
+                                  directives: [
+                                    {
+                                      name: "model",
+                                      rawName: "v-model",
+                                      value: _vm.all_score[index].factor,
+                                      expression: "all_score[index].factor"
+                                    }
+                                  ],
+                                  staticClass: "form-control",
+                                  attrs: {
+                                    type: "number",
+                                    step: "0.01",
+                                    max: "1",
+                                    placeholder: _vm.showHeso(
+                                      lecturer.position
+                                    ),
+                                    min: "0"
+                                  },
+                                  domProps: {
+                                    value: _vm.all_score[index].factor
+                                  },
+                                  on: {
+                                    input: function($event) {
+                                      if ($event.target.composing) {
+                                        return
+                                      }
+                                      _vm.$set(
+                                        _vm.all_score[index],
+                                        "factor",
+                                        $event.target.value
+                                      )
+                                    }
+                                  }
+                                })
+                              ])
                             ]
-                          ),
-                          _vm._v(" "),
-                          _c("div", { staticClass: "col-lg-5" }, [
-                            _c("input", {
-                              directives: [
-                                {
-                                  name: "model",
-                                  rawName: "v-model",
-                                  value: _vm.all_score[index].score,
-                                  expression: "all_score[index].score"
-                                }
-                              ],
-                              staticClass: "form-control",
-                              attrs: {
-                                type: "number",
-                                step: "0.01",
-                                max: "10",
-                                min: "0",
-                                placeholder: "Điểm giảng viên"
-                              },
-                              domProps: { value: _vm.all_score[index].score },
-                              on: {
-                                input: function($event) {
-                                  if ($event.target.composing) {
-                                    return
-                                  }
-                                  _vm.$set(
-                                    _vm.all_score[index],
-                                    "score",
-                                    $event.target.value
-                                  )
-                                }
-                              }
-                            })
-                          ]),
-                          _vm._v(" "),
-                          _c("div", { staticClass: "col-lg-5" }, [
-                            _c("input", {
-                              directives: [
-                                {
-                                  name: "model",
-                                  rawName: "v-model",
-                                  value: _vm.all_score[index].factor,
-                                  expression: "all_score[index].factor"
-                                }
-                              ],
-                              staticClass: "form-control",
-                              attrs: {
-                                type: "number",
-                                step: "0.01",
-                                max: "1",
-                                placeholder: "Hệ số 0.1/1",
-                                min: "0"
-                              },
-                              domProps: { value: _vm.all_score[index].factor },
-                              on: {
-                                input: function($event) {
-                                  if ($event.target.composing) {
-                                    return
-                                  }
-                                  _vm.$set(
-                                    _vm.all_score[index],
-                                    "factor",
-                                    $event.target.value
-                                  )
-                                }
-                              }
-                            })
-                          ])
-                        ]
-                      )
+                          )
+                        : _vm._e()
                     }),
                     _vm._v(" "),
                     _vm.dataEditTopic.status == 1
@@ -15349,7 +15389,7 @@ var normalizeComponent = __webpack_require__(9)
 /* script */
 var __vue_script__ = __webpack_require__(67)
 /* template */
-var __vue_template__ = __webpack_require__(68)
+var __vue_template__ = __webpack_require__(71)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -15393,6 +15433,23 @@ module.exports = Component.exports
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue__ = __webpack_require__(10);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_vue__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__select2_vue__ = __webpack_require__(68);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__select2_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__select2_vue__);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -15458,6 +15515,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 
+
+
+__WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('select2', __WEBPACK_IMPORTED_MODULE_1__select2_vue___default.a);
 /* harmony default export */ __webpack_exports__["default"] = ({
     computed: {
         listLect_bv: function listLect_bv() {
@@ -15472,7 +15532,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         this.dataEditTime.detail = this.detail;
 
         this.dataEditTime.listLecturer = this.listlecturer.split(",");
-        console.log(this.dataEditTime.listLecturer);
+        this.listLecturerOld = this.listlecturer.split(",");
+        // $('select').select2()
     },
     data: function data() {
         return {
@@ -15482,35 +15543,75 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 detail: "",
                 listLecturer: []
             },
-            lecturers: []
+            lecturers: [],
+            listLecturerOld: []
         };
     },
 
     props: ["time_start", "time_end", "id_p", "detail", "listlecturer"],
     methods: {
+        updateValue: function updateValue(value, index) {
+            // console.log(value)
+            if (value != "" && value != undefined) {
+                this.dataEditTime.listLecturer[index] = value;
+            }
+            // console.log(this.dataEditTime.listLecturer)
+
+            // console.log(this.dataEditTime.listLecturer[index])
+        },
         getLecturers: function getLecturers() {
             var _this = this;
 
             // có thể sẽ phải update lại
             axios.get("/api/lecturer").then(function (data) {
-                console.log(data);
+
                 _this.lecturers = data.data;
             }).catch(function (err) {
                 console.log(err);
             });
         },
         submitEditTime: function submitEditTime() {
-            axios.put("/api/protection/" + this.id_p, this.dataEditTime).then(function (data) {
 
-                swal({
-                    title: "Thành công!",
-                    text: "Update thông tin thành công!",
-                    confirmButtonColor: "#66BB6A",
-                    type: "success"
+            if (this.checkLecturer() == true) {
+                axios.put("/api/protection/" + this.id_p, this.dataEditTime).then(function (data) {
+
+                    swal({
+                        title: "Thành công!",
+                        text: "Update thông tin thành công!",
+                        confirmButtonColor: "#66BB6A",
+                        type: "success"
+                    });
+                    location.reload();
+                }).catch(function (err) {
+                    console.log(err);
                 });
-            }).catch(function (err) {
-                console.log(err);
+            }
+        },
+        checkLecturer: function checkLecturer() {
+            var _this2 = this;
+
+            var vle = true;
+
+            this.dataEditTime.listLecturer.forEach(function (value) {
+
+                var ll = _this2.dataEditTime.listLecturer;
+                var l = [];
+                for (var i = 0; i < ll.length; i++) {
+                    if (ll[i] == value) {
+                        l.push(ll[i]);
+                    }
+                }
+                if (l.length > 1) {
+                    swal({
+                        title: "Oops...",
+                        text: "Một thành viên không thể có 2 chức vụ!",
+                        confirmButtonColor: "#EF5350",
+                        type: "error"
+                    });
+                    vle = false;
+                }
             });
+            return vle;
         },
         successDelete: function successDelete() {
 
@@ -15544,27 +15645,153 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             $("#modalDelete").modal("show");
         }
     },
-    watch: {
-        listLect_bv: {
-            handler: function handler(new_value, old_value) {
-                if (new_value.length > 4) {
-                    swal({
-                        title: "Oops...",
-                        text: "Hội đồng bảo vệ phải nhỏ hơn 4!",
-                        confirmButtonColor: "#EF5350",
-                        type: "error"
-                    });
-                    this.dataEditTime.listLecturer = old_value;
-                }
-            },
-
-            deep: true
-        }
-    }
+    watch: {}
 });
 
 /***/ }),
 /* 68 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(9)
+/* script */
+var __vue_script__ = __webpack_require__(69)
+/* template */
+var __vue_template__ = __webpack_require__(70)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources\\assets\\js\\admin\\AdministratorController\\protectionManageId\\components\\select2.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-1a3ecde4", Component.options)
+  } else {
+    hotAPI.reload("data-v-1a3ecde4", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 69 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    props: ['lecturers', 'value'],
+    mounted: function mounted() {
+
+        var vm = this;
+        console.log(vm.value);
+
+        $(this.$el)
+        // init select2
+        .select2().val(this.value).trigger('change')
+        // emit event on change.
+        .on('change', function () {
+            if (this.value != undefined) {
+                vm.$emit('updateValue', this.value);
+            }
+        });
+    },
+    watch: {
+        value: function value(_value) {
+            // update value
+
+            if (_value != undefined) {
+                $(this.$el).val(_value).trigger('change');
+            }
+        }
+    },
+    destroyed: function destroyed() {
+        $(this.$el).off().select2('destroy');
+    }
+});
+
+/***/ }),
+/* 70 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "select",
+    {
+      directives: [
+        {
+          name: "model",
+          rawName: "v-model",
+          value: _vm.value,
+          expression: "value"
+        }
+      ],
+      staticClass: "form-control",
+      attrs: { name: "" },
+      on: {
+        change: function($event) {
+          var $$selectedVal = Array.prototype.filter
+            .call($event.target.options, function(o) {
+              return o.selected
+            })
+            .map(function(o) {
+              var val = "_value" in o ? o._value : o.value
+              return val
+            })
+          _vm.value = $event.target.multiple ? $$selectedVal : $$selectedVal[0]
+        }
+      }
+    },
+    _vm._l(_vm.lecturers, function(lecturer) {
+      return _c("option", { domProps: { value: lecturer.id } }, [
+        _vm._v(_vm._s(lecturer.name_lecturer))
+      ])
+    })
+  )
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-1a3ecde4", module.exports)
+  }
+}
+
+/***/ }),
+/* 71 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -15589,9 +15816,7 @@ var render = function() {
         ]),
         _vm._v(" "),
         _c("div", { staticClass: "form-group" }, [
-          _c("label", { staticClass: "control-label col-lg-2" }, [
-            _vm._v("Thời gian bắt đầu")
-          ]),
+          _vm._m(0),
           _vm._v(" "),
           _c("div", { staticClass: "col-lg-10" }, [
             _c("input", {
@@ -15619,9 +15844,7 @@ var render = function() {
         ]),
         _vm._v(" "),
         _c("div", { staticClass: "form-group" }, [
-          _c("label", { staticClass: "control-label col-lg-2" }, [
-            _vm._v("Thời gian kết thúc")
-          ]),
+          _vm._m(1),
           _vm._v(" "),
           _c("div", { staticClass: "col-lg-10" }, [
             _c("input", {
@@ -15649,55 +15872,105 @@ var render = function() {
         ]),
         _vm._v(" "),
         _c("div", { staticClass: "form-group" }, [
-          _c("label", { staticClass: "control-label col-lg-2" }, [
-            _vm._v("Hội đồng bảo vệ")
-          ]),
+          _vm._m(2),
           _vm._v(" "),
           _c("div", { staticClass: "col-lg-10" }, [
             _c(
-              "select",
-              {
-                directives: [
-                  {
-                    name: "model",
-                    rawName: "v-model",
-                    value: _vm.dataEditTime.listLecturer,
-                    expression: "dataEditTime.listLecturer"
+              "div",
+              { staticClass: "form-group" },
+              [
+                _c("label", { staticClass: "control-label" }, [
+                  _vm._v("Trưởng hội đồng")
+                ]),
+                _vm._v(" "),
+                _c("select2", {
+                  attrs: {
+                    lecturers: _vm.lecturers,
+                    value: _vm.listLecturerOld[0]
+                  },
+                  on: {
+                    updateValue: function($event) {
+                      _vm.updateValue($event, 0)
+                    }
                   }
-                ],
-                staticClass: "form-control",
-                attrs: { name: "", multiple: "" },
-                on: {
-                  change: function($event) {
-                    var $$selectedVal = Array.prototype.filter
-                      .call($event.target.options, function(o) {
-                        return o.selected
-                      })
-                      .map(function(o) {
-                        var val = "_value" in o ? o._value : o.value
-                        return val
-                      })
-                    _vm.$set(
-                      _vm.dataEditTime,
-                      "listLecturer",
-                      $event.target.multiple ? $$selectedVal : $$selectedVal[0]
-                    )
+                })
+              ],
+              1
+            ),
+            _vm._v(" "),
+            _c(
+              "div",
+              { staticClass: "form-group" },
+              [
+                _c("label", { staticClass: "control-label" }, [
+                  _vm._v("Thư ký")
+                ]),
+                _vm._v(" "),
+                _c("select2", {
+                  attrs: {
+                    lecturers: _vm.lecturers,
+                    value: _vm.listLecturerOld[1]
+                  },
+                  on: {
+                    updateValue: function($event) {
+                      _vm.updateValue($event, 1)
+                    }
                   }
-                }
-              },
-              _vm._l(_vm.lecturers, function(lecturer) {
-                return _c("option", { domProps: { value: lecturer.id } }, [
-                  _vm._v(_vm._s(lecturer.name_lecturer))
-                ])
-              })
+                })
+              ],
+              1
+            ),
+            _vm._v(" "),
+            _c(
+              "div",
+              { staticClass: "form-group" },
+              [
+                _c("label", { staticClass: "control-label" }, [
+                  _vm._v("Giảng viên phản biện")
+                ]),
+                _vm._v(" "),
+                _c("select2", {
+                  attrs: {
+                    lecturers: _vm.lecturers,
+                    value: _vm.listLecturerOld[2]
+                  },
+                  on: {
+                    updateValue: function($event) {
+                      _vm.updateValue($event, 2)
+                    }
+                  }
+                })
+              ],
+              1
+            ),
+            _vm._v(" "),
+            _c(
+              "div",
+              { staticClass: "form-group" },
+              [
+                _c("label", { staticClass: "control-label" }, [
+                  _vm._v("Giảng viên phản biện")
+                ]),
+                _vm._v(" "),
+                _c("select2", {
+                  attrs: {
+                    lecturers: _vm.lecturers,
+                    value: _vm.listLecturerOld[3]
+                  },
+                  on: {
+                    updateValue: function($event) {
+                      _vm.updateValue($event, 3)
+                    }
+                  }
+                })
+              ],
+              1
             )
           ])
         ]),
         _vm._v(" "),
         _c("div", { staticClass: "form-group" }, [
-          _c("label", { staticClass: "control-label col-lg-2" }, [
-            _vm._v("Mô tả")
-          ]),
+          _vm._m(3),
           _vm._v(" "),
           _c("div", { staticClass: "col-lg-10" }, [
             _c("textarea", {
@@ -15725,7 +15998,7 @@ var render = function() {
         ]),
         _vm._v(" "),
         _c("div", { staticClass: "text-right" }, [
-          _vm._m(0),
+          _vm._m(4),
           _vm._v(" "),
           _c(
             "button",
@@ -15745,9 +16018,9 @@ var render = function() {
       _c("div", { staticClass: "modal fade", attrs: { id: "modalDelete" } }, [
         _c("div", { staticClass: "modal-dialog" }, [
           _c("div", { staticClass: "modal-content" }, [
-            _vm._m(1),
+            _vm._m(5),
             _vm._v(" "),
-            _vm._m(2),
+            _vm._m(6),
             _vm._v(" "),
             _c("div", { staticClass: "modal-footer" }, [
               _c(
@@ -15776,6 +16049,38 @@ var render = function() {
   )
 }
 var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("label", { staticClass: "control-label col-lg-2" }, [
+      _c("b", [_vm._v("Thời gian bắt đầu:")])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("label", { staticClass: "control-label col-lg-2" }, [
+      _c("b", [_vm._v("Thời gian kết thúc:")])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("label", { staticClass: "control-label col-lg-2" }, [
+      _c("b", [_vm._v("Hội đồng bảo vệ:")])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("label", { staticClass: "control-label col-lg-2" }, [
+      _c("b", [_vm._v("Mô tả:")])
+    ])
+  },
   function() {
     var _vm = this
     var _h = _vm.$createElement

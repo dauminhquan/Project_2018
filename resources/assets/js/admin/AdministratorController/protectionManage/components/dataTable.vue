@@ -21,7 +21,7 @@
                 <div class="modal-content">
                     <div class="modal-header bg-danger">
                         <button type="button" class="close" data-dismiss="modal">&times;</button>
-                        <h6 class="modal-title">Xóa lĩnh vực</h6>
+                        <h6 class="modal-title">Đợt bảo vệ</h6>
                     </div>
 
                     <div class="modal-body">
@@ -67,14 +67,7 @@
                                         <input type="date" v-model="dataAdd.timeEnd"  class="form-control">
                                     </div>
                                 </div>
-                                <div class="form-group">
-                                    <label class="control-label col-lg-2">Danh sách giáo viên phản biện</label>
-                                    <div class="col-lg-10">
-                                        <select name="" multiple v-model="dataAdd.listLecturer" class="form-control">
-                                            <option v-for="lecturer in listLecturer" :value="lecturer.id">{{lecturer.name_lecturer}}</option>
-                                        </select>
-                                    </div>
-                                </div>
+
                                 <div class="form-group">
                                     <label class="control-label col-lg-2">Mô tả</label>
                                     <div class="col-lg-10">

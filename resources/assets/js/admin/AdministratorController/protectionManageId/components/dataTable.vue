@@ -59,13 +59,13 @@
                                 </div>
                                 <!--<data-lecturer v-for="lecturer in dataEditTopic.listLecturer" :key="lecturer.id" :lecturer="lecturer">-->
                                 <!--</data-lecturer>-->
-                                <div class="form-group" v-for="(lecturer,index) in dataEditTopic.listLecturer" :key="lecturer.id">
+                                <div class="form-group" v-if="dataEditTopic.status == 1" v-for="(lecturer,index) in dataEditTopic.listLecturer" :key="lecturer.position">
                                     <label class="control-label col-lg-2">Điểm GV: <b>{{lecturer.name_lecturer}}</b>:</label>
                                     <div class="col-lg-5">
                                         <input type="number" step="0.01" max="10" min="0" v-model="all_score[index].score" placeholder="Điểm giảng viên"  class="form-control" />
                                     </div>
                                     <div class="col-lg-5">
-                                        <input type="number" step="0.01" max="1" placeholder="Hệ số 0.1/1" min="0"  v-model="all_score[index].factor"   class="form-control" />
+                                        <input type="number" step="0.01" max="1" :placeholder="showHeso(lecturer.position)" min="0"  v-model="all_score[index].factor"   class="form-control" />
                                     </div>
                                 </div>
                                 <div class="form-group" v-if="dataEditTopic.status == 1">
@@ -145,6 +145,7 @@
           'data-lecturer' : dtlec
         },
         computed:{
+
             showIdEdit () {
                 //thong tin topic co id
                 var idEdit_cr = this.$store.state.idData
@@ -206,7 +207,26 @@
         },
         methods: {
 
-
+            showHeso(i){
+                switch (i){
+                    case (1) : {
+                        return 'Hệ số của Trưởng hội đồng'
+                    }
+                    case (2) : {
+                        return 'Hệ số của Thư ký'
+                    }
+                    case (3) : {
+                        return 'Hệ số của Giảng viên phản biện 1'
+                    }
+                    case (4) : {
+                        return 'Hệ số của Giảng viên phản biện 2'
+                    }
+                    default :
+                    {
+                        return "Không rõ chức vụ"
+                    }
+                }
+            },
             drawTable(data){
                 $.extend( $.fn.dataTable.defaults, {
                     autoWidth: false,
@@ -218,7 +238,10 @@
                     }
                 });
 
-
+                if(data[0][0] == null)
+                {
+                    data = []
+                }
                 $('#datatable-basic').dataTable({
                     data: data,
                     columnDefs: [],
@@ -291,6 +314,7 @@
                             type: "success"
                         });
                         $("#modalInfo").modal("hide")
+
                     }).catch((err) => {
                         console.log(err)
                     })
@@ -405,7 +429,7 @@
 
             getData(){
                 axios.get("/api/protection/"+this.id).then((data) => {
-
+                    console.log(data.data)
                     this.infoData = this.filData(data.data.topics)
                     this.infoDataJson = data.data.topics
 

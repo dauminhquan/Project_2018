@@ -14325,13 +14325,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
 
 window.Vuex = __webpack_require__(32);
 Vue.use(Vuex);
@@ -14653,56 +14646,6 @@ var render = function() {
                   _vm._v(" "),
                   _c("div", { staticClass: "form-group" }, [
                     _c("label", { staticClass: "control-label col-lg-2" }, [
-                      _vm._v("Danh sách giáo viên phản biện")
-                    ]),
-                    _vm._v(" "),
-                    _c("div", { staticClass: "col-lg-10" }, [
-                      _c(
-                        "select",
-                        {
-                          directives: [
-                            {
-                              name: "model",
-                              rawName: "v-model",
-                              value: _vm.dataAdd.listLecturer,
-                              expression: "dataAdd.listLecturer"
-                            }
-                          ],
-                          staticClass: "form-control",
-                          attrs: { name: "", multiple: "" },
-                          on: {
-                            change: function($event) {
-                              var $$selectedVal = Array.prototype.filter
-                                .call($event.target.options, function(o) {
-                                  return o.selected
-                                })
-                                .map(function(o) {
-                                  var val = "_value" in o ? o._value : o.value
-                                  return val
-                                })
-                              _vm.$set(
-                                _vm.dataAdd,
-                                "listLecturer",
-                                $event.target.multiple
-                                  ? $$selectedVal
-                                  : $$selectedVal[0]
-                              )
-                            }
-                          }
-                        },
-                        _vm._l(_vm.listLecturer, function(lecturer) {
-                          return _c(
-                            "option",
-                            { domProps: { value: lecturer.id } },
-                            [_vm._v(_vm._s(lecturer.name_lecturer))]
-                          )
-                        })
-                      )
-                    ])
-                  ]),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "form-group" }, [
-                    _c("label", { staticClass: "control-label col-lg-2" }, [
                       _vm._v("Mô tả")
                     ]),
                     _vm._v(" "),
@@ -14783,7 +14726,7 @@ var staticRenderFns = [
         [_vm._v("×")]
       ),
       _vm._v(" "),
-      _c("h6", { staticClass: "modal-title" }, [_vm._v("Xóa lĩnh vực")])
+      _c("h6", { staticClass: "modal-title" }, [_vm._v("Đợt bảo vệ")])
     ])
   },
   function() {

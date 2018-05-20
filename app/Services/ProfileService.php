@@ -514,6 +514,7 @@ class ProfileService
                 "topic_protection.time_run",
                 "topic_protection.place",
                 "topic_protection.pass",
+                "lecturer_protection.position",
                 DB::raw("topic_lec.id as id_top_lec"),// id_giang vien huong dan topic
                 DB::raw("topic_lec.name_lecturer as name_lecturer_top_lec") // ten giang vien huong dan
             )
@@ -555,7 +556,7 @@ class ProfileService
 
             if($index ===false)
             {
-                $listTopic[$index]["listLecturer"][] = ["name_lecturer" => $item->name_lecturer,"id_lecturer" => $item->id_lecturer];
+                $listTopic[$index]["listLecturer"][] = ["name_lecturer" => $item->name_lecturer,"id_lecturer" => $item->id_lecturer,"position" => $item->position];
 
             }
             else{
@@ -621,11 +622,13 @@ class ProfileService
         if($request->has("listLecturer"))
         {
             LecturerProtection::where("id_protection",$id)->delete();
-            foreach ($request->listLecturer as $item)
+            foreach ($request->listLecturer as $key => $item)
             {
                 $l = new LecturerProtection();
                 $l->id_protection = $id;
+
                 $l->id_lecturer = $item;
+                $l->position = $key+1;
                 $l->save();
             }
         }
