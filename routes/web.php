@@ -70,6 +70,7 @@ Route::group(["prefix" => "api","name" =>"api.","namespace" => "Api"],function()
 Route::group(["prefix" => "excel","middleware" => "secretary"],function (){
    Route::get("lecturer",["uses" => "ExcelController@lecturer"]);
     Route::get("student",["uses" => "ExcelController@student"]);
+    Route::get("topics",["uses" => "ExcelController@topic"]);
 });
 Route::group(["middleware" => "secretary"],function (){
     Route::get("quan-ly-giang-vien",["as" => "thuky.quanlygiangvien","uses" => "SecretaryController@lecturersManage"]);

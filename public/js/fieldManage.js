@@ -14875,7 +14875,7 @@ var staticRenderFns = [
       _vm._v(" "),
       _c("h5", { staticClass: "modal-title" }, [
         _c("i", { staticClass: "icon-menu7" }),
-        _vm._v("  Thông tin sinh viên")
+        _vm._v("  Thông tin lĩnh vực")
       ])
     ])
   },

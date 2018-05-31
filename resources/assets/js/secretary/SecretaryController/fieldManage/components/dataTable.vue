@@ -19,7 +19,7 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal">&times;</button>
-                        <h5 class="modal-title"><i class="icon-menu7"></i> &nbsp;Thông tin sinh viên</h5>
+                        <h5 class="modal-title"><i class="icon-menu7"></i> &nbsp;Thông tin lĩnh vực</h5>
                     </div>
                     <input type="text" id="id_lec" hidden />
                     <form v-on:submit.prevent="submitEdit"  class="form-horizontal" id="" action="#">

@@ -33,6 +33,16 @@ class ExcelController extends Controller
             });
         })->download('xls');
     }
+    public function topic(){
+        $pro =  new ProfileService();
+        $lec = $pro->getTopics();
+        Excel::create('topics', function($excel) use ($lec) {
+            $excel->sheet("sheet_1",function ($sheet) use ($lec)
+            {
+                $sheet->fromArray($lec);
+            });
+        })->download('xls');
+    }
 
     public function testEmail()
     {
