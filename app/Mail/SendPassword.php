@@ -15,7 +15,6 @@ class SendPassword extends Mailable
     private $password;
     public function __construct($user_name,$password)
     {
-
         $this->user_name = $user_name;
         $this->password = $password;
     }
