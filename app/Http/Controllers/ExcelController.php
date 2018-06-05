@@ -52,8 +52,10 @@ class ExcelController extends Controller
     }
     public function statistical()
     {
+        $sv_dangky = TopicProtection::join('students','students.id','topic_protection.id_student')
+            ->join('departments','departments.id','students.id_department')->groupBy('departments.id','department_name')->select('departments.id','departments.department_name',DB::raw('COUNT(students.id) as count_sv'))->get();
         // lay danh sach sinh vien đăng ký theo khoa
-        $sv_dangky = TopicProtection::where('topic_protection.acceptance',1)->join('students','students.id','topic_protection.id_student')
+        $sv_dangkybv = TopicProtection::where('topic_protection.acceptance',1)->join('students','students.id','topic_protection.id_student')
             ->join('departments','departments.id','students.id_department')->groupBy('departments.id','department_name')->select('departments.id','departments.department_name',DB::raw('COUNT(students.id) as count_sv'))->get();
         $sv_pass = TopicProtection::where('scores','>',5)->join('students','students.id','topic_protection.id_student')
             ->join('departments','departments.id','students.id_department')->groupBy('departments.id','department_name')->select('departments.id','departments.department_name',DB::raw('COUNT(students.id) as count_sv'))->get();
@@ -72,7 +74,8 @@ class ExcelController extends Controller
             $data[] = (Object)[
                 'id' => $item->id,
                 'department_name' => $item->department_name,
-                'sv_dangky' => $this->get_dangky($item,$sv_dangky),
+                'sv_dangky' => $this->get_dangkybv($item,$sv_dangky),
+                'sv_dangkybv' => $this->get_dangkybv($item,$sv_dangkybv),
                 'sv_pass' => $this->getsv_pass($item,$sv_pass),
                 'dtb' => $this->get_avg($item,$dtb)
             ];
@@ -89,8 +92,10 @@ class ExcelController extends Controller
 
 
     public function statistical_excel(){
+        $sv_dangky = TopicProtection::join('students','students.id','topic_protection.id_student')
+            ->join('departments','departments.id','students.id_department')->groupBy('departments.id','department_name')->select('departments.id','departments.department_name',DB::raw('COUNT(students.id) as count_sv'))->get();
         // lay danh sach sinh vien đăng ký theo khoa
-        $sv_dangky = TopicProtection::where('topic_protection.acceptance',1)->join('students','students.id','topic_protection.id_student')
+        $sv_dangkybv = TopicProtection::where('topic_protection.acceptance',1)->join('students','students.id','topic_protection.id_student')
             ->join('departments','departments.id','students.id_department')->groupBy('departments.id','department_name')->select('departments.id','departments.department_name',DB::raw('COUNT(students.id) as count_sv'))->get();
         $sv_pass = TopicProtection::where('scores','>',5)->join('students','students.id','topic_protection.id_student')
             ->join('departments','departments.id','students.id_department')->groupBy('departments.id','department_name')->select('departments.id','departments.department_name',DB::raw('COUNT(students.id) as count_sv'))->get();
@@ -109,11 +114,15 @@ class ExcelController extends Controller
             $data[] = [
                 'id' => $item->id,
                 'Tên khoa' => $item->department_name,
-                'Số sinh viên đăng ký bảo vệ' => $this->get_dangky($item,$sv_dangky),
+                'Số sinh viên đăng ký khóa luận' => $this->get_dangky($item,$sv_dangky),
+                'Số sinh viên đăng ký bảo vệ' => $this->get_dangkybv($item,$sv_dangkybv),
                 'Số sinh viên bảo vệ thành công' => $this->getsv_pass($item,$sv_pass),
                 'Điểm trung bình của khoa' => $this->get_avg($item,$dtb)
             ];
         }
+
+
+
 
         return Excel::create('statistical', function($excel) use($data) {
             $excel->sheet('statistical', function($sheet) use($data) {
@@ -123,8 +132,22 @@ class ExcelController extends Controller
         })->download('xls');
     }
 
-
     private function get_dangky($item,$sv_dangky)
+    {
+        if(count($sv_dangky) == 0)
+        {
+            return 0;
+        }
+        foreach ($sv_dangky as $value)
+        {
+            if($value->id == $item->id)
+            {
+                return $value->count_sv;
+            }
+        }
+        return 0;
+    }
+    private function get_dangkybv($item,$sv_dangky)
     {
         if(count($sv_dangky) == 0)
         {

@@ -20,8 +20,9 @@
                     <tr>
                         <th>#</th>
                         <th>Khoa</th>
-                        <th>Sinh viên đăng ký khóa luận</th>
-                        <th>Sinh viên vượt quan</th>
+                        <th>Số sinh viên đăng ký khóa luận</th>
+                        <th>Số sinh viên đăng ký bảo vệ</th>
+                        <th>Số SV qua</th>
                         <th>Điểm trung bình</th>
                     </tr>
                     </thead>
@@ -31,6 +32,7 @@
                             <td>{{$item->id}}</td>
                             <td>{{$item->department_name}}</td>
                             <td>{{$item->sv_dangky}}</td>
+                            <td>{{$item->sv_dangkybv}}</td>
                             <td>{{$item->sv_pass}}</td>
                             <td>{{$item->dtb}}</td>
                         </tr>
